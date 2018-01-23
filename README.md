@@ -12,6 +12,10 @@ To be described later.
 
 To be described later.
 
+## Acknowledgements
+
+- The concepts of this library is borrowed from Python's [HoloViews](http://holoviews.org/) and Julia's [Plots ecosystem](https://juliaplots.github.io/).
+
 ## Authors
 
 - Kenta Murata \<mrkn@mrkn.jp\>
