@@ -1,0 +1,43 @@
+PATH
+  remote: ..
+  specs:
+    red-visualizer (0.1.0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    bond (0.5.1)
+    czmq-ffi-gen (0.15.0)
+      ffi (~> 1.9.10)
+    cztop (0.13.1)
+      czmq-ffi-gen (~> 0.15.0)
+    data_uri (0.1.0)
+    ffi (1.9.23)
+    iruby (0.3)
+      bond (~> 0.5)
+      data_uri (~> 0.1)
+      mimemagic (~> 0.3)
+      multi_json (~> 1.11)
+    matplotlib (1.0.0)
+      pycall (>= 1.0.0)
+    mimemagic (0.3.2)
+    multi_json (1.13.1)
+    pycall (1.0.3)
+    rbczmq (1.7.9)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  cztop
+  iruby
+  matplotlib
+  mimemagic
+  rbczmq
+  red-visualizer!
+
+RUBY VERSION
+   ruby 2.5.0p0
+
+BUNDLED WITH
+   1.16.1
