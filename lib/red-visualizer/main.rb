@@ -5,51 +5,68 @@ module RedVisualizer
     end
 
     def curve(&block)
-      context = RenderContext.new &block
-      context.apply(:curve, @frontend)
+      context = RenderContext.new :curve, &block
+      context.apply(@frontend)
     end
 
     def scatter(&block)
-      context = RenderContext.new &block
-      context.apply(:scatter, @frontend)
+      context = RenderContext.new :scatter, &block
+      context.apply(@frontend)
     end
   end
 
   Series = Struct.new(:xs, :ys)
 
   class RenderContext
-    def initialize(&block)
-      self.instance_eval &block
+    attr_reader :function, :range, :series, :method
+
+    def initialize(method, &block)
+      @method = method
+      configurator = Configurator.new
+      configurator.instance_eval &block
+      (@range, @series, @function) = configurator.to_a
     end
 
-    def function(&block)
-      @function = block
+    class Configurator
+      def function(&block)
+        @function = block
+      end
+
+      def series(xs, ys)
+        @series = Series.new(xs, ys)
+      end
+
+      def range(range)
+        @range = range
+      end
+
+      def to_a
+        [@range, @series, @function]
+      end
     end
 
-    def series(xs, ys)
-      @series = Series.new(xs, ys)
+    def range_x
+      @range[:x]
     end
 
-    def range(range)
-      @range = range
+    def range_y
+      @range[:y]
     end
 
     def render
-      @frontend.render(@type)
+      @frontend.render(self)
     end
 
-    def apply(type, frontend)
+    def apply(frontend)
       case
         when @series
           frontend.series = @series
         when @function
           x_range = @range[:x]
           step = (x_range.end - x_range.begin).to_f / 100
-          frontend.series = Series.new(x_range.step(step).to_a, x_range.step(step).map{|x| @function.call(x) })
+          @series = Series.new(x_range.step(step).to_a, x_range.step(step).map{|x| @function.call(x) })
       end
 
-      frontend.range = @range
-      @type = type
       @frontend = frontend
       self
     end

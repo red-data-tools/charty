@@ -21,19 +21,15 @@ module RedVisualizer
       @series = series
     end
 
-    def range=(range)
-      @range = range
-    end
+    def render(context)
+      @plot.xlim(context.range_x.begin, context.range_x.end)
+      @plot.ylim(context.range_y.begin, context.range_y.end)
 
-    def render(type)
-      @plot.xlim(@range[:x].begin, @range[:x].end)
-      @plot.ylim(@range[:y].begin, @range[:y].end)
-
-      case type
+      case context.method
       when :curve
-        @plot.plot(@series.xs, @series.ys)
+        @plot.plot(context.series.xs, context.series.ys)
       when :scatter
-        @plot.plot(@series.xs, @series.ys, "o")
+        @plot.plot(context.series.xs, context.series.ys, ".")
       end
       @plot.show
     end
