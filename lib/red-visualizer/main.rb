@@ -13,6 +13,10 @@ module RedVisualizer
       context = RenderContext.new :scatter, &block
       context.apply(@frontend)
     end
+
+    def layout(definition=:horizontal)
+      Layout.new(@frontend, definition)
+    end
   end
 
   Series = Struct.new(:xs, :ys)
