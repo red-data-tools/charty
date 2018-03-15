@@ -11,11 +11,22 @@ module RedVisualizer
         ArrayLayout.new
       when :vertical
         ArrayLayout.new(:vertical)
+      else
+        if match = definition.to_s.match(/\Agrid(\d+)x(\d+)\z/)
+          num_cols = match[1].to_i
+          num_rows = match[2].to_i
+          GridLayout.new(num_cols, num_rows)
+        end
       end
     end
 
     def <<(content)
-      @layout << content
+      if content.respond_to?(:each)
+        content.each {|c| self << c }
+      else
+        @layout << content
+      end
+      nil
     end
 
     def render
@@ -43,6 +54,22 @@ module RedVisualizer
 
     def rows
       [@array]
+    end
+  end
+
+  class GridLayout
+    attr_reader :num_rows, :num_cols, :rows
+
+    def initialize(num_cols, num_rows)
+      @rows = Array.new(num_rows) { Array.new(num_cols) }
+      @num_cols = num_cols
+      @num_rows = num_rows
+      @cursor = 0
+    end
+
+    def <<(content)
+      @rows[@cursor / @num_rows][@cursor % @num_cols] = content
+      @cursor += 1
     end
   end
 end

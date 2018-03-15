@@ -4,13 +4,13 @@ module RedVisualizer
       @frontend = frontend
     end
 
-    def curve(&block)
-      context = RenderContext.new :curve, &block
+    def curve(**args, &block)
+      context = RenderContext.new :curve, **args, &block
       context.apply(@frontend)
     end
 
-    def scatter(&block)
-      context = RenderContext.new :scatter, &block
+    def scatter(**args, &block)
+      context = RenderContext.new :scatter, **args, &block
       context.apply(@frontend)
     end
 
@@ -24,14 +24,18 @@ module RedVisualizer
   class RenderContext
     attr_reader :function, :range, :series, :method
 
-    def initialize(method, &block)
+    def initialize(method, **args, &block)
       @method = method
-      configurator = Configurator.new
+      configurator = Configurator.new(**args)
       configurator.instance_eval &block
       (@range, @series, @function) = configurator.to_a
     end
 
     class Configurator
+      def initialize(**args)
+        @args = args
+      end
+
       def function(&block)
         @function = block
       end
@@ -46,6 +50,14 @@ module RedVisualizer
 
       def to_a
         [@range, @series, @function]
+      end
+
+      def method_missing(method, *args)
+        if (@args.has_key?(method))
+          @args[name]
+        else
+          super
+        end
       end
     end
 
@@ -66,9 +78,8 @@ module RedVisualizer
         when @series
           frontend.series = @series
         when @function
-          x_range = @range[:x]
-          step = (x_range.end - x_range.begin).to_f / 100
-          @series = Series.new(x_range.step(step).to_a, x_range.step(step).map{|x| @function.call(x) })
+          linspace = Linspace.new(@range[:x], 100)
+          @series = Series.new(linspace.to_a, linspace.map{|x| @function.call(x) })
       end
 
       @frontend = frontend
