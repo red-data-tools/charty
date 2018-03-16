@@ -48,3 +48,15 @@ build-iPhoneSimulator/
 
 # unless supporting rvm < 1.11.0 or doing something fancy, ignore this:
 .rvmrc
+
+# Jupyter notebook
+.ipynb_checkpoints/
+
+# Python
+__pycache__/
+
+# Object files
+*.bundle
+*.so
+*.o
+*.pyc
