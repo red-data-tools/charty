@@ -1,10 +1,10 @@
 lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require "red-visualizer/version"
+require "visualizer/version"
 
 Gem::Specification.new do |spec|
   spec.name          = "red-visualizer"
-  spec.version       = RedVisualizer::VERSION
+  spec.version       = Visualizer::VERSION
   spec.authors       = ["youchan"]
   spec.email         = ["youchan01@gmail.com"]
 

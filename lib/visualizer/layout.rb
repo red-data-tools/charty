@@ -1,4 +1,4 @@
-module RedVisualizer
+module Visualizer
   class Layout
     def initialize(frontend, definition = :horizontal)
       @frontend = frontend

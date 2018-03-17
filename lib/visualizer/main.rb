@@ -1,4 +1,4 @@
-module RedVisualizer
+module Visualizer
   class Main
     def initialize(frontend)
       @frontend = frontend

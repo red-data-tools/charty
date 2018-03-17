@@ -1,7 +1,7 @@
 require 'matplotlib/pyplot'
 require 'matplotlib/iruby'
 
-module RedVisualizer
+module Visualizer
   class Matplot
     def initialize
       @plot = Matplotlib::Pyplot

@@ -1,4 +1,4 @@
-module RedVisualizer
+module Visualizer
   class Linspace
     include Enumerable
 
