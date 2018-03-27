@@ -11,4 +11,4 @@ gem 'rbczmq'
 gem 'cztop'
 gem 'iruby'
 gem 'matplotlib'
-gem 'red-visualizer', path: ".."
+gem 'charty', path: ".."

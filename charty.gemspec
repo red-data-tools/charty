@@ -1,16 +1,16 @@
 lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require "visualizer/version"
+require "charty/version"
 
 Gem::Specification.new do |spec|
-  spec.name          = "red-visualizer"
-  spec.version       = Visualizer::VERSION
+  spec.name          = "charty"
+  spec.version       = Charty::VERSION
   spec.authors       = ["youchan"]
   spec.email         = ["youchan01@gmail.com"]
 
   spec.summary       = %q{Visualizing your data in a simple way.}
   spec.description   = %q{Visualizing your data in a simple way.}
-  spec.homepage      = "https://github.com/red-data-tools/red-visualizer"
+  spec.homepage      = "https://github.com/red-data-tools/charty"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0").reject do |f|

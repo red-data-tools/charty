@@ -1,4 +1,4 @@
-module Visualizer
+module Charty
   class Linspace
     include Enumerable
 

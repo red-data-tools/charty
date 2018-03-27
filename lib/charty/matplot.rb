@@ -1,7 +1,7 @@
 require 'matplotlib/pyplot'
 require 'matplotlib/iruby'
 
-module Visualizer
+module Charty
   class Matplot
     def initialize
       @plot = Matplotlib::Pyplot

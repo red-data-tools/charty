@@ -1,4 +1,4 @@
-module Visualizer
+module Charty
   class Layout
     def initialize(frontend, definition = :horizontal)
       @frontend = frontend

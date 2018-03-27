@@ -1,4 +1,4 @@
-module Visualizer
+module Charty
   class Main
     def initialize(frontend)
       @frontend = frontend
