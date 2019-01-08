@@ -1,5 +1,4 @@
 require 'matplotlib/pyplot'
-require 'matplotlib/iruby'
 
 module Charty
   class Matplot
@@ -7,14 +6,12 @@ module Charty
       @plot = Matplotlib::Pyplot
     end
 
-    def self.notebook
+    def self.activate_iruby_integration
+      require 'matplotlib/iruby'
       Matplotlib::IRuby.activate
-
-      self.new
     end
 
     def label(x, y)
-
     end
 
     def series=(series)
