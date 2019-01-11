@@ -1,7 +1,6 @@
 require "charty/version"
 
 require "charty/main"
-require "charty/matplot"
 require "charty/layout"
 require "charty/linspace"
 
