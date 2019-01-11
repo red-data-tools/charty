@@ -23,18 +23,18 @@ module Charty
       layout.rows.each_with_index do |row, y|
         row.each_with_index do |cel, x|
           plot = layout.num_rows > 1 ? axes[y][x] : axes[x]
-          plot(plot, cel)
+          plot(plot, cel, subplot: true)
         end
       end
       @plot.show
     end
 
-    def render(context)
+    def render(context, filename)
       plot(@plot, context)
       @plot.show
     end
 
-    def plot(plot, context)
+    def plot(plot, context, subplot: false)
       case
       when plot.respond_to?(:xlim)
         plot.xlim(context.range_x.begin, context.range_x.end)
@@ -44,11 +44,45 @@ module Charty
         plot.set_ylim(context.range_y.begin, context.range_y.end)
       end
 
+      plot.title(context.title) if context.title
+      if !subplot
+        plot.xlabel(context.xlabel) if context.xlabel
+        plot.ylabel(context.ylabel) if context.ylabel
+      end
+
       case context.method
+      when :bar
+        context.series.each do |data|
+          plot.bar(data.xs.to_a, data.ys.to_a)
+        end
+      when :boxplot
+        plot.boxplot(context.data.to_a)
+      when :bubble
+        context.series.each do |data|
+          plot.scatter(data.xs.to_a, data.ys.to_a, s: data.zs.to_a, alpha: 0.5)
+        end
       when :curve
-        plot.plot(context.series.xs.to_a, context.series.ys.to_a)
+        context.series.each do |data|
+          plot.plot(data.xs.to_a, data.ys.to_a)
+        end
       when :scatter
-        plot.plot(context.series.xs.to_a, context.series.ys.to_a, ".")
+        context.series.each do |data|
+          plot.scatter(data.xs.to_a, data.ys.to_a, label: data.label)
+        end
+        plot.legend()
+      when :errorbar
+        context.series.each do |data|
+          plot.errorbar(
+            data.xs.to_a,
+            data.ys.to_a,
+            context.yerr,
+            context.xerr,
+            label: data.label,
+          )
+        end
+        plot.legend()
+      when :hist
+        plot.hist(context.data.to_a)
       end
     end
   end
