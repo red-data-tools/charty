@@ -145,7 +145,7 @@ scatter.render
 
 #### Rubyplot
 
-### Errrorbar
+### Errorbar
  
 ```ruby
 errorbar = charty.errorbar do
