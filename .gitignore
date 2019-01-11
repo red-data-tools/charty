@@ -60,5 +60,3 @@ __pycache__/
 *.so
 *.o
 *.pyc
-
-examples/sample_images
