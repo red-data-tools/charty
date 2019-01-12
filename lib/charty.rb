@@ -1,8 +1,8 @@
-require "charty/version"
+require_relative "charty/version"
 
-require "charty/main"
-require "charty/layout"
-require "charty/linspace"
+require_relative "charty/main"
+require_relative "charty/layout"
+require_relative "charty/linspace"
 
 Rdv = Charty
 RdvMain = Rdv::Main

@@ -16,3 +16,6 @@ gem 'cztop'
 gem 'iruby'
 gem 'matplotlib'
 gem 'charty', path: ".."
+
+gem 'gruff'
+gem 'rubyplot'

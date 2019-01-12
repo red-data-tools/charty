@@ -29,7 +29,7 @@ module Charty
       nil
     end
 
-    def render
+    def render(filename="")
       @frontend.render_layout(@layout)
     end
   end

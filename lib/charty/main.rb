@@ -3,13 +3,13 @@ module Charty
     def initialize(frontend)
       @frontend =  case frontend
       when :matplot
-        require "charty/matplot"
+        require_relative "matplot"
         Charty::Matplot.new
       when :gruff
-        require "charty/gruff"
+        require_relative "gruff"
         Charty::Gruff.new
       when :rubyplot
-        require "charty/rubyplot"
+        require_relative "rubyplot"
         Charty::Rubyplot.new
       else
         raise NotImplementedError
