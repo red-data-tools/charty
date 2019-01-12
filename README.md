@@ -62,9 +62,15 @@ bar.render
 
 #### Matplotlib
 
+![bar matplotlib](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/bar_matplot.png)
+
 #### Gruff
 
+![bar gruff](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/bar_gruff.png)
+
 #### Rubyplot
+
+![bar rubyplot](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/bar_rubyplot.png)
 
 ### Curve
 
@@ -82,9 +88,15 @@ curve2.render
 
 #### Matplotlib
 
+![curve2 matplotlib](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/curve_matplot.png)
+
 #### Gruff
 
+![curve2 gruff](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/curve_gruff.png)
+
 #### Rubyplot
+
+![curve2 rubyplot](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/curve_rubyplot.png)
 
 ### Curve with function
 
@@ -100,9 +112,15 @@ curve.render("sample_images/curve_gruff.png")
 
 #### Matplotlib
 
+![curve matplotlib](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/curve_with_function_matplot.png)
+
 #### Gruff
 
+Not supported
+
 #### Rubyplot
+
+![curve rubyplot](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/curve_with_function_rubyplot.png)
 
 ### Box plot
 
@@ -119,9 +137,15 @@ boxplot.render
 
 #### Matplotlib
 
+![box matplotlib](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/boxplot_matplot.png)
+
 #### Gruff
 
+Not supported
+
 #### Rubyplot
+
+Not supported
 
 ### Scatter
 
@@ -141,9 +165,15 @@ scatter.render
 
 #### Matplotlib
 
+![scatter matplotlib](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/scatter_matplot.png)
+
 #### Gruff
 
+![scatter gruff](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/scatter_gruff.png)
+
 #### Rubyplot
+
+![scatter rubyplot](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/scatter_rubyplot.png)
 
 ### Errorbar
  
@@ -162,9 +192,15 @@ errorbar.render
 
 #### Matplotlib
 
+![errorbar matplotlib](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/errorbar_matplot.png)
+
 #### Gruff
 
+Not supported
+
 #### Rubyplot
+
+Not supported
 
 ### Bubble chart
 
@@ -183,9 +219,15 @@ bubble.render
 
 #### Matplotlib
 
+![bubble matplotlib](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/bubble_matplot.png)
+
 #### Gruff
 
+Not supported
+
 #### Rubyplot
+
+![bubble rubyplot](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/bubble_rubyplot.png)
 
 ### Histogram
 
@@ -202,9 +244,15 @@ hist.render
 
 #### Matplotlib
 
+![hist matplotlib](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/hist_matplot.png)
+
 #### Gruff
 
+Not supported
+
 #### Rubyplot
+
+Not supported
 
 ### Subplots
 
@@ -217,9 +265,15 @@ layout.render
 
 #### Matplotlib
 
+![subplot matplotlib](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/subplot_matplot.png)
+
 #### Gruff
 
+Not supported
+
 #### Rubyplot
+
+Not supported
 
 ### Subplots 2
 
@@ -246,10 +300,15 @@ grid_layout.render
 
 #### Matplotlib
 
+![subplot2 matplotlib](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/subplot2_matplot.png)
+
 #### Gruff
+
+Not supported
 
 #### Rubyplot
 
+Not supported
 
 
 ## Acknowledgements
