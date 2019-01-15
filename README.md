@@ -179,15 +179,14 @@ scatter.render
  
 ```ruby
 errorbar = charty.errorbar do
-  series [1,2,3,4], [1,4,9,16], label: 'label1'
+  series [1,2,3,4], [1,4,9,16], xerr: [0.5,1.0,1.5,0.3], yerr: [0.6,0.2,0.8,0.1], label: 'label1'
   series [1,2,3,4], [16,9,4,1], label: 'label2'
+  series [1,2,3,4,5,6,7,8], [14,14,14,14,14,14,14,14], label: 'label2', xerr: [0.5,1.0,1.5,0.3, 1.1, 1.2, 1.3, 1.4]
   range x: 0..10, y: -1..20
-  yerr [0.6,0.7,2.1,1.4]
-  xerr [0.1,0.2,0.3,1.4]
   xlabel 'x label'  
   title 'errorbar'
 end
-errorbar.render
+errorbar.render("sample_images/errorbar_matplot.png")
 ```
 
 #### Matplotlib
