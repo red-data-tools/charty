@@ -56,16 +56,16 @@ module Charty
     end
   end
 
-  Series = Struct.new(:xs, :ys, :zs, :label)
+  Series = Struct.new(:xs, :ys, :zs, :xerr, :yerr, :label)
 
   class RenderContext
-    attr_reader :function, :range, :series, :method, :data, :title, :xlabel, :ylabel, :xerr, :yerr
+    attr_reader :function, :range, :series, :method, :data, :title, :xlabel, :ylabel
 
     def initialize(method, **args, &block)
       @method = method
       configurator = Configurator.new(**args)
       configurator.instance_eval &block
-      (@range, @series, @function, @data, @title, @xlabel, @ylabel, @xerr, @yerr) = configurator.to_a
+      (@range, @series, @function, @data, @title, @xlabel, @ylabel) = configurator.to_a
     end
 
     class Configurator
@@ -94,20 +94,12 @@ module Charty
         @ylabel = ylabel
       end
 
-      def xerr(xerr)
-        @xerr = xerr
-      end
-
-      def yerr(yerr)
-        @yerr = yerr
-      end
-
       def label(x, y)
 
       end
 
-      def series(xs, ys=nil, zs=nil, label: nil)
-        @series << Series.new(xs, ys, zs, label)
+      def series(xs, ys=nil, zs=nil, xerr: nil, yerr: nil, label: nil)
+        @series << Series.new(xs, ys, zs, xerr, yerr, label)
       end
 
       def range(range)
@@ -115,7 +107,7 @@ module Charty
       end
 
       def to_a
-        [@range, @series, @function, @data, @title, @xlabel, @ylabel, @xerr, @yerr]
+        [@range, @series, @function, @data, @title, @xlabel, @ylabel]
       end
 
       def method_missing(method, *args)

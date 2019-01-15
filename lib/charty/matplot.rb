@@ -76,8 +76,8 @@ module Charty
           plot.errorbar(
             data.xs.to_a,
             data.ys.to_a,
-            context.yerr,
-            context.xerr,
+            data.xerr,
+            data.yerr,
             label: data.label,
           )
         end
