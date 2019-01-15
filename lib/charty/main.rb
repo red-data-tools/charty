@@ -135,7 +135,7 @@ module Charty
       @range[:y]
     end
 
-    def render(filename="")
+    def render(filename=nil)
       @frontend.render(self, filename)
     end
 
