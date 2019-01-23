@@ -25,7 +25,7 @@ bar = charty.bar do
   ylabel 'bar'
   title 'bar plot'
 end
-bar.render
+bar.render("sample_images/bar_matplot.png")
 ```
 
 ## Examples
@@ -57,7 +57,7 @@ bar = charty.bar do
   ylabel 'bar'
   title 'bar plot'
 end
-bar.render
+bar.render("sample_images/bar_matplot.png")
 ```
 
 #### Matplotlib
@@ -83,7 +83,7 @@ curve2 = charty.curve do
   xlabel 'foo'
   ylabel 'bar'
 end
-curve2.render
+curve2.render("sample_images/curve_matplot.png")
 ```
 
 #### Matplotlib
@@ -107,7 +107,7 @@ curve = charty.curve do
   xlabel 'foo'
   ylabel 'bar'
 end
-curve.render("sample_images/curve_gruff.png")
+curve.render("sample_images/curve_with_function_matplot.png")
 ```
 
 #### Matplotlib
@@ -132,7 +132,7 @@ boxplot = charty.boxplot do
   ylabel 'bar'
   title 'box plot'
 end
-boxplot.render
+boxplot.render("sample_images/boxplot_matplot.png")
 ```
 
 #### Matplotlib
@@ -160,7 +160,7 @@ scatter = charty.scatter do
   ylabel 'y label'
   title 'scatter sample'
 end
-scatter.render
+scatter.render("sample_images/scatter_matplot.png")
 ```
 
 #### Matplotlib
@@ -213,7 +213,7 @@ bubble = charty.bubble do
   ylabel 'y label'
   title 'bubble sample'
 end
-bubble.render
+bubble.render("sample_images/bubble_matplot.png")
 ```
 
 #### Matplotlib
@@ -238,7 +238,7 @@ hist = charty.hist do
   ylabel 'y label'
   title 'histogram sample'
 end
-hist.render
+hist.render("sample_images/hist_matplot.png")
 ```
 
 #### Matplotlib
@@ -259,7 +259,7 @@ Not supported
 layout = charty.layout
 layout << curve
 layout << scatter
-layout.render
+layout.render("sample_images/subplot_matplot.png")
 ```
 
 #### Matplotlib
@@ -294,7 +294,7 @@ end
 grid_layout = charty.layout(:grid2x2)
 grid_layout << curve_list
 grid_layout << scatter_list
-grid_layout.render
+grid_layout.render("sample_images/subplot2_matplot.png")
 ```
 
 #### Matplotlib
