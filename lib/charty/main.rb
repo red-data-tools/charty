@@ -34,6 +34,18 @@ module Charty
       end
     end
 
+    def to_boxplot(x, y, **args, &block)
+      serieses = table.to_a
+      xrange = 0..serieses.size
+      yrange = (serieses.flatten.min - 1)..(serieses.flatten.max + 1)
+      boxplot = boxplot do
+        data serieses
+        range x: xrange, y: yrange
+        xlabel x
+        ylabel y
+      end
+    end
+
     def to_bubble(x, y, z, **args, &block)
       seriesx, seriesy, seriesz = *table.to_a
       xrange = (seriesx.min)..(seriesx.max)
