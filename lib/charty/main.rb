@@ -16,15 +16,16 @@ module Charty
       end
     end
 
-    def table(data, **kwargs)
-      @data = data
+    def table=(data, **kwargs)
+      @table = Charty::Table.new(data)
     end
 
+    attr_reader :table
+
     def to_bar(x, y, **args, &block)
-      seriesx = @data[x].to_a
-      seriesy = @data[y].to_a
-      xrange = (@data[x].to_a.min)..(@data[x].to_a.max)
-      yrange = (@data[y].to_a.min)..(@data[y].to_a.max)
+      seriesx, seriesy = *table.to_a
+      xrange = (seriesx.min)..(seriesx.max)
+      yrange = (seriesy.min)..(seriesy.max)
       bar = bar do
         series seriesx, seriesy
         range x: xrange, y: yrange
@@ -34,11 +35,9 @@ module Charty
     end
 
     def to_bubble(x, y, z, **args, &block)
-      seriesx = @data[x].to_a
-      seriesy = @data[y].to_a
-      seriesz = @data[z].to_a
-      xrange = (@data[x].to_a.min)..(@data[x].to_a.max)
-      yrange = (@data[y].to_a.min)..(@data[y].to_a.max)
+      seriesx, seriesy, seriesz = *table.to_a
+      xrange = (seriesx.min)..(seriesx.max)
+      yrange = (seriesy.min)..(seriesy.max)
       bubble = bubble do
         series seriesx, seriesy, seriesz
         range x: xrange, y: yrange
@@ -48,10 +47,9 @@ module Charty
     end
 
     def to_curve(x, y, **args, &block)
-      seriesx = @data[x].to_a
-      seriesy = @data[y].to_a
-      xrange = (@data[x].to_a.min)..(@data[x].to_a.max)
-      yrange = (@data[y].to_a.min)..(@data[y].to_a.max)
+      seriesx, seriesy = *table.to_a
+      xrange = (seriesx.min)..(seriesx.max)
+      yrange = (seriesy.min)..(seriesy.max)
       curve = curve do
         series seriesx, seriesy
         range x: xrange, y: yrange
@@ -61,10 +59,9 @@ module Charty
     end
 
     def to_scatter(x, y, **args, &block)
-      seriesx = @data[x].to_a
-      seriesy = @data[y].to_a
-      xrange = (@data[x].to_a.min)..(@data[x].to_a.max)
-      yrange = (@data[y].to_a.min)..(@data[y].to_a.max)
+      seriesx, seriesy = *table.to_a
+      xrange = (seriesx.min)..(seriesx.max)
+      yrange = (seriesy.min)..(seriesy.max)
       scatter = scatter do
         series seriesx, seriesy
         range x: xrange, y: yrange
