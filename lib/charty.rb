@@ -7,3 +7,9 @@ require_relative "charty/table"
 
 Rdv = Charty
 RdvMain = Rdv::Main
+
+module Charty
+  def self.new(*args)
+    Charty::Main.new(*args)
+  end
+end
