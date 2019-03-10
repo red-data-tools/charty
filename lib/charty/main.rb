@@ -95,6 +95,17 @@ module Charty
       end
     end
 
+    def to_hst(x, y, **args, &block)
+      serieses = table.to_a
+      xrange = (serieses.flatten.min - 1)..(serieses.flatten.max + 1)
+      yrange = 0..serieses[0].size
+      hist = hist do
+        data serieses
+        range x: xrange, y: yrange
+        xlabel x
+        ylabel y
+      end
+    end
 
     def bar(**args, &block)
       context = RenderContext.new :bar, **args, &block
