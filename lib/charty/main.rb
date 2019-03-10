@@ -20,6 +20,19 @@ module Charty
       @data = data
     end
 
+    def to_bar(x, y, **args, &block)
+      seriesx = @data[x].to_a
+      seriesy = @data[y].to_a
+      xrange = (@data[x].to_a.min)..(@data[x].to_a.max)
+      yrange = (@data[y].to_a.min)..(@data[y].to_a.max)
+      bar = bar do
+        series seriesx, seriesy
+        range x: xrange, y: yrange
+        xlabel x
+        ylabel y
+      end
+    end
+
     def bar(**args, &block)
       context = RenderContext.new :bar, **args, &block
       context.apply(@frontend)
