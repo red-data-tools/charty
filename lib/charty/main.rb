@@ -16,6 +16,10 @@ module Charty
       end
     end
 
+    def table(data, **kwargs)
+      @data = data
+    end
+
     def bar(**args, &block)
       context = RenderContext.new :bar, **args, &block
       context.apply(@frontend)
