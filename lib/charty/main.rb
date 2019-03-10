@@ -60,6 +60,19 @@ module Charty
       end
     end
 
+    def to_scatter(x, y, **args, &block)
+      seriesx = @data[x].to_a
+      seriesy = @data[y].to_a
+      xrange = (@data[x].to_a.min)..(@data[x].to_a.max)
+      yrange = (@data[y].to_a.min)..(@data[y].to_a.max)
+      scatter = scatter do
+        series seriesx, seriesy
+        range x: xrange, y: yrange
+        xlabel x
+        ylabel y
+      end
+    end
+
     def bar(**args, &block)
       context = RenderContext.new :bar, **args, &block
       context.apply(@frontend)
