@@ -82,6 +82,20 @@ module Charty
       end
     end
 
+    def to_errorbar(x, y, **args, &block)
+      # TODO: It is not yet decided how to include data including xerror and yerror.
+      seriesx, seriesy = *table.to_a
+      xrange = (seriesx.min)..(seriesx.max)
+      yrange = (seriesy.min)..(seriesy.max)
+      errorbar = errorbar do
+        series seriesx, seriesy
+        range x: xrange, y: yrange
+        xlabel x
+        ylabel y
+      end
+    end
+
+
     def bar(**args, &block)
       context = RenderContext.new :bar, **args, &block
       context.apply(@frontend)
