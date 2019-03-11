@@ -23,7 +23,7 @@ module Charty
     attr_reader :table
 
     def to_bar(x, y, **args, &block)
-      seriesx, seriesy = *table.to_a
+      seriesx, seriesy = *table.to_a(x, y)
       xrange = (seriesx.min)..(seriesx.max)
       yrange = (seriesy.min)..(seriesy.max)
       bar = bar do
@@ -35,7 +35,7 @@ module Charty
     end
 
     def to_boxplot(x, y, **args, &block)
-      serieses = table.to_a
+      serieses = table.to_a(x, y)
       xrange = 0..serieses.size
       yrange = (serieses.flatten.min - 1)..(serieses.flatten.max + 1)
       boxplot = boxplot do
@@ -47,7 +47,7 @@ module Charty
     end
 
     def to_bubble(x, y, z, **args, &block)
-      seriesx, seriesy, seriesz = *table.to_a
+      seriesx, seriesy, seriesz = *table.to_a(x, y, z)
       xrange = (seriesx.min)..(seriesx.max)
       yrange = (seriesy.min)..(seriesy.max)
       bubble = bubble do
@@ -59,7 +59,7 @@ module Charty
     end
 
     def to_curve(x, y, **args, &block)
-      seriesx, seriesy = *table.to_a
+      seriesx, seriesy = *table.to_a(x, y)
       xrange = (seriesx.min)..(seriesx.max)
       yrange = (seriesy.min)..(seriesy.max)
       curve = curve do
@@ -71,7 +71,7 @@ module Charty
     end
 
     def to_scatter(x, y, **args, &block)
-      seriesx, seriesy = *table.to_a
+      seriesx, seriesy = *table.to_a(x, y)
       xrange = (seriesx.min)..(seriesx.max)
       yrange = (seriesy.min)..(seriesy.max)
       scatter = scatter do
@@ -84,7 +84,7 @@ module Charty
 
     def to_errorbar(x, y, **args, &block)
       # TODO: It is not yet decided how to include data including xerror and yerror.
-      seriesx, seriesy = *table.to_a
+      seriesx, seriesy = *table.to_a(x, y)
       xrange = (seriesx.min)..(seriesx.max)
       yrange = (seriesy.min)..(seriesy.max)
       errorbar = errorbar do
@@ -96,7 +96,7 @@ module Charty
     end
 
     def to_hst(x, y, **args, &block)
-      serieses = table.to_a
+      serieses = table.to_a(x, y)
       xrange = (serieses.flatten.min - 1)..(serieses.flatten.max + 1)
       yrange = 0..serieses[0].size
       hist = hist do
