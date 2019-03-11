@@ -36,14 +36,15 @@ module Charty
     end
 
     def plot(plot, context, subplot: false)
-      case
-      when plot.respond_to?(:xlim)
-        plot.xlim(context.range_x.begin, context.range_x.end)
-        plot.ylim(context.range_y.begin, context.range_y.end)
-      when plot.respond_to?(:set_xlim)
-        plot.set_xlim(context.range_x.begin, context.range_x.end)
-        plot.set_ylim(context.range_y.begin, context.range_y.end)
-      end
+      # TODO: Since it is not required, research and change conditions.
+      # case
+      # when plot.respond_to?(:xlim)
+      #   plot.xlim(context.range_x.begin, context.range_x.end)
+      #   plot.ylim(context.range_y.begin, context.range_y.end)
+      # when plot.respond_to?(:set_xlim)
+      #   plot.set_xlim(context.range_x.begin, context.range_x.end)
+      #   plot.set_ylim(context.range_y.begin, context.range_y.end)
+      # end
 
       plot.title(context.title) if context.title
       if !subplot
