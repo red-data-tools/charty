@@ -7,12 +7,20 @@ module Charty
 
     attr_reader :table
 
-    def to_a
+    def to_a(x=nil, y=nil, z=nil)
       case
       when defined?(Daru::DataFrame) && table.kind_of?(Daru::DataFrame)
         table.map(&:to_a)
       when defined?(Numo::NArray) && table.kind_of?(Numo::NArray)
         table.to_a
+      when defined?(ActiveRecord::Relation) && table.kind_of?(ActiveRecord::Relation)
+        if z && x && y
+          [table.pluck(x), table.pluck(y), table.pluck(z)]
+        elsif x && y
+          [table.pluck(x), table.pluck(y)]
+        else
+          raise ArgumentError, "column_names is required to convert to_a from ActiveRecord::Relation"
+        end
       else
         raise ArgumentError, "unsupported object: #{table.inspect}"
       end
