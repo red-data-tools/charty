@@ -317,6 +317,7 @@ Not supported
 ## Authors
 
 - Kenta Murata \<mrkn@mrkn.jp\>
+- Kazuma Furuhashi \<k.furuhashi10@gmail.com\>
 
 ## License
 
