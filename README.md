@@ -28,6 +28,64 @@ end
 bar.render("sample_images/bar_matplot.png")
 ```
 
+Charty also supports Daru::DataFrame, Numo::NArray and ActiveRecord as Data Abstraction Layer.
+For example.
+
+```ruby
+require 'charty'
+charty = Charty::Main.new(:matplot)
+
+
+### when Daru::DataFrame
+require 'daru'
+df = Daru::DataFrame.new({'a':[1,2,3,4], 'b':[4,5,6,7], 'c':[8, 9, 10, 11]})
+charty.table = df
+
+
+### when Numo::NArray
+require "numo/narray"
+narray = Numo::DFloat.new(3,5).seq
+charty.table = narray
+
+
+### when ActiveRecord
+require "active_record"
+ActiveRecord::Base.establish_connection(adapter: "sqlite3", database: ":memory:")
+ActiveRecord::Schema.define do
+  create_table :foos do |t|
+    t.integer :price
+    t.integer :sales
+  end
+end
+class Foo < ActiveRecord::Base
+end
+100.times{|i| Foo.create!(price: 10 * i, sales: (1..100).to_a.sample) }
+sales = Foo.where("sales >= 40")
+charty.table = sales
+
+
+bar = charty.to_bar(:price, :sales)
+bar.render('sample')
+
+boxplot = charty.to_boxplot(:price, :sales)
+boxplot.render('sample')
+
+bubble = charty.to_bubble(:price, :sales, :id)
+bubble.render('sample')
+
+curve = charty.to_curve(:price, :sales)
+curve.render('sample')
+
+scatter = charty.to_scatter(:price, :sales)
+scatter.render('sample')
+
+errorbar = charty.to_errorbar(:price, :sales)
+errorbar.render('sample')
+
+hst= charty.to_hst(:price, :sales)
+hst.render('sample')
+```
+
 ## Examples
 
 create an instance of the library you want to use.
