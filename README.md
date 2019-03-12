@@ -14,7 +14,7 @@ To be described later.
 
 ```ruby
 require 'charty'
-charty = Charty::Main.new(:matplot)
+charty = Charty.new(:matplot)
 
 bar = charty.bar do
   series [0,1,2,3,4], [10,40,20,90,70]
@@ -36,13 +36,13 @@ create an instance of the library you want to use.
 require 'charty'
 
 # when you want to use matplotlib
-charty = Charty::Main.new(:matplot)
+charty = Charty.new(:matplot)
 
 # when you want to use gruff
-charty = Charty::Main.new(:gruff)
+charty = Charty.new(:gruff)
 
 # when you wanto to use rubyplot
-charty = Charty::Main.new(:rubyplot)
+charty = Charty.new(:rubyplot)
 ```
 
 ### Bar
