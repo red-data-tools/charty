@@ -13,6 +13,8 @@ module Charty
         table.map(&:to_a)
       when defined?(Numo::NArray) && table.kind_of?(Numo::NArray)
         table.to_a
+      when defined?(NMatrix) && table.kind_of?(NMatrix)
+        table.to_a
       when defined?(ActiveRecord::Relation) && table.kind_of?(ActiveRecord::Relation)
         if z && x && y
           [table.pluck(x), table.pluck(y), table.pluck(z)]
