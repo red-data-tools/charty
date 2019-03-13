@@ -1,5 +1,5 @@
 module Charty
-  class Main
+  class Plotter
     def initialize(frontend)
       @frontend =  case frontend
       when :matplot
@@ -156,6 +156,7 @@ module Charty
       @method = method
       configurator = Configurator.new(**args)
       configurator.instance_eval &block
+      # TODO: label も外から付けられた方がよさそう
       (@range, @series, @function, @data, @title, @xlabel, @ylabel) = configurator.to_a
     end
 
