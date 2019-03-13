@@ -33,7 +33,7 @@ For example.
 
 ```ruby
 require 'charty'
-charty = Charty::Main.new(:matplot)
+charty = Charty::Plotter.new(:matplot)
 
 
 ### when Daru::DataFrame
