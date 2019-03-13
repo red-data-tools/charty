@@ -19,3 +19,11 @@ gem 'charty', path: ".."
 
 gem 'gruff'
 gem 'rubyplot'
+
+gem 'red-datasets'
+gem 'red-datasets-daru'
+gem 'numo-narray'
+gem 'nmatrix'
+
+gem 'rails'
+gem 'sqlite3', '~> 1.3.6'
