@@ -11,8 +11,8 @@ Gem::Specification.new do |spec|
     Charty::Version::TAG,
   ]
   spec.version       = version_components.compact.join(".")
-  spec.authors       = ["youchan"]
-  spec.email         = ["youchan01@gmail.com"]
+  spec.authors       = ["youchan", "mrkn", "284km"]
+  spec.email         = ["youchan01@gmail.com", "mrkn@mrkn.jp", "k.furuhashi10@gmail.com"]
 
   spec.summary       = %q{Visualizing your data in a simple way.}
   spec.description   = %q{Visualizing your data in a simple way.}
