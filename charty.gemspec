@@ -4,7 +4,13 @@ require "charty/version"
 
 Gem::Specification.new do |spec|
   spec.name          = "charty"
-  spec.version       = Charty::VERSION
+  version_components = [
+    Charty::Version::MAJOR.to_s,
+    Charty::Version::MINOR.to_s,
+    Charty::Version::MICRO.to_s,
+    Charty::Version::TAG,
+  ]
+  spec.version       = version_components.compact.join(".")
   spec.authors       = ["youchan"]
   spec.email         = ["youchan01@gmail.com"]
 
