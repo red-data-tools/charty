@@ -1,5 +1,7 @@
 # Charty - Visualizing your data in Ruby
 
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/red-data-tools/charty/masater?filepath=iris_dataset.ipynb)
+
 Charty is open-source Ruby library for visualizing your data in a simple way.
 In Charty, you need to write very few lines of code for representing what you want to do.
 It lets you focus on your analysis of data, instead of plotting.
