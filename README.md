@@ -8,7 +8,14 @@ It lets you focus on your analysis of data, instead of plotting.
 
 ## Installation
 
-To be described later.
+### With Matplotlib
+
+```
+sudo gem install charty --pre
+sudo gem install matplotlib
+sudo apt install python3-pip
+sudo python3 -m pip install -U pip matplotlib
+```
 
 ## Usage
 
