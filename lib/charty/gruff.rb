@@ -41,6 +41,9 @@ module Charty
           p.data(data.label, data.xs.to_a)
         end
         p
+      when :barh
+        # TODO: To implement
+        raise NotImplementedError
       when :boxplot
         # refs. https://github.com/topfunky/gruff/issues/155
         raise NotImplementedError
