@@ -34,6 +34,18 @@ module Charty
       end
     end
 
+    def to_barh(x, y, **args, &block)
+      seriesx, seriesy = *table.to_a(x, y)
+      xrange = (seriesx.min)..(seriesx.max)
+      yrange = (seriesy.min)..(seriesy.max)
+      bar = barh do
+        series seriesx, seriesy
+        range x: xrange, y: yrange
+        xlabel x
+        ylabel y
+      end
+    end
+
     def to_boxplot(x, y, **args, &block)
       serieses = table.to_a(x, y)
       xrange = 0..serieses.size
@@ -109,6 +121,11 @@ module Charty
 
     def bar(**args, &block)
       context = RenderContext.new :bar, **args, &block
+      context.apply(@frontend)
+    end
+
+    def barh(**args, &block)
+      context = RenderContext.new :barh, **args, &block
       context.apply(@frontend)
     end
 

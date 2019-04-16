@@ -57,6 +57,10 @@ module Charty
         context.series.each do |data|
           plot.bar(data.xs.to_a.map(&:to_s), data.ys.to_a)
         end
+      when :barh
+        context.series.each do |data|
+          plot.barh(data.xs.to_a.map(&:to_s), data.ys.to_a)
+        end
       when :boxplot
         plot.boxplot(context.data.to_a)
       when :bubble
