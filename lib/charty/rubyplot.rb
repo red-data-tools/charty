@@ -47,12 +47,14 @@ module Charty
       case context.method
       when :bar
         context.series.each do |data|
-          axes.bar! do |p| 
+          axes.bar! do |p|
             p.data(data.xs.to_a)
             p.label = data.label
           end
         end
         figure
+      when :barh
+        raise NotImplementedError
       when :boxplot
         raise NotImplementedError
       when :bubble
