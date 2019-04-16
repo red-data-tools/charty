@@ -55,7 +55,7 @@ module Charty
       case context.method
       when :bar
         context.series.each do |data|
-          plot.bar(data.xs.to_a, data.ys.to_a)
+          plot.bar(data.xs.to_a.map(&:to_s), data.ys.to_a)
         end
       when :boxplot
         plot.boxplot(context.data.to_a)
