@@ -10,6 +10,17 @@ It lets you focus on your analysis of data, instead of plotting.
 
 ## Installation
 
+### MacOS;
+
+```
+$ brew install Python
+$ pip3 install matplotlib
+$ bundle
+$ bin/console
+> Charty
+=> Charty
+```
+
 ### With Matplotlib
 
 ```
