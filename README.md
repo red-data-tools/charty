@@ -47,9 +47,9 @@ require 'charty'
 charty = Charty.new(:matplot)
 
 bar = charty.bar do
-  series [0,1,2,3,4], [10,40,20,90,70]
-  series [0,1,2,3,4], [90,80,70,60,50]
-  series [0,1,2,3,4,5,6,7,8], [50,60,20,30,10, 90, 0, 100, 50]
+  series [0,1,2,3,4], [10,40,20,90,70], label: "sample1"
+  series [0,1,2,3,4], [90,80,70,60,50], label: "sample2"
+  series [0,1,2,3,4,5,6,7,8], [50,60,20,30,10, 90, 0, 100, 50], label: "sample3"
   range x: 0..10, y: 1..100
   xlabel 'foo'
   ylabel 'bar'
@@ -143,9 +143,9 @@ charty = Charty.new(:rubyplot)
 
 ```ruby
 bar = charty.bar do
-  series [0,1,2,3,4], [10,40,20,90,70]
-  series [0,1,2,3,4], [90,80,70,60,50]
-  series [0,1,2,3,4,5,6,7,8], [50,60,20,30,10, 90, 0, 100, 50]
+  series [0,1,2,3,4], [10,40,20,90,70], label: "sample1"
+  series [0,1,2,3,4], [90,80,70,60,50], label: "sample2"
+  series [0,1,2,3,4,5,6,7,8], [50,60,20,30,10, 90, 0, 100, 50], label: "sample3"
   range x: 0..10, y: 1..100
   xlabel 'foo'
   ylabel 'bar'
@@ -170,9 +170,9 @@ bar.render("sample_images/bar_matplot.png")
 
 ```ruby
 curve2 = charty.curve do
-  series [0,1,2,3,4], [10,40,20,90,70]
-  series [0,1,2,3,4], [90,80,70,60,50]
-  series [0,1,2,3,4,5,6,7,8], [50,60,20,30,10, 90, 0, 100, 50]
+  series [0,1,2,3,4], [10,40,20,90,70], label: "sample1"
+  series [0,1,2,3,4], [90,80,70,60,50], label: "sample2"
+  series [0,1,2,3,4,5,6,7,8], [50,60,20,30,10, 90, 0, 100, 50], label: "sample3"
   range x: 0..10, y: 1..100
   xlabel 'foo'
   ylabel 'bar'
@@ -247,7 +247,7 @@ Not supported
 scatter = charty.scatter do
   series 0..10, (0..1).step(0.1), label: 'sample1'
   series 0..5, (0..1).step(0.2), label: 'sample2'
-  series [0, 1, 2, 3, 4], [0, -0.1, -0.5, -0.5, 0.1]
+  series [0, 1, 2, 3, 4], [0, -0.1, -0.5, -0.5, 0.1], label: 'sample3'
   range x: 0..10, y: -1..1
   # xlabel 'x label'
   # xlabel ''
@@ -270,14 +270,14 @@ scatter.render("sample_images/scatter_matplot.png")
 ![scatter rubyplot](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/scatter_rubyplot.png)
 
 ### Errorbar
- 
+
 ```ruby
 errorbar = charty.errorbar do
   series [1,2,3,4], [1,4,9,16], xerr: [0.5,1.0,1.5,0.3], yerr: [0.6,0.2,0.8,0.1], label: 'label1'
   series [1,2,3,4], [16,9,4,1], label: 'label2'
   series [1,2,3,4,5,6,7,8], [14,14,14,14,14,14,14,14], label: 'label2', xerr: [0.5,1.0,1.5,0.3, 1.1, 1.2, 1.3, 1.4]
   range x: 0..10, y: -1..20
-  xlabel 'x label'  
+  xlabel 'x label'
   title 'errorbar'
 end
 errorbar.render("sample_images/errorbar_matplot.png")
