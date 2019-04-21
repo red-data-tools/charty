@@ -21,6 +21,16 @@ $ bin/console
 => Charty
 ```
 
+### Ubuntu + pyenv
+
+You should install tk libraries before install python and should add enabling shared library option to installing python.
+So you may have to do `pyenv uninstall 3.x.x` first.
+
+```
+$ apt install -y tk-dev python3-tk
+$ CONFIGURE_OPTS="--enable-shared" pyenv install 3.x.x
+```
+
 ### With Matplotlib
 
 ```
