@@ -33,14 +33,28 @@ $ CONFIGURE_OPTS="--enable-shared" pyenv install 3.x.x
 
 ### With Matplotlib
 
+If you don't use `pyenv`, do this command.
+
+```
+sudo apt install python3-pip
+```
+
+If you use `rbenv` then you don't need `sudo`.
+
 ```
 sudo gem install charty --pre
 sudo gem install matplotlib
-sudo apt install python3-pip
+```
+
+If you use `pyenv` then you don't need `sudo`.
+
+```
 sudo python3 -m pip install -U pip matplotlib
 ```
 
 ## Usage
+
+You should do `mkdir sample_images` first.
 
 ```ruby
 require 'charty'
