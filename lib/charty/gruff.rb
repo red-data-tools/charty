@@ -68,7 +68,7 @@ module Charty
           p.data(data.label, data.xs.to_a, data.ys.to_a)
         end
         p
-      when :errorbar
+      when :error_bar
         # refs. https://github.com/topfunky/gruff/issues/163
         raise NotImplementedError
       when :hist

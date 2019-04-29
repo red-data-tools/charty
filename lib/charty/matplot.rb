@@ -79,7 +79,7 @@ module Charty
           plot.scatter(data.xs.to_a, data.ys.to_a, label: data.label)
         end
         plot.legend()
-      when :errorbar
+      when :error_bar
         context.series.each do |data|
           plot.errorbar(
             data.xs.to_a,

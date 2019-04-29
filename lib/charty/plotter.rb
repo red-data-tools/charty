@@ -11,6 +11,9 @@ module Charty
       when :rubyplot
         require_relative "rubyplot"
         Charty::Rubyplot.new
+      when :chartjs
+        require_relative "chartjs"
+        Charty::Chartjs.new
       else
         raise NotImplementedError
       end
@@ -94,12 +97,12 @@ module Charty
       end
     end
 
-    def to_errorbar(x, y, **args, &block)
+    def to_error_bar(x, y, **args, &block)
       # TODO: It is not yet decided how to include data including xerror and yerror.
       seriesx, seriesy = *table.to_a(x, y)
       xrange = (seriesx.min)..(seriesx.max)
       yrange = (seriesy.min)..(seriesy.max)
-      errorbar = errorbar do
+      error_bar = error_bar do
         series seriesx, seriesy
         range x: xrange, y: yrange
         xlabel x
@@ -149,8 +152,8 @@ module Charty
       context.apply(@frontend)
     end
 
-    def errorbar(**args, &block)
-      context = RenderContext.new :errorbar, **args, &block
+    def error_bar(**args, &block)
+      context = RenderContext.new :error_bar, **args, &block
       context.apply(@frontend)
     end
 
