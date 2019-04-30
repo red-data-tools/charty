@@ -1,7 +1,9 @@
 require 'rubyplot'
 
 module Charty
-  class Rubyplot
+  class Rubyplot < PlotterAdapter
+    Name = "rubyplot"
+
     def initialize
       @plot = ::Rubyplot
     end
