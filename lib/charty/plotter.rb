@@ -49,11 +49,11 @@ module Charty
       end
     end
 
-    def to_boxplot(x, y, **args, &block)
+    def to_box_plot(x, y, **args, &block)
       serieses = table.to_a(x, y)
       xrange = 0..serieses.size
       yrange = (serieses.flatten.min - 1)..(serieses.flatten.max + 1)
-      boxplot = boxplot do
+      box_plot = box_plot do
         data serieses
         range x: xrange, y: yrange
         xlabel x
@@ -132,8 +132,8 @@ module Charty
       context.apply(@frontend)
     end
 
-    def boxplot(**args, &block)
-      context = RenderContext.new :boxplot, **args, &block
+    def box_plot(**args, &block)
+      context = RenderContext.new :box_plot, **args, &block
       context.apply(@frontend)
     end
 

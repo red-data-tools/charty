@@ -103,8 +103,8 @@ charty.table = sales
 bar = charty.to_bar(:price, :sales)
 bar.render('sample')
 
-boxplot = charty.to_boxplot(:price, :sales)
-boxplot.render('sample')
+box_plot = charty.to_box_plot(:price, :sales)
+box_plot.render('sample')
 
 bubble = charty.to_bubble(:price, :sales, :id)
 bubble.render('sample')
@@ -219,19 +219,19 @@ Not supported
 ### Box plot
 
 ```ruby
-boxplot = charty.boxplot do
+box_plot = charty.box_plot do
   data [[60,70,80,70,50], [100,40,20,80,70], [30, 10]]
   range x: 0..10, y: 1..100
   xlabel 'foo'
   ylabel 'bar'
   title 'box plot'
 end
-boxplot.render("sample_images/boxplot_matplot.png")
+box_plot.render("sample_images/box_plot_matplot.png")
 ```
 
 #### Matplotlib
 
-![box matplotlib](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/boxplot_matplot.png)
+![box matplotlib](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/box_plot_matplot.png)
 
 #### Gruff
 

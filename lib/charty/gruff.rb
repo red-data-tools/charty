@@ -45,7 +45,7 @@ module Charty
       when :barh
         # TODO: To implement
         raise NotImplementedError
-      when :boxplot
+      when :box_plot
         # refs. https://github.com/topfunky/gruff/issues/155
         raise NotImplementedError
       when :bubble
