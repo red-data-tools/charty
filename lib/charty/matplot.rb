@@ -31,7 +31,10 @@ module Charty
 
     def render(context, filename)
       plot(@plot, context)
-      @plot.savefig(filename) if filename
+      if filename
+        FileUtils.mkdir_p(File.dirname(filename))
+        @plot.savefig(filename)
+      end
       @plot.show
     end
 
