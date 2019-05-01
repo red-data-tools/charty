@@ -34,11 +34,11 @@ module Charty
       end
     end
 
-    def to_boxplot(x, y, **args, &block)
+    def to_box_plot(x, y, **args, &block)
       serieses = table.to_a(x, y)
       xrange = 0..serieses.size
       yrange = (serieses.flatten.min - 1)..(serieses.flatten.max + 1)
-      boxplot = boxplot do
+      box_plot = box_plot do
         data serieses
         range x: xrange, y: yrange
         xlabel x
@@ -82,12 +82,12 @@ module Charty
       end
     end
 
-    def to_errorbar(x, y, **args, &block)
+    def to_error_bar(x, y, **args, &block)
       # TODO: It is not yet decided how to include data including xerror and yerror.
       seriesx, seriesy = *table.to_a(x, y)
       xrange = (seriesx.min)..(seriesx.max)
       yrange = (seriesy.min)..(seriesy.max)
-      errorbar = errorbar do
+      error_bar = error_bar do
         series seriesx, seriesy
         range x: xrange, y: yrange
         xlabel x
@@ -117,8 +117,8 @@ module Charty
       context.apply(@plotter_adapter)
     end
 
-    def boxplot(**args, &block)
-      context = RenderContext.new :boxplot, **args, &block
+    def box_plot(**args, &block)
+      context = RenderContext.new :box_plot, **args, &block
       context.apply(@plotter_adapter)
     end
 
@@ -137,8 +137,8 @@ module Charty
       context.apply(@plotter_adapter)
     end
 
-    def errorbar(**args, &block)
-      context = RenderContext.new :errorbar, **args, &block
+    def error_bar(**args, &block)
+      context = RenderContext.new :error_bar, **args, &block
       context.apply(@plotter_adapter)
     end
 

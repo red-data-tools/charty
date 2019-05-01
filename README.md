@@ -10,15 +10,12 @@ It lets you focus on your analysis of data, instead of plotting.
 
 ## Installation
 
-### MacOS;
+### MacOS:
 
 ```
 $ brew install Python
 $ pip3 install matplotlib
 $ bundle
-$ bin/console
-> Charty
-=> Charty
 ```
 
 ### Ubuntu + pyenv
@@ -103,8 +100,8 @@ charty.table = sales
 bar = charty.to_bar(:price, :sales)
 bar.render('sample')
 
-boxplot = charty.to_boxplot(:price, :sales)
-boxplot.render('sample')
+box_plot = charty.to_box_plot(:price, :sales)
+box_plot.render('sample')
 
 bubble = charty.to_bubble(:price, :sales, :id)
 bubble.render('sample')
@@ -115,8 +112,8 @@ curve.render('sample')
 scatter = charty.to_scatter(:price, :sales)
 scatter.render('sample')
 
-errorbar = charty.to_errorbar(:price, :sales)
-errorbar.render('sample')
+error_bar = charty.to_error_bar(:price, :sales)
+error_bar.render('sample')
 
 hst= charty.to_hst(:price, :sales)
 hst.render('sample')
@@ -219,19 +216,19 @@ Not supported
 ### Box plot
 
 ```ruby
-boxplot = charty.boxplot do
+box_plot = charty.box_plot do
   data [[60,70,80,70,50], [100,40,20,80,70], [30, 10]]
   range x: 0..10, y: 1..100
   xlabel 'foo'
   ylabel 'bar'
   title 'box plot'
 end
-boxplot.render("sample_images/boxplot_matplot.png")
+box_plot.render("sample_images/box_plot_matplot.png")
 ```
 
 #### Matplotlib
 
-![box matplotlib](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/boxplot_matplot.png)
+![box matplotlib](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/box_plot_matplot.png)
 
 #### Gruff
 
@@ -272,20 +269,20 @@ scatter.render("sample_images/scatter_matplot.png")
 ### Errorbar
 
 ```ruby
-errorbar = charty.errorbar do
+error_bar = charty.error_bar do
   series [1,2,3,4], [1,4,9,16], xerr: [0.5,1.0,1.5,0.3], yerr: [0.6,0.2,0.8,0.1], label: 'label1'
   series [1,2,3,4], [16,9,4,1], label: 'label2'
   series [1,2,3,4,5,6,7,8], [14,14,14,14,14,14,14,14], label: 'label2', xerr: [0.5,1.0,1.5,0.3, 1.1, 1.2, 1.3, 1.4]
   range x: 0..10, y: -1..20
   xlabel 'x label'
-  title 'errorbar'
+  title 'error_bar'
 end
-errorbar.render("sample_images/errorbar_matplot.png")
+error_bar.render("sample_images/error_bar_matplot.png")
 ```
 
 #### Matplotlib
 
-![errorbar matplotlib](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/errorbar_matplot.png)
+![error_bar matplotlib](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/error_bar_matplot.png)
 
 #### Gruff
 

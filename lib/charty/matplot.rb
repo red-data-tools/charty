@@ -33,7 +33,10 @@ module Charty
 
     def render(context, filename)
       plot(@plot, context)
-      @plot.savefig(filename) if filename
+      if filename
+        FileUtils.mkdir_p(File.dirname(filename))
+        @plot.savefig(filename)
+      end
       @plot.show
     end
 
@@ -63,7 +66,7 @@ module Charty
         context.series.each do |data|
           plot.barh(data.xs.to_a.map(&:to_s), data.ys.to_a)
         end
-      when :boxplot
+      when :box_plot
         plot.boxplot(context.data.to_a)
       when :bubble
         context.series.each do |data|
@@ -78,7 +81,7 @@ module Charty
           plot.scatter(data.xs.to_a, data.ys.to_a, label: data.label)
         end
         plot.legend()
-      when :errorbar
+      when :error_bar
         context.series.each do |data|
           plot.errorbar(
             data.xs.to_a,

@@ -19,7 +19,8 @@ module Charty
       raise NotImplementedError
     end
 
-    def render(context, filename)
+    def render(context, filename="")
+      FileUtils.mkdir_p(File.dirname(filename))
       plot(@plot, context).write(filename)
     end
 
@@ -46,7 +47,7 @@ module Charty
       when :barh
         # TODO: To implement
         raise NotImplementedError
-      when :boxplot
+      when :box_plot
         # refs. https://github.com/topfunky/gruff/issues/155
         raise NotImplementedError
       when :bubble
@@ -69,7 +70,7 @@ module Charty
           p.data(data.label, data.xs.to_a, data.ys.to_a)
         end
         p
-      when :errorbar
+      when :error_bar
         # refs. https://github.com/topfunky/gruff/issues/163
         raise NotImplementedError
       when :hist

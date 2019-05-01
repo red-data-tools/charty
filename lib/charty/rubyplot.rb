@@ -26,7 +26,8 @@ module Charty
       @plot.show
     end
 
-    def render(context, filename)
+    def render(context, filename="")
+      FileUtils.mkdir_p(File.dirname(filename))
       plot(@plot, context).write(filename)
     end
 
@@ -57,7 +58,7 @@ module Charty
         figure
       when :barh
         raise NotImplementedError
-      when :boxplot
+      when :box_plot
         raise NotImplementedError
       when :bubble
         context.series.each do |data|
@@ -83,7 +84,7 @@ module Charty
           end
         end
         figure
-      when :errorbar
+      when :error_bar
         # refs. https://github.com/SciRuby/rubyplot/issues/26
         raise NotImplementedError
       when :hist
