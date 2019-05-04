@@ -1,0 +1,7 @@
+ARG BASE_IMAGE_TAG=c9ca70040856
+FROM rubydata/minimal-notebook:$BASE_IMAGE_TAG
+
+RUN mkdir ./charty-dev
+COPY . charty-dev
+RUN gem build charty-dev/charty.gemspec
+RUN gem install --force --local charty-dev/charty-*.gem
