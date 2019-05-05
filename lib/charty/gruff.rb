@@ -43,8 +43,15 @@ module Charty
         end
         p
       when :barh
-        # TODO: To implement
-        raise NotImplementedError
+        p = plot::SideBar.new
+        p.title = context.title if context.title
+        p.x_axis_label = context.xlabel if context.xlabel
+        p.y_axis_label = context.ylabel if context.ylabel
+        context.series.each do |data|
+          p.data(data.label, data.xs.to_a)
+        end
+        p.labels = {nil=>nil}
+        p
       when :box_plot
         # refs. https://github.com/topfunky/gruff/issues/155
         raise NotImplementedError
