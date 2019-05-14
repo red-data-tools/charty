@@ -42,6 +42,7 @@ sudo python3 -m pip install -U pip matplotlib
 e.g.
 
 ```
+$ bundle install
 $ docker build -f ./Dockerfile.dev -t charty-dev:0.1 .
 $ docker run -it -v ${PWD}:/charty -w /charty charty-dev:0.1 ./bin/console
 irb(main):001:0> Charty::VERSION
