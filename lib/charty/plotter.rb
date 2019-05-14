@@ -1,22 +1,7 @@
 module Charty
   class Plotter
-    def initialize(frontend)
-      @frontend =  case frontend
-      when :matplot
-        require_relative "matplot"
-        Charty::Matplot.new
-      when :gruff
-        require_relative "gruff"
-        Charty::Gruff.new
-      when :rubyplot
-        require_relative "rubyplot"
-        Charty::Rubyplot.new
-      when :chartjs
-        require_relative "chartjs"
-        Charty::Chartjs.new
-      else
-        raise NotImplementedError
-      end
+    def initialize(adapter_name)
+      @plotter_adapter =  PlotterAdapter.create(adapter_name)
     end
 
     def table=(data, **kwargs)
@@ -124,46 +109,46 @@ module Charty
 
     def bar(**args, &block)
       context = RenderContext.new :bar, **args, &block
-      context.apply(@frontend)
+      context.apply(@plotter_adapter)
     end
 
     def barh(**args, &block)
       context = RenderContext.new :barh, **args, &block
-      context.apply(@frontend)
+      context.apply(@plotter_adapter)
     end
 
     def box_plot(**args, &block)
       context = RenderContext.new :box_plot, **args, &block
-      context.apply(@frontend)
+      context.apply(@plotter_adapter)
     end
 
     def bubble(**args, &block)
       context = RenderContext.new :bubble, **args, &block
-      context.apply(@frontend)
+      context.apply(@plotter_adapter)
     end
 
     def curve(**args, &block)
       context = RenderContext.new :curve, **args, &block
-      context.apply(@frontend)
+      context.apply(@plotter_adapter)
     end
 
     def scatter(**args, &block)
       context = RenderContext.new :scatter, **args, &block
-      context.apply(@frontend)
+      context.apply(@plotter_adapter)
     end
 
     def error_bar(**args, &block)
       context = RenderContext.new :error_bar, **args, &block
-      context.apply(@frontend)
+      context.apply(@plotter_adapter)
     end
 
     def hist(**args, &block)
       context = RenderContext.new :hist, **args, &block
-      context.apply(@frontend)
+      context.apply(@plotter_adapter)
     end
 
     def layout(definition=:horizontal)
-      Layout.new(@frontend, definition)
+      Layout.new(@plotter_adapter, definition)
     end
   end
 
@@ -240,13 +225,13 @@ module Charty
     end
 
     def render(filename=nil)
-      @frontend.render(self, filename)
+      @plotter_adapter.render(self, filename)
     end
 
-    def apply(frontend)
+    def apply(plotter_adapter)
       case
         when !@series.empty?
-          frontend.series = @series
+          plotter_adapter.series = @series
         when @function
           linspace = Linspace.new(@range[:x], 100)
           # TODO: set label with function
@@ -254,7 +239,7 @@ module Charty
           @series << Series.new(linspace.to_a, linspace.map{|x| @function.call(x) }, label: "function" )
       end
 
-      @frontend = frontend
+      @plotter_adapter = plotter_adapter
       self
     end
   end
