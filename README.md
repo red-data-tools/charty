@@ -37,6 +37,20 @@ sudo apt install python3-pip
 sudo python3 -m pip install -U pip matplotlib
 ```
 
+## Development with Docker
+
+e.g.
+
+```
+$ docker build -f ./Dockerfile.dev -t charty-dev:0.1 .
+$ docker run -it -v ${PWD}:/charty -w /charty charty-dev:0.1 ./bin/console
+irb(main):001:0> Charty::VERSION
+=> "0.1.4-dev"
+
+# When using jupyter notebook
+$ docker run -it -v ${PWD}:/charty -w /charty -p 8888:8888 charty-dev:0.1
+```
+
 ## Usage
 
 ```ruby
