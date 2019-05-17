@@ -56,7 +56,7 @@ $ docker run -it -v ${PWD}:/charty -w /charty -p 8888:8888 charty-dev:0.1
 
 ```ruby
 require 'charty'
-charty = Charty.new(:matplot)
+charty = Charty::Plotter.new(:matplot)
 
 bar = charty.bar do
   series [0,1,2,3,4], [10,40,20,90,70], label: "sample1"
@@ -142,13 +142,13 @@ create an instance of the library you want to use.
 require 'charty'
 
 # when you want to use matplotlib
-charty = Charty.new(:matplot)
+charty = Charty::Plotter.new(:matplot)
 
 # when you want to use gruff
-charty = Charty.new(:gruff)
+charty = Charty::Plotter.new(:gruff)
 
 # when you wanto to use rubyplot
-charty = Charty.new(:rubyplot)
+charty = Charty::Plotter.new(:rubyplot)
 ```
 
 ### Bar
