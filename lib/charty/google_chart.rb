@@ -1,5 +1,7 @@
 module Charty
-  class GoogleChart
+  class GoogleChart < PlotterAdapter
+    Name = "google_chart"
+
     def initilize
     end
 

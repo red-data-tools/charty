@@ -8,6 +8,7 @@ module Charty
     end
 
     def self.create(adapter_name)
+      require "charty/#{adapter_name}"
       adapter = @adapters.find {|adapter| adapter::Name.to_s == adapter_name.to_s }
       raise AdapterNotLoadedError.new("Adapter for '#{adapter_name}' is not found.") unless adapter
       adapter.new
