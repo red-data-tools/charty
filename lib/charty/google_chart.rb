@@ -34,6 +34,8 @@ module Charty
         generate_render_js("BarChart")
       when :scatter
         generate_render_js("ScatterChart")
+      when :bubble
+        generate_render_js("BubbleChart")
       else
         raise NotImplementedError
       end
@@ -75,7 +77,7 @@ module Charty
               if data_index = series_data.xs.to_a.index(x_label)
                 hash[x_label] << series_data.ys.to_a[data_index]
               else
-                hash[x_label] << 'null'
+                hash[x_label] << "null"
               end
             end
           end
@@ -83,11 +85,44 @@ module Charty
       end
 
       def formatted_data_array
-        [headers.map(&:to_s)].tap do |data_array|
-          data_hash.each do |k, v|
-            data_array << [k.to_s, v].flatten
+        case context.method
+        when :bubble
+          [["ID", "X", "Y", "GROUP", "SIZE"]].tap do |data_array|
+            context.series.to_a.each_with_index do |series_data, series_index|
+              series_data.xs.to_a.each_with_index do |data, data_index|
+                data_array << [
+                  "",
+                  series_data.xs.to_a[data_index] || "null",
+                  series_data.ys.to_a[data_index] || "null",
+                  series_data[:label] || series_index,
+                  series_data.zs.to_a[data_index] || "null",
+                ]
+              end
+            end
+          end
+        else
+          [headers.map(&:to_s)].tap do |data_array|
+            data_hash.each do |k, v|
+              data_array << [k.to_s, v].flatten
+            end
           end
         end
+      end
+
+      def x_range_option
+        x_range = context&.range&.fetch(:x, nil)
+        {
+          max: x_range&.max,
+          min: x_range&.min,
+        }.reject { |_k, v| v.nil? }
+      end
+
+      def y_range_option
+        y_range = context&.range&.fetch(:y, nil)
+        {
+          max: y_range&.max,
+          min: y_range&.min,
+        }.reject { |_k, v| v.nil? }
       end
 
       def generate_render_js(chart_type)
@@ -106,10 +141,18 @@ module Charty
               const options = {
                 title: "#{context.title}",
                 vAxis: {
-                  title: "#{context.ylabel}"
+                  title: "#{context.ylabel}",
+                  viewWindow: {
+                    max: #{y_range_option[:max] || "null"},
+                    min: #{y_range_option[:min] || "null"},
+                  },
                 },
                 hAxis: {
-                  title: "#{context.xlabel}"
+                  title: "#{context.xlabel}",
+                  viewWindow: {
+                    max: #{x_range_option[:max] || "null"},
+                    min: #{x_range_option[:min] || "null"},
+                  }
                 },
                 legend: { position: "none" },
               };
