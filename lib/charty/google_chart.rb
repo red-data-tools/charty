@@ -3,6 +3,14 @@ module Charty
     Name = "google_chart"
     attr_reader :context
 
+    def self.chart_id=(chart_id)
+      @chart_id = chart_id
+    end
+
+    def self.chart_id
+      @chart_id ||= 0
+    end
+
     def initilize
     end
 
@@ -19,10 +27,13 @@ module Charty
 
     def plot(plot, context)
       @context = context
+      self.class.chart_id = self.class.chart_id + 1
 
       case context.method
       when :bar
         generate_render_js("BarChart")
+      when :scatter
+        generate_render_js("ScatterChart")
       else
         raise NotImplementedError
       end
@@ -37,8 +48,8 @@ module Charty
       def headers
         [].tap do |header|
           header << context.xlabel
-          context.series.each_with_index do |_series_data, index|
-            header << index
+          context.series.to_a.each_with_index do |series_data, index|
+            header << series_data.label || index
           end
         end
       end
@@ -55,16 +66,16 @@ module Charty
 
       def data_hash
         {}.tap do |hash|
-          context.series.each_with_index do |series_data, series_index|
+          context.series.to_a.each_with_index do |series_data, series_index|
             x_labels.sort.each do |x_label|
               unless hash[x_label]
                 hash[x_label] = []
               end
 
-              if data_index = series_data.xs.index(x_label)
-                hash[x_label] << series_data.ys[data_index]
+              if data_index = series_data.xs.to_a.index(x_label)
+                hash[x_label] << series_data.ys.to_a[data_index]
               else
-                hash[x_label] << 0
+                hash[x_label] << 'null'
               end
             end
           end
@@ -95,18 +106,18 @@ module Charty
               const options = {
                 title: "#{context.title}",
                 vAxis: {
-                  title: "#{context.xlabel}"
+                  title: "#{context.ylabel}"
                 },
                 hAxis: {
-                  title: "#{context.ylabel}"
+                  title: "#{context.xlabel}"
                 },
                 legend: { position: "none" },
               };
-              const chart = new google.visualization.#{chart_type}(document.getElementById("barchart_values"));
+              const chart = new google.visualization.#{chart_type}(document.getElementById("#{chart_type}-#{self.class.chart_id}"));
               chart.draw(view, options);
             }
           </script>
-          <div id="barchart_values" style="width: 900px; height: 300px;"></div>
+          <div id="#{chart_type}-#{self.class.chart_id}" style="width: 900px; height: 300px;"></div>
         JS
       end
   end
