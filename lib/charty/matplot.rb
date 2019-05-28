@@ -70,8 +70,9 @@ module Charty
         plot.boxplot(context.data.to_a)
       when :bubble
         context.series.each do |data|
-          plot.scatter(data.xs.to_a, data.ys.to_a, s: data.zs.to_a, alpha: 0.5)
+          plot.scatter(data.xs.to_a, data.ys.to_a, s: data.zs.to_a, alpha: 0.5, label: data.label)
         end
+        plot.legend()
       when :curve
         context.series.each do |data|
           plot.plot(data.xs.to_a, data.ys.to_a)
