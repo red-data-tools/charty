@@ -60,8 +60,9 @@ module Charty
       case context.method
       when :bar
         context.series.each do |data|
-          plot.bar(data.xs.to_a.map(&:to_s), data.ys.to_a)
+          plot.bar(data.xs.to_a.map(&:to_s), data.ys.to_a, label: data.label)
         end
+        plot.legend()
       when :barh
         context.series.each do |data|
           plot.barh(data.xs.to_a.map(&:to_s), data.ys.to_a)
