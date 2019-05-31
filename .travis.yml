@@ -4,4 +4,10 @@ language: ruby
 cache: bundler
 rvm:
   - 2.6.3
-before_install: gem i bundler
+apt:
+  packages:
+    - libimagemagickcore-dev
+before_script:
+  - PYENV_VERSION=3.7 pip3 install --user matplotlib
+env:
+  - PYENV_VERSION=3.7 PYTHON=python
