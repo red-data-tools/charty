@@ -1,8 +1,8 @@
 require 'matplotlib/pyplot'
 
 module Charty
-  class Matplot < PlotterAdapter
-    Name = "matplot"
+  class PyPlot < PlotterAdapter
+    Name = "pyplot"
 
     def initialize
       @plot = Matplotlib::Pyplot
