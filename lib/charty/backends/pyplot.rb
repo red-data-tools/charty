@@ -68,7 +68,7 @@ module Charty
           plot.barh(data.xs.to_a.map(&:to_s), data.ys.to_a)
         end
       when :box_plot
-        plot.boxplot(context.data.to_a)
+        plot.boxplot(context.data.to_a, labels: context.labels)
       when :bubble
         context.series.each do |data|
           plot.scatter(data.xs.to_a, data.ys.to_a, s: data.zs.to_a, alpha: 0.5, label: data.label)

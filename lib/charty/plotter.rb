@@ -155,14 +155,14 @@ module Charty
   Series = Struct.new(:xs, :ys, :zs, :xerr, :yerr, :label)
 
   class RenderContext
-    attr_reader :function, :range, :series, :method, :data, :title, :xlabel, :ylabel
+    attr_reader :function, :range, :series, :method, :data, :title, :xlabel, :ylabel, :labels
 
     def initialize(method, **args, &block)
       @method = method
       configurator = Configurator.new(**args)
       configurator.instance_eval &block
       # TODO: label も外から付けられた方がよさそう
-      (@range, @series, @function, @data, @title, @xlabel, @ylabel) = configurator.to_a
+      (@range, @series, @function, @data, @title, @xlabel, @ylabel, @labels) = configurator.to_a
     end
 
     class Configurator
@@ -191,6 +191,10 @@ module Charty
         @ylabel = ylabel
       end
 
+      def labels(labels)
+        @labels = labels
+      end
+
       def label(x, y)
 
       end
@@ -204,7 +208,7 @@ module Charty
       end
 
       def to_a
-        [@range, @series, @function, @data, @title, @xlabel, @ylabel]
+        [@range, @series, @function, @data, @title, @xlabel, @ylabel, @labels]
       end
 
       def method_missing(method, *args)
