@@ -6,12 +6,4 @@ class PlotterTest < Test::Unit::TestCase
     adapter = plotter.send(:instance_variable_get, :@plotter_adapter)
     assert_instance_of(Charty::PyPlot, adapter)
   end
-
-  sub_test_case("gruff adapter") do
-    def test_plotter_use_another_plotter_adapter
-      plotter = Charty::Plotter.new :gruff
-      adapter = plotter.send(:instance_variable_get, :@plotter_adapter)
-      assert_instance_of(Charty::Gruff, adapter)
-    end
-  end
 end
