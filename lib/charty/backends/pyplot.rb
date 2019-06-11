@@ -40,6 +40,14 @@ module Charty
       @plot.show
     end
 
+    def save(context, filename)
+      plot(@plot, context)
+      if filename
+        FileUtils.mkdir_p(File.dirname(filename))
+        @plot.savefig(filename)
+      end
+    end
+
     def plot(plot, context, subplot: false)
       # TODO: Since it is not required, research and change conditions.
       # case

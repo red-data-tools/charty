@@ -232,6 +232,10 @@ module Charty
       @plotter_adapter.render(self, filename)
     end
 
+    def save(filename=nil)
+      @plotter_adapter.save(self, filename)
+    end
+
     def apply(plotter_adapter)
       case
         when !@series.empty?
