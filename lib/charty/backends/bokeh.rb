@@ -28,6 +28,8 @@ module Charty
       #TODO To implement boxplot, bublle, error_bar, hist.
       
       plot = @plot.figure(title: context&.title)
+      plot.xaxis[0].axis_label = context&.xlabel
+      plot.yaxis[0].axis_label = context&.ylabel
       case context.method
         when :bar
           context.series.each do |data|
