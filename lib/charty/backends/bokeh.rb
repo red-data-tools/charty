@@ -26,21 +26,24 @@ module Charty
 
     def plot(context)
       #TODO To implement boxplot, bublle, error_bar, hist.
-      
+
       plot = @plot.figure(title: context&.title)
       plot.xaxis[0].axis_label = context&.xlabel
       plot.yaxis[0].axis_label = context&.ylabel
+
       case context.method
         when :bar
           context.series.each do |data|
-            plot.vbar(data.xs.to_a, nil, data.ys.to_a)
+            diffs = data.xs.to_a.each_cons(2).map {|n, m| (n - m).abs }
+            width = diffs.min * 0.8
+            plot.vbar(data.xs.to_a, width, data.ys.to_a)
           end
 
         when :barh
           context.series.each do |data|
-            context.series.each do |data|
-              plot.hbar(data.xs.to_a, nil, data.ys.to_a)
-            end
+            diffs = data.xs.to_a.each_cons(2).map {|n, m| (n - m).abs }
+            height = diffs.min * 0.8
+            plot.hbar(data.xs.to_a, height, data.ys.to_a)
           end
 
         when :boxplot
@@ -64,7 +67,7 @@ module Charty
 
         when :hist
           raise NotImplementedError
-      end
+        end
       plot
     end
   end
