@@ -1,11 +1,11 @@
-require 'bokeh'
+require 'pycall'
 
 module Charty
   class Bokeh < PlotterAdapter
     Name = "bokeh"
 
     def initialize
-      @plot = ::Bokeh::Plotting
+      @plot = PyCall.import_module('bokeh.plotting')
     end
 
     def series=(series)
@@ -15,12 +15,12 @@ module Charty
     def render(context, filename)
       plot = plot(context)
       save(plot, context, filename)
-      ::Bokeh::IO::show(plot)
+      PyCall.import_module('bokeh.io').show(plot)
     end
 
     def save(plot, context, filename)
       if filename
-        ::Bokeh::IO::save(plot, filename)
+        PyCall.import_module('bokeh.io').save(plot, filename)
       end
     end
 
