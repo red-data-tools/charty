@@ -49,10 +49,22 @@ module Charty
         p.title = context.title if context.title
         p.x_axis_label = context.xlabel if context.xlabel
         p.y_axis_label = context.ylabel if context.ylabel
-        context.series.each do |data|
-          p.data(data.label, data.xs.to_a)
+
+        labels = context.series.map {|data| data.xs.to_a}.flatten.uniq
+        labels.each do |label|
+          data_ys = context.series.map do |data|
+            if data.xs.to_a.index(label)
+              data.ys.to_a[data.xs.to_a.index(label)]
+            else
+              0
+            end
+          end
+          p.data(label, data_ys)
         end
-        p.labels = {nil=>nil}
+        p.labels = context.series.each_with_index.inject({}) do |attr, (data, i)|
+          attr[i] = data.label
+          attr
+        end
         p
       when :box_plot
         # refs. https://github.com/topfunky/gruff/issues/155
