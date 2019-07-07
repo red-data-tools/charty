@@ -49,7 +49,6 @@ module Charty
         p.title = context.title if context.title
         p.x_axis_label = context.xlabel if context.xlabel
         p.y_axis_label = context.ylabel if context.ylabel
-
         labels = context.series.map {|data| data.xs.to_a}.flatten.uniq
         labels.each do |label|
           data_ys = context.series.map do |data|
