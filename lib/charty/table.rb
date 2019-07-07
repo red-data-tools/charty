@@ -23,6 +23,8 @@ module Charty
         else
           raise ArgumentError, "column_names is required to convert to_a from ActiveRecord::Relation"
         end
+      when table.kind_of?(Array)
+        table
       else
         raise ArgumentError, "unsupported object: #{table.inspect}"
       end

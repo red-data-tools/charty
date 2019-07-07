@@ -1,5 +1,6 @@
 # Charty - Visualizing your data in Ruby
 
+[![Build Status](https://travis-ci.org/red-data-tools/charty.svg?branch=master)](https://travis-ci.org/red-data-tools/charty)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/red-data-tools/charty/master?filepath=iris_dataset.ipynb)
 
 Charty is open-source Ruby library for visualizing your data in a simple way.
@@ -37,11 +38,26 @@ sudo apt install python3-pip
 sudo python3 -m pip install -U pip matplotlib
 ```
 
+## Development with Docker
+
+e.g.
+
+```
+$ bundle install
+$ docker build -f ./Dockerfile.dev -t charty-dev:0.1 .
+$ docker run -it -v ${PWD}:/charty -w /charty charty-dev:0.1 ./bin/console
+irb(main):001:0> Charty::VERSION
+=> "0.1.4-dev"
+
+# When using jupyter notebook
+$ docker run -it -v ${PWD}:/charty -w /charty -p 8888:8888 charty-dev:0.1
+```
+
 ## Usage
 
 ```ruby
 require 'charty'
-charty = Charty.new(:matplot)
+charty = Charty::Plotter.new(:pyplot)
 
 bar = charty.bar do
   series [0,1,2,3,4], [10,40,20,90,70], label: "sample1"
@@ -52,7 +68,7 @@ bar = charty.bar do
   ylabel 'bar'
   title 'bar plot'
 end
-bar.render("sample_images/bar_matplot.png")
+bar.render("sample_images/bar_pyplot.png")
 ```
 
 Charty also supports Daru::DataFrame, Numo::NArray, NMatrix and ActiveRecord as Data Abstraction Layer.
@@ -60,7 +76,7 @@ For example.
 
 ```ruby
 require 'charty'
-charty = Charty::Plotter.new(:matplot)
+charty = Charty::Plotter.new(:pyplot)
 
 
 ### when Daru::DataFrame
@@ -126,14 +142,14 @@ create an instance of the library you want to use.
 ```ruby
 require 'charty'
 
-# when you want to use matplotlib
-charty = Charty.new(:matplot)
+# when you want to use matplotlib.pyplot
+charty = Charty::Plotter.new(:pyplot)
 
 # when you want to use gruff
-charty = Charty.new(:gruff)
+charty = Charty::Plotter.new(:gruff)
 
 # when you wanto to use rubyplot
-charty = Charty.new(:rubyplot)
+charty = Charty::Plotter.new(:rubyplot)
 ```
 
 ### Bar
@@ -148,12 +164,12 @@ bar = charty.bar do
   ylabel 'bar'
   title 'bar plot'
 end
-bar.render("sample_images/bar_matplot.png")
+bar.render("sample_images/bar_pyplot.png")
 ```
 
-#### Matplotlib
+#### PyPlot
 
-![bar matplotlib](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/bar_matplot.png)
+![bar pyplot](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/bar_pyplot.png)
 
 #### Gruff
 
@@ -174,12 +190,12 @@ curve2 = charty.curve do
   xlabel 'foo'
   ylabel 'bar'
 end
-curve2.render("sample_images/curve_matplot.png")
+curve2.render("sample_images/curve_pyplot.png")
 ```
 
-#### Matplotlib
+#### PyPlot
 
-![curve2 matplotlib](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/curve_matplot.png)
+![curve2 pyplot](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/curve_pyplot.png)
 
 #### Gruff
 
@@ -198,12 +214,12 @@ curve = charty.curve do
   xlabel 'foo'
   ylabel 'bar'
 end
-curve.render("sample_images/curve_with_function_matplot.png")
+curve.render("sample_images/curve_with_function_pyplot.png")
 ```
 
-#### Matplotlib
+#### PyPlot
 
-![curve matplotlib](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/curve_with_function_matplot.png)
+![curve pyplot](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/curve_with_function_pyplot.png)
 
 #### Gruff
 
@@ -223,12 +239,12 @@ box_plot = charty.box_plot do
   ylabel 'bar'
   title 'box plot'
 end
-box_plot.render("sample_images/box_plot_matplot.png")
+box_plot.render("sample_images/box_plot_pyplot.png")
 ```
 
-#### Matplotlib
+#### PyPlot
 
-![box matplotlib](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/box_plot_matplot.png)
+![box pyplot](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/box_plot_pyplot.png)
 
 #### Gruff
 
@@ -251,12 +267,12 @@ scatter = charty.scatter do
   ylabel 'y label'
   title 'scatter sample'
 end
-scatter.render("sample_images/scatter_matplot.png")
+scatter.render("sample_images/scatter_pyplot.png")
 ```
 
-#### Matplotlib
+#### PyPlot
 
-![scatter matplotlib](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/scatter_matplot.png)
+![scatter pyplot](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/scatter_pyplot.png)
 
 #### Gruff
 
@@ -277,12 +293,12 @@ error_bar = charty.error_bar do
   xlabel 'x label'
   title 'error_bar'
 end
-error_bar.render("sample_images/error_bar_matplot.png")
+error_bar.render("sample_images/error_bar_pyplot.png")
 ```
 
-#### Matplotlib
+#### PyPlot
 
-![error_bar matplotlib](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/error_bar_matplot.png)
+![error_bar pyplot](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/error_bar_pyplot.png)
 
 #### Gruff
 
@@ -304,12 +320,12 @@ bubble = charty.bubble do
   ylabel 'y label'
   title 'bubble sample'
 end
-bubble.render("sample_images/bubble_matplot.png")
+bubble.render("sample_images/bubble_pyplot.png")
 ```
 
-#### Matplotlib
+#### PyPlot
 
-![bubble matplotlib](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/bubble_matplot.png)
+![bubble pyplot](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/bubble_pyplot.png)
 
 #### Gruff
 
@@ -329,12 +345,12 @@ hist = charty.hist do
   ylabel 'y label'
   title 'histogram sample'
 end
-hist.render("sample_images/hist_matplot.png")
+hist.render("sample_images/hist_pyplot.png")
 ```
 
-#### Matplotlib
+#### PyPlot
 
-![hist matplotlib](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/hist_matplot.png)
+![hist pyplot](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/hist_pyplot.png)
 
 #### Gruff
 
@@ -350,12 +366,12 @@ Not supported
 layout = charty.layout
 layout << curve
 layout << scatter
-layout.render("sample_images/subplot_matplot.png")
+layout.render("sample_images/subplot_pyplot.png")
 ```
 
-#### Matplotlib
+#### PyPlot
 
-![subplot matplotlib](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/subplot_matplot.png)
+![subplot pyplot](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/subplot_pyplot.png)
 
 #### Gruff
 
@@ -385,12 +401,12 @@ end
 grid_layout = charty.layout(:grid2x2)
 grid_layout << curve_list
 grid_layout << scatter_list
-grid_layout.render("sample_images/subplot2_matplot.png")
+grid_layout.render("sample_images/subplot2_pyplot.png")
 ```
 
-#### Matplotlib
+#### PyPlot
 
-![subplot2 matplotlib](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/subplot2_matplot.png)
+![subplot2 pyplot](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/subplot2_pyplot.png)
 
 #### Gruff
 

@@ -1,7 +1,9 @@
 require 'matplotlib/pyplot'
 
 module Charty
-  class Matplot
+  class PyPlot < PlotterAdapter
+    Name = "pyplot"
+
     def initialize
       @plot = Matplotlib::Pyplot
     end
@@ -38,6 +40,14 @@ module Charty
       @plot.show
     end
 
+    def save(context, filename)
+      plot(@plot, context)
+      if filename
+        FileUtils.mkdir_p(File.dirname(filename))
+        @plot.savefig(filename)
+      end
+    end
+
     def plot(plot, context, subplot: false)
       # TODO: Since it is not required, research and change conditions.
       # case
@@ -58,18 +68,20 @@ module Charty
       case context.method
       when :bar
         context.series.each do |data|
-          plot.bar(data.xs.to_a.map(&:to_s), data.ys.to_a)
+          plot.bar(data.xs.to_a.map(&:to_s), data.ys.to_a, label: data.label)
         end
+        plot.legend()
       when :barh
         context.series.each do |data|
           plot.barh(data.xs.to_a.map(&:to_s), data.ys.to_a)
         end
       when :box_plot
-        plot.boxplot(context.data.to_a)
+        plot.boxplot(context.data.to_a, labels: context.labels)
       when :bubble
         context.series.each do |data|
-          plot.scatter(data.xs.to_a, data.ys.to_a, s: data.zs.to_a, alpha: 0.5)
+          plot.scatter(data.xs.to_a, data.ys.to_a, s: data.zs.to_a, alpha: 0.5, label: data.label)
         end
+        plot.legend()
       when :curve
         context.series.each do |data|
           plot.plot(data.xs.to_a, data.ys.to_a)

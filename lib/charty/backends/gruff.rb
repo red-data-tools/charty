@@ -1,7 +1,9 @@
 require 'gruff'
 
 module Charty
-  class Gruff
+  class Gruff < PlotterAdapter
+    Name = "gruff"
+
     def initialize
       @plot = ::Gruff
     end
