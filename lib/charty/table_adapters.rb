@@ -9,6 +9,10 @@ module Charty
           require_relative 'table_adapters/datasets_adapter'
           return DatasetsAdapter
         end
+        if defined?(Daru::DataFrame) && data.kind_of?(Daru::DataFrame)
+          require_relative 'table_adapters/daru_adapter'
+          return DaruAdapter
+        end
         raise ArgumentError, "Unsupported data class: #{data.class}"
       end
     end
