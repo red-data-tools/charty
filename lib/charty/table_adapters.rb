@@ -9,6 +9,7 @@ module Charty
           require_relative 'table_adapters/datasets_adapter'
           return DatasetsAdapter
         end
+        raise ArgumentError, "Unsupported data class: #{data.class}"
       end
     end
   end
