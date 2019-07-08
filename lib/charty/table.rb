@@ -1,11 +1,17 @@
+require 'forwardable'
 
 module Charty
   class Table
-    def initialize(table)
-      @table = table
+    extend Forwardable
+
+    def initialize(data)
+      adapter_maker = TableAdapters.lookup_adapter_maker(data)
+      @adapter = adapter_maker.make(data)
     end
 
-    attr_reader :table
+    def_delegator :@adapter, :columns
+
+    def_delegator :@adapter, :[]
 
     def to_a(x=nil, y=nil, z=nil)
       case
