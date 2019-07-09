@@ -14,7 +14,7 @@ module Charty
       seriesx, seriesy = *table.to_a(x, y)
       xrange = (seriesx.min)..(seriesx.max)
       yrange = (seriesy.min)..(seriesy.max)
-      bar = bar do
+      bar do
         series seriesx, seriesy
         range x: xrange, y: yrange
         xlabel x
@@ -26,7 +26,7 @@ module Charty
       seriesx, seriesy = *table.to_a(x, y)
       xrange = (seriesx.min)..(seriesx.max)
       yrange = (seriesy.min)..(seriesy.max)
-      bar = barh do
+      barh do
         series seriesx, seriesy
         range x: xrange, y: yrange
         xlabel x
@@ -38,7 +38,7 @@ module Charty
       serieses = table.to_a(x, y)
       xrange = 0..serieses.size
       yrange = (serieses.flatten.min - 1)..(serieses.flatten.max + 1)
-      box_plot = box_plot do
+      box_plot do
         data serieses
         range x: xrange, y: yrange
         xlabel x
@@ -50,7 +50,7 @@ module Charty
       seriesx, seriesy, seriesz = *table.to_a(x, y, z)
       xrange = (seriesx.min)..(seriesx.max)
       yrange = (seriesy.min)..(seriesy.max)
-      bubble = bubble do
+      bubble do
         series seriesx, seriesy, seriesz
         range x: xrange, y: yrange
         xlabel x
@@ -62,7 +62,7 @@ module Charty
       seriesx, seriesy = *table.to_a(x, y)
       xrange = (seriesx.min)..(seriesx.max)
       yrange = (seriesy.min)..(seriesy.max)
-      curve = curve do
+      curve do
         series seriesx, seriesy
         range x: xrange, y: yrange
         xlabel x
@@ -74,7 +74,7 @@ module Charty
       seriesx, seriesy = *table.to_a(x, y)
       xrange = (seriesx.min)..(seriesx.max)
       yrange = (seriesy.min)..(seriesy.max)
-      scatter = scatter do
+      scatter do
         series seriesx, seriesy
         range x: xrange, y: yrange
         xlabel x
@@ -87,7 +87,7 @@ module Charty
       seriesx, seriesy = *table.to_a(x, y)
       xrange = (seriesx.min)..(seriesx.max)
       yrange = (seriesy.min)..(seriesy.max)
-      error_bar = error_bar do
+      error_bar do
         series seriesx, seriesy
         range x: xrange, y: yrange
         xlabel x
@@ -99,7 +99,7 @@ module Charty
       serieses = table.to_a(x, y)
       xrange = (serieses.flatten.min - 1)..(serieses.flatten.max + 1)
       yrange = 0..serieses[0].size
-      hist = hist do
+      hist do
         data serieses
         range x: xrange, y: yrange
         xlabel x
@@ -160,7 +160,7 @@ module Charty
     def initialize(method, **args, &block)
       @method = method
       configurator = Configurator.new(**args)
-      configurator.instance_eval &block
+      configurator.instance_eval(&block)
       # TODO: label も外から付けられた方がよさそう
       (@range, @series, @function, @data, @title, @xlabel, @ylabel, @labels) = configurator.to_a
     end
