@@ -33,7 +33,8 @@ module Charty
         case data
         when Array,
              ->(x) { defined?(Numo::NArray) && x.is_a?(Numo::NArray) },
-             ->(x) { defined?(Daru::Vector) && x.is_a?(Daru::Vector) }
+             ->(x) { defined?(Daru::Vector) && x.is_a?(Daru::Vector) },
+             ->(x) { defined?(NMatrix) && x.is_a?(NMatrix) }
           true
         else
           false
@@ -79,7 +80,7 @@ module Charty
 
       private def make_data_from_records(data, columns)
         n_rows = data.length
-        n_columns = data.map(&:length).max
+        n_columns = data.map(&:size).max
         columns = generate_column_names(n_columns, columns)
         columns.map.with_index { |key, j|
           values = n_rows.times.map {|i| data[i][j] }

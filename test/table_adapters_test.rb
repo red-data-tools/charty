@@ -57,7 +57,7 @@ class TableAdaptersTest < Test::Unit::TestCase
                    Charty::TableAdapters.lookup_adapter_maker(data))
     end
 
-    test("for a Numo::NArray") do
+    test("for a Numo::NArray matrix") do
       data = Numo::Int32[
                           [1, 5,  9],
                           [2, 6, 10],
@@ -65,6 +65,18 @@ class TableAdaptersTest < Test::Unit::TestCase
                           [4, 8, 12],
                         ]
       assert_equal(Charty::TableAdapters::NArrayAdapter,
+                   Charty::TableAdapters.lookup_adapter_maker(data))
+    end
+
+    test("for a NMatrix matrix") do
+      data = NMatrix.new([4, 3],
+                         [
+                           1, 5,  9,
+                           2, 6, 10,
+                           3, 7, 11,
+                           4, 8, 12,
+                         ])
+      assert_equal(Charty::TableAdapters::NMatrixAdapter,
                    Charty::TableAdapters.lookup_adapter_maker(data))
     end
   end
