@@ -47,7 +47,8 @@ module Charty
         when Array
           case data[0]
           when Numeric, String, Time, Date
-            # TODO
+            data = data.map {|x| [x] }
+            @data = make_data_from_records(data, columns)
           when Hash
             # TODO
           when self.class.method(:array?)

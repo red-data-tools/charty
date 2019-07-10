@@ -22,4 +22,23 @@ class TableArrayTest < Test::Unit::TestCase
                    @table[1, "X2"])
     end
   end
+
+  sub_test_case("an array") do
+    def setup
+      @data = [1, 2, 3, 4, 5]
+      @table = Charty::Table.new(@data)
+    end
+
+    test("#columns") do
+      assert_equal(["X0"],
+                   @table.columns)
+    end
+
+    test("#[]") do
+      assert_equal(1,
+                   @table[0, "X0"])
+      assert_equal(4,
+                   @table[3, "X0"])
+    end
+  end
 end
