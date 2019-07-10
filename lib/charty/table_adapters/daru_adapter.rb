@@ -1,5 +1,3 @@
-require 'daru'
-
 module Charty
   module TableAdapters
     class DaruAdapter
@@ -8,6 +6,10 @@ module Charty
 
       def self.make(data)
         self.new(data)
+      end
+
+      def self.supported?(data)
+        defined?(Daru::DataFrame) && data.is_a?(Daru::DataFrame)
       end
 
       def initialize(data)
@@ -27,5 +29,7 @@ module Charty
         raise TypeError, "#{name} must be a #{type}"
       end
     end
+
+    register(:daru, DaruAdapter)
   end
 end

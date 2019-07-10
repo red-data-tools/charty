@@ -8,6 +8,10 @@ module Charty
         GenericDatasetsAdapter.new(dataset)
       end
 
+      def self.supported?(data)
+        defined?(Datasets::Dataset) && data.is_a?(Datasets::Dataset)
+      end
+
       def initialize(dataset)
         @dataset = dataset
         @records = []
@@ -39,5 +43,7 @@ module Charty
         end
       end
     end
+
+    register(:datasets, DatasetsAdapter)
   end
 end

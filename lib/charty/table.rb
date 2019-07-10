@@ -4,10 +4,12 @@ module Charty
   class Table
     extend Forwardable
 
-    def initialize(data)
+    def initialize(data, **kwargs)
       adapter_maker = TableAdapters.lookup_adapter_maker(data)
-      @adapter = adapter_maker.make(data)
+      @adapter = adapter_maker.make(data, **kwargs)
     end
+
+    attr_reader :adapter
 
     def_delegator :@adapter, :columns
 
