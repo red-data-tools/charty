@@ -31,6 +31,8 @@ module Charty
 
       case context.method
       when :bar
+        generate_render_js("ColumnChart")
+      when :barh
         generate_render_js("BarChart")
       when :scatter
         generate_render_js("ScatterChart")
@@ -49,19 +51,40 @@ module Charty
         "<script type='text/javascript' src='https://www.gstatic.com/charts/loader.js'></script>"
       end
 
-      def headers
-        [].tap do |header|
-          header << context.xlabel
+      def data_column_js
+        case context.method
+        when :bubble
+          column_js = <<-COLUMN_JS
+            data.addColumn('string', 'ID');
+            data.addColumn('number', 'X');
+            data.addColumn('number', 'Y');
+            data.addColumn('string', 'GROUP');
+            data.addColumn('number', 'SIZE');
+          COLUMN_JS
+        when :curve
+          column_js = "data.addColumn('number', '#{context.xlabel}');"
           context.series.to_a.each_with_index do |series_data, index|
-            header << series_data.label || index
+            column_js << "data.addColumn('number', '#{series_data.label || index}');"
+          end
+        else
+          column_js = "data.addColumn('string', '#{context.xlabel}');"
+          context.series.to_a.each_with_index do |series_data, index|
+            column_js << "data.addColumn('number', '#{series_data.label || index}');"
           end
         end
+
+        column_js
       end
 
       def x_labels
         [].tap do |label|
           context.series.each do |series|
-            series.xs.each do |xs_data|
+            xs_series = if series.xs.detect { |xs_data| xs_data.is_a?(String) }
+                          series.xs.sort_by {|x| format('%10s', "#{x}")}
+                        else
+                          series.xs.sort
+                        end
+            xs_series.each do |xs_data|
               label << xs_data unless label.any? { |label| label == xs_data }
             end
           end
@@ -71,7 +94,7 @@ module Charty
       def data_hash
         {}.tap do |hash|
           context.series.to_a.each_with_index do |series_data, series_index|
-            x_labels.sort.each do |x_label|
+            x_labels.each do |x_label|
               unless hash[x_label]
                 hash[x_label] = []
               end
@@ -89,27 +112,27 @@ module Charty
       def formatted_data_array
         case context.method
         when :bubble
-          [["ID", "X", "Y", "GROUP", "SIZE"]].tap do |data_array|
+          [].tap do |data_array|
             context.series.to_a.each_with_index do |series_data, series_index|
               series_data.xs.to_a.each_with_index do |data, data_index|
                 data_array << [
                   "",
                   series_data.xs.to_a[data_index] || "null",
                   series_data.ys.to_a[data_index] || "null",
-                  series_data[:label] || series_index,
+                  series_data[:label] || series_index.to_s,
                   series_data.zs.to_a[data_index] || "null",
                 ]
               end
             end
           end
         when :curve
-          [headers.map(&:to_s)].tap do |data_array|
+          [].tap do |data_array|
             data_hash.each do |k, v|
               data_array << [k, v].flatten
             end
           end
         else
-          [headers.map(&:to_s)].tap do |data_array|
+          [].tap do |data_array|
             data_hash.each do |k, v|
               data_array << [k.to_s, v].flatten
             end
@@ -118,7 +141,11 @@ module Charty
       end
 
       def x_range_option
-        x_range = context&.range&.fetch(:x, nil)
+        x_range = if context.method != :barh
+                    context&.range&.fetch(:x, nil)
+                  else
+                    context&.range&.fetch(:y, nil)
+                  end
         {
           max: x_range&.max,
           min: x_range&.min,
@@ -126,7 +153,11 @@ module Charty
       end
 
       def y_range_option
-        y_range = context&.range&.fetch(:y, nil)
+        y_range = if context.method != :barh
+                    context&.range&.fetch(:y, nil)
+                  else
+                    context&.range&.fetch(:x, nil)
+                  end
         {
           max: y_range&.max,
           min: y_range&.min,
@@ -140,9 +171,9 @@ module Charty
             google.charts.load("current", {packages:["corechart"]});
             google.charts.setOnLoadCallback(drawChart);
             function drawChart() {
-              const data = google.visualization.arrayToDataTable(
-                #{formatted_data_array}
-              );
+              const data = new google.visualization.DataTable();
+              #{data_column_js}
+              data.addRows(#{formatted_data_array})
 
               const view = new google.visualization.DataView(data);
 
@@ -170,6 +201,8 @@ module Charty
           </script>
           <div id="#{chart_type}-#{self.class.chart_id}" style="width: 900px; height: 300px;"></div>
         JS
+        js.gsub!(/\"null\"/, 'null')
+        js
       end
   end
 end
