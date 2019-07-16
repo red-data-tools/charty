@@ -36,6 +36,8 @@ module Charty
         generate_render_js("ScatterChart")
       when :bubble
         generate_render_js("BubbleChart")
+      when :curve
+        generate_render_js("LineChart")
       else
         raise NotImplementedError
       end
@@ -100,6 +102,12 @@ module Charty
               end
             end
           end
+        when :curve
+          [headers.map(&:to_s)].tap do |data_array|
+            data_hash.each do |k, v|
+              data_array << [k, v].flatten
+            end
+          end
         else
           [headers.map(&:to_s)].tap do |data_array|
             data_hash.each do |k, v|
@@ -127,7 +135,7 @@ module Charty
 
       def generate_render_js(chart_type)
         js = <<-JS
-          #{google_chart_load_tag}
+          #{google_chart_load_tag unless self.class.chart_id > 1}
           <script type="text/javascript">
             google.charts.load("current", {packages:["corechart"]});
             google.charts.setOnLoadCallback(drawChart);
