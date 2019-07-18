@@ -25,7 +25,7 @@ class TableActiveRecordTest < Test::Unit::TestCase
     TestRecord.create(id: 2, name: "bar",  rate: 0.2)
     TestRecord.create(id: 3, name: "baz",  rate: 0.3)
     TestRecord.create(id: 4, name: "qux",  rate: 0.4)
-    TestRecord.create(id: 4, name: "quux", rate: 0.5)
+    TestRecord.create(id: 5, name: "quux", rate: 0.5)
 
     @data = TestRecord.all.map(&:attributes)
     @table = Charty::Table.new(TestRecord.all)
@@ -36,10 +36,21 @@ class TableActiveRecordTest < Test::Unit::TestCase
                  @table.columns)
   end
 
-  test("#[]") do
-    assert_equal("baz",
-                 @table[2, "name"])
-    assert_equal(0.4,
-                 @table[3, "rate"])
+  sub_test_case("#[]") do
+    test("row index and column name") do
+      assert_equal("baz",
+                   @table[2, "name"])
+      assert_equal(0.4,
+                   @table[3, "rate"])
+    end
+
+    test("column name only") do
+      assert_equal([1, 2, 3, 4, 5],
+                   @table["id"])
+      assert_equal(["foo", "bar", "baz", "qux", "quux"],
+                   @table["name"])
+      assert_equal([0.1, 0.2, 0.3, 0.4, 0.5],
+                   @table["rate"])
+    end
   end
 end

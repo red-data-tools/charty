@@ -1,6 +1,16 @@
 require 'forwardable'
 
 module Charty
+  class ColumnAccessor
+    def initialize(adapter)
+      @adapter = adapter
+    end
+
+    def [](i)
+      @adapter.column(i)
+    end
+  end
+
   class Table
     extend Forwardable
 
@@ -13,7 +23,19 @@ module Charty
 
     def_delegator :@adapter, :columns
 
-    def_delegator :@adapter, :[]
+    def arrays
+      @column_accessor ||= ColumnAccessor.new(@adapter)
+    end
+
+    def [](*args)
+      case args.length
+      when 1
+        arrays[args[0]]
+      when 2
+        i, j = args
+        @adapter[i, j]
+      end
+    end
 
     def to_a(x=nil, y=nil, z=nil)
       case

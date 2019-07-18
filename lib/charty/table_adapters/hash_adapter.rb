@@ -65,8 +65,12 @@ module Charty
 
       def_delegator :@data, :keys, :columns
 
+      def column(i)
+        @data[i]
+      end
+
       def [](i, j)
-        @data[j][i]
+        column(j)[i]
       end
 
       def each

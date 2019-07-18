@@ -19,15 +19,18 @@ module Charty
 
       attr_reader :columns
 
-      def [](i, j)
-        fetch_records unless @arrays
-
-        col = columns.index(j)
-        unless col 
-          raise IndexError, "Invalid column index: #{j}"
+      def column(i)
+        col = columns.index(i)
+        if col
+          fetch_records unless @arrays
+          @arrays[col]
+        else
+          raise IndexError, "Invalid column index: #{i}"
         end
+      end
 
-        @arrays[col][i]
+      def [](i, j)
+        column(j)[i]
       end
 
       private def fetch_records

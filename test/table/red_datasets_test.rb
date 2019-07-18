@@ -35,6 +35,12 @@ class TableRedDatasetsTest < Test::Unit::TestCase
         assert_equal(first_record.age,
                      @table[0, :age])
       end
+
+      test("column name only") do
+        race_column = @data.map(&:race)
+        assert_equal(race_column,
+                     @table[:race])
+      end
     end
   end
 
@@ -60,6 +66,12 @@ class TableRedDatasetsTest < Test::Unit::TestCase
         first_record = @data.first
         assert_equal(first_record.sepal_length,
                      @table[0, :sepal_length])
+      end
+
+      test("column name only") do
+        sepal_width_column = @data.map(&:sepal_width)
+        assert_equal(sepal_width_column,
+                     @table[:sepal_width])
       end
     end
   end
@@ -106,6 +118,12 @@ class TableRedDatasetsTest < Test::Unit::TestCase
         assert_equal(first_record.cap_shape,
                      @table[0, :cap_shape])
       end
+
+      test("column name only") do
+        odor_column = @data.map(&:odor)
+        assert_equal(odor_column,
+                     @table[:odor])
+      end
     end
   end
 
@@ -143,6 +161,12 @@ class TableRedDatasetsTest < Test::Unit::TestCase
         assert_equal(first_record.postal_code,
                      @table[0, :postal_code])
       end
+
+      test("column name only") do
+        prefecture_column = @data.map(&:prefecture)
+        assert_equal(prefecture_column,
+                     @table[:prefecture])
+      end
     end
   end
 
@@ -178,6 +202,12 @@ class TableRedDatasetsTest < Test::Unit::TestCase
         first_record = @data.first
         assert_equal(first_record.malic_acid,
                      @table[0, :malic_acid])
+      end
+
+      test("column name only") do
+        hue_column = @data.map(&:hue)
+        assert_equal(hue_column,
+                     @table[:hue])
       end
     end
   end

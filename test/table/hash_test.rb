@@ -15,8 +15,19 @@ class TableHashTest < Test::Unit::TestCase
                  @table.columns)
   end
 
-  test("#[]") do
-    assert_equal(20,
-                 @table[1, :bar])
+  sub_test_case("#[]") do
+    test("row index and column name") do
+      assert_equal(20,
+                   @table[1, :bar])
+    end
+
+    test("column name only") do
+      assert_equal([1, 2, 3, 4, 5],
+                   @table[:foo])
+      assert_equal([10, 20, 30, 40, 50],
+                   @table[:bar])
+      assert_equal([100, 200, 300, 400, 500],
+                   @table[:baz])
+    end
   end
 end

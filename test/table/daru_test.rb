@@ -27,10 +27,31 @@ class TableDaruTest < Test::Unit::TestCase
                  @table.columns)
   end
 
-  test("#[]") do
-    assert_equal("Bud Light",
-                 @table[2, "Beer"])
-    assert_equal(400,
-                 @table[1, "Gallons sold"])
+  sub_test_case("#[]") do
+    test("row index and column name") do
+      assert_equal("Bud Light",
+                   @table[2, "Beer"])
+      assert_equal(400,
+                   @table[1, "Gallons sold"])
+    end
+
+    test("column name only") do
+      assert_equal(Daru::Vector.new([
+                     "Kingfisher",
+                     "Snow",
+                     "Bud Light",
+                     "Tiger Beer",
+                     "Budweiser",
+                   ]),
+                   @table["Beer"])
+      assert_equal(Daru::Vector.new([
+                     500,
+                     400,
+                     450,
+                     200,
+                     250,
+                   ]),
+                   @table["Gallons sold"])
+    end
   end
 end

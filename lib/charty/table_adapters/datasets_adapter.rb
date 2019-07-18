@@ -30,6 +30,11 @@ module Charty
         end
       end
 
+      def column(i)
+        fetch_all if @records.empty?
+        @records.map {|record| record[i] }
+      end
+
       # @param [Integer] i  Row index
       # @param [Symbol,String,Integer] j  Column index
       def [](i, j)
