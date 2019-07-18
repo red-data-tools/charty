@@ -14,24 +14,24 @@ module Charty
       def initialize(data)
         @data = check_type(ActiveRecord::Relation, data, :data)
         @columns = @data.column_names.freeze
-        @records = nil
+        @arrays = nil
       end
 
       attr_reader :columns
 
       def [](i, j)
-        fetch_records unless @records
+        fetch_records unless @arrays
 
         col = columns.index(j)
         unless col 
           raise IndexError, "Invalid column index: #{j}"
         end
 
-        @records[i][col]
+        @arrays[col][i]
       end
 
       private def fetch_records
-        @records = @data.pluck(*columns)
+        @arrays = @data.pluck(*columns).transpose
       end
 
       private def check_type(type, data, name)
