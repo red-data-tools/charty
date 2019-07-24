@@ -6,7 +6,7 @@ module Charty
       @adapters[name] = adapter
     end
 
-    def self.lookup_adapter_maker(data)
+    def self.find_adapter_maker(data)
       @adapters.each_value do |adapter|
         return adapter if adapter.supported?(data)
       end

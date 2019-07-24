@@ -15,7 +15,7 @@ module Charty
     extend Forwardable
 
     def initialize(data, **kwargs)
-      adapter_maker = TableAdapters.lookup_adapter_maker(data)
+      adapter_maker = TableAdapters.find_adapter_maker(data)
       @adapter = adapter_maker.make(data, **kwargs)
     end
 
