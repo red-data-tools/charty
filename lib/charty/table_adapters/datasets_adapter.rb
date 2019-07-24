@@ -5,7 +5,12 @@ module Charty
       include Enumerable
 
       def self.make(dataset)
-        GenericDatasetsAdapter.new(dataset)
+        case
+        when dataset.class.const_defined?(:Record)
+          RecordCollectionAdapter.new(dataset)
+        else
+          raise TypeError, "Unsupported dataset class: #{dataset.class}"
+        end
       end
 
       def self.supported?(data)
@@ -42,7 +47,7 @@ module Charty
         @records[i][j]
       end
 
-      class GenericDatasetsAdapter < self
+      class RecordCollectionAdapter < self
         def columns
           @dataset.class::Record.members
         end
