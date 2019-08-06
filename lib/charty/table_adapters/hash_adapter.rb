@@ -59,7 +59,7 @@ module Charty
         end
       end
 
-      def_delegator :@data, :keys, :columns
+      def_delegator :@data, :keys, :column_names
 
       def column(i)
         @data[i]

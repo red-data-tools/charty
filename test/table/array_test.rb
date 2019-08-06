@@ -10,9 +10,9 @@ class TableArrayTest < Test::Unit::TestCase
       @table = Charty::Table.new(@data)
     end
 
-    test("#columns") do
+    test("#column_names") do
       assert_equal(["X0", "X1", "X2", "X3"],
-                   @table.columns)
+                   @table.column_names)
     end
 
     sub_test_case("#[]") do
@@ -42,9 +42,9 @@ class TableArrayTest < Test::Unit::TestCase
       @table = Charty::Table.new(@data)
     end
 
-    test("#columns") do
+    test("#column_names") do
       assert_equal(["X0"],
-                   @table.columns)
+                   @table.column_names)
     end
 
     sub_test_case("#[]") do

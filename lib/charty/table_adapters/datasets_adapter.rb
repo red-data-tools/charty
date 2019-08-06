@@ -14,7 +14,7 @@ module Charty
         @records = []
       end
 
-      def columns
+      def column_names
         @dataset.class::Record.members
       end
 

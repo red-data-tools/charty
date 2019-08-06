@@ -9,14 +9,14 @@ module Charty
 
       def initialize(data)
         @data = check_type(ActiveRecord::Relation, data, :data)
-        @columns = @data.column_names.freeze
+        @column_names = @data.column_names.freeze
         @arrays = nil
       end
 
-      attr_reader :columns
+      attr_reader :column_names
 
       def column(i)
-        col = columns.index(i)
+        col = column_names.index(i)
         if col
           fetch_records unless @arrays
           @arrays[col]
@@ -30,7 +30,7 @@ module Charty
       end
 
       private def fetch_records
-        @arrays = @data.pluck(*columns).transpose
+        @arrays = @data.pluck(*column_names).transpose
       end
 
       private def check_type(type, data, name)

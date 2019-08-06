@@ -16,7 +16,7 @@ class TableRedDatasetsTest < Test::Unit::TestCase
       @table = Charty::Table.new(@data)
     end
 
-    test("#columns") do
+    test("#column_names") do
       assert_equal([
                      :age,
                      :work_class,
@@ -34,7 +34,7 @@ class TableRedDatasetsTest < Test::Unit::TestCase
                      :native_country,
                      :label
                    ],
-                   @table.columns)
+                   @table.column_names)
     end
 
     sub_test_case("#[]") do
@@ -58,7 +58,7 @@ class TableRedDatasetsTest < Test::Unit::TestCase
       @table = Charty::Table.new(@data)
     end
 
-    test("#columns") do
+    test("#column_names") do
       assert_equal([
                      :sepal_length,
                      :sepal_width,
@@ -66,7 +66,7 @@ class TableRedDatasetsTest < Test::Unit::TestCase
                      :petal_width,
                      :label
                    ],
-                   @table.columns)
+                   @table.column_names)
     end
 
     sub_test_case("#[]") do
@@ -91,7 +91,7 @@ class TableRedDatasetsTest < Test::Unit::TestCase
       @table = Charty::Table.new(@data)
     end
 
-    test("#columns") do
+    test("#column_names") do
       assert_equal([
                      :label,
                      :cap_shape,
@@ -117,7 +117,7 @@ class TableRedDatasetsTest < Test::Unit::TestCase
                      :population,
                      :habitat,
                    ],
-                   @table.columns)
+                   @table.column_names)
     end
 
     sub_test_case("#[]") do
@@ -142,7 +142,7 @@ class TableRedDatasetsTest < Test::Unit::TestCase
       @table = Charty::Table.new(@data)
     end
 
-    test("#columns") do
+    test("#column_names") do
       assert_equal([
                      :organization_code,
                      :old_postal_code,
@@ -160,7 +160,7 @@ class TableRedDatasetsTest < Test::Unit::TestCase
                      :changed,
                      :change_reason,
                    ],
-                   @table.columns)
+                   @table.column_names)
     end
 
     sub_test_case("#[]") do
@@ -185,7 +185,7 @@ class TableRedDatasetsTest < Test::Unit::TestCase
       @table = Charty::Table.new(@data)
     end
 
-    test("#columns") do
+    test("#column_names") do
       assert_equal([
                      :label,
                      :alcohol,
@@ -202,7 +202,7 @@ class TableRedDatasetsTest < Test::Unit::TestCase
                      :optical_nucleic_acid_concentration,
                      :n_prolines,
                    ],
-                   @table.columns)
+                   @table.column_names)
     end
 
     sub_test_case("#[]") do

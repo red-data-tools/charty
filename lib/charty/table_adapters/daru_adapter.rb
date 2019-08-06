@@ -11,7 +11,7 @@ module Charty
         @data = check_type(Daru::DataFrame, data, :data)
       end
 
-      def columns
+      def column_names
         @data.vectors.to_a
       end
 

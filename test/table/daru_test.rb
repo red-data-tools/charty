@@ -22,9 +22,9 @@ class TableDaruTest < Test::Unit::TestCase
     @table = Charty::Table.new(@data)
   end
 
-  test("#columns") do
+  test("#column_names") do
     assert_equal(["Beer", "Gallons sold"],
-                 @table.columns)
+                 @table.column_names)
   end
 
   sub_test_case("#[]") do

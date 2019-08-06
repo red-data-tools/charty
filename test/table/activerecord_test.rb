@@ -31,9 +31,9 @@ class TableActiveRecordTest < Test::Unit::TestCase
     @table = Charty::Table.new(TestRecord.all)
   end
 
-  test("#columns") do
+  test("#column_names") do
     assert_equal(["id", "name", "rate"],
-                 @table.columns)
+                 @table.column_names)
   end
 
   sub_test_case("#[]") do

@@ -15,10 +15,10 @@ module Charty
           raise ArgumentError, "Unsupported data format"
         end
         @data = data
-        @columns = generate_column_names(data.shape[1], columns)
+        @column_names = generate_column_names(data.shape[1], columns)
       end
 
-      attr_reader :columns
+      attr_reader :column_names
 
       def column(i)
         @data[:*, column_index(i)].reshape([@data.shape[0]])
@@ -29,7 +29,7 @@ module Charty
       end
 
       private def column_index(name)
-        index = columns.index(name)
+        index = column_names.index(name)
         return index if index
         raise IndexError, "Invalid column name: #{name}"
       end
