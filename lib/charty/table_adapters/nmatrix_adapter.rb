@@ -1,10 +1,6 @@
 module Charty
   module TableAdapters
     class NMatrixAdapter
-      def self.make(data)
-        self.new(data)
-      end
-
       def self.supported?(data)
         defined?(NMatrix) && data.is_a?(NMatrix) && data.shape.length <= 2
       end

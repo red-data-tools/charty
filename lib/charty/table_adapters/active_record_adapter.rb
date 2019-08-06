@@ -3,10 +3,6 @@ module Charty
     class ActiveRecordAdapter
       include Enumerable
 
-      def self.make(data)
-        self.new(data)
-      end
-
       def self.supported?(data)
         defined?(ActiveRecord::Relation) && data.is_a?(ActiveRecord::Relation)
       end

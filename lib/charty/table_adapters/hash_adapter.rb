@@ -7,10 +7,6 @@ module Charty
       extend Forwardable
       include Enumerable
 
-      def self.make(data)
-        new(data)
-      end
-
       def self.supported?(data)
         case data
         when []

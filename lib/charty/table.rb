@@ -15,8 +15,12 @@ module Charty
     extend Forwardable
 
     def initialize(data, **kwargs)
-      adapter_maker = TableAdapters.find_adapter_maker(data)
-      @adapter = adapter_maker.make(data, **kwargs)
+      adapter_class = TableAdapters.find_adapter_class(data)
+      if kwargs.empty?
+        @adapter = adapter_class.new(data)
+      else
+        @adapter = adapter_class.new(data, **kwargs)
+      end
     end
 
     attr_reader :adapter

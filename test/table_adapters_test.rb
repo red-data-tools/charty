@@ -3,14 +3,14 @@ require 'daru'
 require 'numo/narray'
 
 class TableAdaptersTest < Test::Unit::TestCase
-  sub_test_case(".find_adapter_maker") do
+  sub_test_case(".find_adapter_class") do
     test("for a hash of arrays") do
       data = {
                "foo" => [1, 2, 3, 4],
                "bar" => [5, 6, 7, 8],
              }
       assert_equal(Charty::TableAdapters::HashAdapter,
-                   Charty::TableAdapters.find_adapter_maker(data))
+                   Charty::TableAdapters.find_adapter_class(data))
     end
 
     test("for an array of hashes") do
@@ -21,7 +21,7 @@ class TableAdaptersTest < Test::Unit::TestCase
                {"foo" => 4, "bar" => 8},
              ]
       assert_equal(Charty::TableAdapters::HashAdapter,
-                   Charty::TableAdapters.find_adapter_maker(data))
+                   Charty::TableAdapters.find_adapter_class(data))
     end
 
     test("for an array of arrays") do
@@ -30,7 +30,7 @@ class TableAdaptersTest < Test::Unit::TestCase
                [5, 6, 7, 8]
              ]
       assert_equal(Charty::TableAdapters::HashAdapter,
-                   Charty::TableAdapters.find_adapter_maker(data))
+                   Charty::TableAdapters.find_adapter_class(data))
     end
 
     test("for an array of Numo::NArray arrays") do
@@ -39,13 +39,13 @@ class TableAdaptersTest < Test::Unit::TestCase
                [5, 6, 7, 8]
              ]
       assert_equal(Charty::TableAdapters::HashAdapter,
-                   Charty::TableAdapters.find_adapter_maker(data))
+                   Charty::TableAdapters.find_adapter_class(data))
     end
 
     test("for an array of scalar values") do
       data = [1, 2, 3, 4]
       assert_equal(Charty::TableAdapters::HashAdapter,
-                   Charty::TableAdapters.find_adapter_maker(data))
+                   Charty::TableAdapters.find_adapter_class(data))
     end
 
     test("for a Daru::DataFrame") do
@@ -54,7 +54,7 @@ class TableAdaptersTest < Test::Unit::TestCase
         "bar" => [5, 6, 7, 8]
       )
       assert_equal(Charty::TableAdapters::DaruAdapter,
-                   Charty::TableAdapters.find_adapter_maker(data))
+                   Charty::TableAdapters.find_adapter_class(data))
     end
 
     test("for a Numo::NArray matrix") do
@@ -65,7 +65,7 @@ class TableAdaptersTest < Test::Unit::TestCase
                           [4, 8, 12],
                         ]
       assert_equal(Charty::TableAdapters::NArrayAdapter,
-                   Charty::TableAdapters.find_adapter_maker(data))
+                   Charty::TableAdapters.find_adapter_class(data))
     end
 
     test("for a NMatrix matrix") do
@@ -77,7 +77,7 @@ class TableAdaptersTest < Test::Unit::TestCase
                            4, 8, 12,
                          ])
       assert_equal(Charty::TableAdapters::NMatrixAdapter,
-                   Charty::TableAdapters.find_adapter_maker(data))
+                   Charty::TableAdapters.find_adapter_class(data))
     end
   end
 end

@@ -1,10 +1,6 @@
 module Charty
   module TableAdapters
     class NArrayAdapter
-      def self.make(data)
-        self.new(data)
-      end
-
       def self.supported?(data)
         defined?(Numo::NArray) && data.is_a?(Numo::NArray) && data.ndim <= 2
       end

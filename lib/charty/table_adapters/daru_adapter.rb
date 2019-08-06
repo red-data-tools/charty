@@ -1,12 +1,7 @@
 module Charty
   module TableAdapters
     class DaruAdapter
-      extend Forwardable
       include Enumerable
-
-      def self.make(data)
-        self.new(data)
-      end
 
       def self.supported?(data)
         defined?(Daru::DataFrame) && data.is_a?(Daru::DataFrame)

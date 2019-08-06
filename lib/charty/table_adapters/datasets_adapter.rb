@@ -1,25 +1,21 @@
 module Charty
   module TableAdapters
     class DatasetsAdapter
-      extend Forwardable
       include Enumerable
 
-      def self.make(dataset)
-        case
-        when dataset.class.const_defined?(:Record)
-          RecordCollectionAdapter.new(dataset)
-        else
-          raise TypeError, "Unsupported dataset class: #{dataset.class}"
-        end
-      end
-
       def self.supported?(data)
-        defined?(Datasets::Dataset) && data.is_a?(Datasets::Dataset)
+        defined?(Datasets::Dataset) &&
+          data.is_a?(Datasets::Dataset) &&
+          data.class.const_defined?(:Record)
       end
 
       def initialize(dataset)
         @dataset = dataset
         @records = []
+      end
+
+      def columns
+        @dataset.class::Record.members
       end
 
       def each(&block)
@@ -45,12 +41,6 @@ module Charty
       def [](i, j)
         fetch_all if @records.empty?
         @records[i][j]
-      end
-
-      class RecordCollectionAdapter < self
-        def columns
-          @dataset.class::Record.members
-        end
       end
     end
 

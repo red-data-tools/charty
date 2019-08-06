@@ -4,7 +4,7 @@ require 'datasets'
 class TableRedDatasetsTest < Test::Unit::TestCase
   sub_test_case("Charty::Table.new") do
     test("CIFAR dataset is unsupported yet") do
-      assert_raise(TypeError) do
+      assert_raise(ArgumentError) do
         Charty::Table.new(Datasets::CIFAR.new)
       end
     end

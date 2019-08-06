@@ -2,13 +2,13 @@ module Charty
   module TableAdapters
     @adapters = {}
 
-    def self.register(name, adapter)
-      @adapters[name] = adapter
+    def self.register(name, adapter_class)
+      @adapters[name] = adapter_class
     end
 
-    def self.find_adapter_maker(data)
-      @adapters.each_value do |adapter|
-        return adapter if adapter.supported?(data)
+    def self.find_adapter_class(data)
+      @adapters.each_value do |adapter_class|
+        return adapter_class if adapter_class.supported?(data)
       end
       raise ArgumentError, "Unsupported data class: #{data.class}"
     end
