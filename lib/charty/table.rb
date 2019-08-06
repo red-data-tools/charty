@@ -27,14 +27,14 @@ module Charty
 
     def_delegator :@adapter, :column_names
 
-    def arrays
+    def columns
       @column_accessor ||= ColumnAccessor.new(@adapter)
     end
 
     def [](*args)
       case args.length
       when 1
-        arrays[args[0]]
+        columns[args[0]]
       when 2
         i, j = args
         @adapter[i, j]
