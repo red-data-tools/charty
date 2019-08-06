@@ -1,11 +1,52 @@
+require 'forwardable'
 
 module Charty
-  class Table
-    def initialize(table)
-      @table = table
+  class ColumnAccessor
+    def initialize(adapter)
+      @adapter = adapter
     end
 
-    attr_reader :table
+    def [](column_name)
+      @adapter[nil, column_name]
+    end
+  end
+
+  class Table
+    extend Forwardable
+
+    def initialize(data, **kwargs)
+      adapter_class = TableAdapters.find_adapter_class(data)
+      if kwargs.empty?
+        @adapter = adapter_class.new(data)
+      else
+        @adapter = adapter_class.new(data, **kwargs)
+      end
+    end
+
+    attr_reader :adapter
+
+    def_delegator :@adapter, :column_names
+
+    def columns
+      @column_accessor ||= ColumnAccessor.new(@adapter)
+    end
+
+    def [](*args)
+      n_args = args.length
+      case n_args
+      when 1
+        row = nil
+        column = args[0]
+        @adapter[row, column]
+      when 2
+        row = args[0]
+        column = args[1]
+        @adapter[row, column]
+      else
+        message = "wrong number of arguments (given #{n_args}, expected 1..2)"
+        raise ArgumentError, message
+      end
+    end
 
     def to_a(x=nil, y=nil, z=nil)
       case

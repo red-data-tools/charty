@@ -11,7 +11,8 @@ module Charty
     attr_reader :table
 
     def to_bar(x, y, **args, &block)
-      seriesx, seriesy = *table.to_a(x, y)
+      seriesx = table[x]
+      seriesy = table[y]
       xrange = (seriesx.min)..(seriesx.max)
       yrange = (seriesy.min)..(seriesy.max)
       bar do
@@ -23,7 +24,8 @@ module Charty
     end
 
     def to_barh(x, y, **args, &block)
-      seriesx, seriesy = *table.to_a(x, y)
+      seriesx = table[x]
+      seriesy = table[y]
       xrange = (seriesx.min)..(seriesx.max)
       yrange = (seriesy.min)..(seriesy.max)
       barh do
@@ -35,7 +37,7 @@ module Charty
     end
 
     def to_box_plot(x, y, **args, &block)
-      serieses = table.to_a(x, y)
+      serieses = [table[x], table[y]]
       xrange = 0..serieses.size
       yrange = (serieses.flatten.min - 1)..(serieses.flatten.max + 1)
       box_plot do
@@ -47,7 +49,9 @@ module Charty
     end
 
     def to_bubble(x, y, z, **args, &block)
-      seriesx, seriesy, seriesz = *table.to_a(x, y, z)
+      seriesx = table[x]
+      seriesy = table[y]
+      seriesz = table[z]
       xrange = (seriesx.min)..(seriesx.max)
       yrange = (seriesy.min)..(seriesy.max)
       bubble do
@@ -59,7 +63,8 @@ module Charty
     end
 
     def to_curve(x, y, **args, &block)
-      seriesx, seriesy = *table.to_a(x, y)
+      seriesx = table[x]
+      seriesy = table[y]
       xrange = (seriesx.min)..(seriesx.max)
       yrange = (seriesy.min)..(seriesy.max)
       curve do
@@ -71,7 +76,8 @@ module Charty
     end
 
     def to_scatter(x, y, **args, &block)
-      seriesx, seriesy = *table.to_a(x, y)
+      seriesx = table[x]
+      seriesy = table[y]
       xrange = (seriesx.min)..(seriesx.max)
       yrange = (seriesy.min)..(seriesy.max)
       scatter do
@@ -84,7 +90,8 @@ module Charty
 
     def to_error_bar(x, y, **args, &block)
       # TODO: It is not yet decided how to include data including xerror and yerror.
-      seriesx, seriesy = *table.to_a(x, y)
+      seriesx = table[x]
+      seriesy = table[y]
       xrange = (seriesx.min)..(seriesx.max)
       yrange = (seriesy.min)..(seriesy.max)
       error_bar do
@@ -96,7 +103,7 @@ module Charty
     end
 
     def to_hst(x, y, **args, &block)
-      serieses = table.to_a(x, y)
+      serieses = [table[x], table[y]]
       xrange = (serieses.flatten.min - 1)..(serieses.flatten.max + 1)
       yrange = 0..serieses[0].size
       hist do
