@@ -61,12 +61,12 @@ module Charty
 
       def_delegator :@data, :keys, :column_names
 
-      def column(i)
-        @data[i]
-      end
-
-      def [](i, j)
-        column(j)[i]
+      def [](row, column)
+        if row
+          @data[column][row]
+        else
+          @data[column]
+        end
       end
 
       def each

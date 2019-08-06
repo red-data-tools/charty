@@ -15,12 +15,12 @@ module Charty
         @data.vectors.to_a
       end
 
-      def column(i)
-        @data[i]
-      end
-
-      def [](i, j)
-        column(j)[i]
+      def [](row, column)
+        if row
+          @data[column][row]
+        else
+          @data[column]
+        end
       end
 
       private def check_type(type, data, name)

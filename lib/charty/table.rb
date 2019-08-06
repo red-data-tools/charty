@@ -6,8 +6,8 @@ module Charty
       @adapter = adapter
     end
 
-    def [](i)
-      @adapter.column(i)
+    def [](column_name)
+      @adapter[nil, column_name]
     end
   end
 
@@ -32,12 +32,19 @@ module Charty
     end
 
     def [](*args)
-      case args.length
+      n_args = args.length
+      case n_args
       when 1
-        columns[args[0]]
+        row = nil
+        column = args[0]
+        @adapter[row, column]
       when 2
-        i, j = args
-        @adapter[i, j]
+        row = args[0]
+        column = args[1]
+        @adapter[row, column]
+      else
+        message = "wrong number of arguments (given #{n_args}, expected 1..2)"
+        raise ArgumentError, message
       end
     end
 

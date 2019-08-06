@@ -15,18 +15,29 @@ module Charty
 
       attr_reader :column_names
 
-      def column(i)
-        col = column_names.index(i)
-        if col
-          fetch_records unless @columns
-          @columns[col]
+      def [](row, column)
+        fetch_records unless @columns
+        if row
+          @columns[resolve_column_index(column)][row]
         else
-          raise IndexError, "Invalid column index: #{i}"
+          @columns[resolve_column_index(column)]
         end
       end
 
-      def [](i, j)
-        column(j)[i]
+      private def resolve_column_index(column)
+        case column
+        when String
+          index = column_names.index(column)
+          unless index
+            raise IndexError, "invalid column name: #{column.inspect}"
+          end
+          index
+        when Integer
+          column
+        else
+          message = "column must be String or Integer: #{column.inspect}"
+          raise ArgumentError, message
+        end
       end
 
       private def fetch_records

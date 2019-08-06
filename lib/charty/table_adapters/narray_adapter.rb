@@ -20,18 +20,26 @@ module Charty
 
       attr_reader :column_names
 
-      def column(i)
-        @data[true, column_index(i)]
+      def [](row, column)
+        if row
+          @data[row, resolve_column_index(column)]
+        else
+          @data[true, resolve_column_index(column)]
+        end
       end
 
-      def [](i, j)
-        @data[i, column_index(j)]
-      end
-
-      private def column_index(name)
-        index = column_names.index(name)
-        return index if index
-        raise IndexError, "Invalid column name: #{name}"
+      private def resolve_column_index(column)
+        case column
+        when String
+          index = column_names.index(column)
+          return index if index
+          raise IndexError, "invalid column name: #{column}"
+        when Integer
+          column
+        else
+          message = "column must be String or Integer: #{column.inspect}"
+          raise ArgumentError, message
+        end
       end
 
       private def generate_column_names(n_columns, columns)
