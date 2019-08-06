@@ -3,12 +3,22 @@ module Charty
     Name = "google_chart"
     attr_reader :context
 
-    def self.chart_id=(chart_id)
-      @chart_id = chart_id
-    end
+    class << self
+      attr_writer :chart_id, :google_charts_src, :with_api_load_tag
 
-    def self.chart_id
-      @chart_id ||= 0
+      def chart_id
+        @chart_id ||= 0
+      end
+
+      def with_api_load_tag
+        return @with_api_load_tag unless @with_api_load_tag.nil?
+
+        @with_api_load_tag = true
+      end
+
+      def google_charts_src
+        @google_charts_src ||= 'https://www.gstatic.com/charts/loader.js'
+      end
     end
 
     def initilize
@@ -47,8 +57,12 @@ module Charty
 
     private
 
-      def google_chart_load_tag
-        "<script type='text/javascript' src='https://www.gstatic.com/charts/loader.js'></script>"
+      def google_charts_load_tag
+        if self.class.with_api_load_tag
+          "<script type='text/javascript' src='#{self.class.google_charts_src}'></script>"
+        else
+          nil
+        end
       end
 
       def data_column_js
@@ -166,7 +180,7 @@ module Charty
 
       def generate_render_js(chart_type)
         js = <<-JS
-          #{google_chart_load_tag unless self.class.chart_id > 1}
+          #{google_charts_load_tag unless self.class.chart_id > 1}
           <script type="text/javascript">
             google.charts.load("current", {packages:["corechart"]});
             google.charts.setOnLoadCallback(drawChart);
