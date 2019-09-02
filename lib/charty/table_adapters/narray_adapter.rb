@@ -29,6 +29,7 @@ module Charty
       end
 
       private def resolve_column_index(column)
+        column = column.to_s if column.instance_of?(Symbol)
         case column
         when String
           index = column_names.index(column)
