@@ -49,16 +49,32 @@ class TableNMatrixTest < Test::Unit::TestCase
     end
 
     sub_test_case("#[]") do
-      test("row index and column name") do
-        assert_equal(1,
-                     @table[0, "X0"])
-        assert_equal(4,
-                     @table[3, "X0"])
+      sub_test_case("with string column name") do
+        test("row index and column name") do
+          assert_equal(1,
+                       @table[0, "X0"])
+          assert_equal(4,
+                       @table[3, "X0"])
+        end
+
+        test("column name only") do
+          assert_equal(NMatrix[1, 2, 3, 4, 5],
+                       @table["X0"])
+        end
       end
 
-      test("column name only") do
-        assert_equal(NMatrix[1, 2, 3, 4, 5],
-                     @table["X0"])
+      sub_test_case("with symbol column name") do
+        test("row index and column name") do
+          assert_equal(1,
+                       @table[0, :X0])
+          assert_equal(4,
+                       @table[3, :X0])
+        end
+
+        test("column name only") do
+          assert_equal(NMatrix[1, 2, 3, 4, 5],
+                       @table[:X0])
+        end
       end
     end
   end
@@ -80,20 +96,40 @@ class TableNMatrixTest < Test::Unit::TestCase
     end
 
     sub_test_case("#[]") do
-      test("row index and column name") do
-        assert_equal(2,
-                     @table[1, "X0"])
-        assert_equal(11,
-                     @table[2, "X2"])
+      sub_test_case("with string column name") do
+        test("row index and column name") do
+          assert_equal(2,
+                       @table[1, "X0"])
+          assert_equal(11,
+                       @table[2, "X2"])
+        end
+
+        test("column name only") do
+          assert_equal(NMatrix[1, 2, 3, 4],
+                       @table["X0"])
+          assert_equal(NMatrix[5, 6, 7, 8],
+                       @table["X1"])
+          assert_equal(NMatrix[9, 10, 11, 12],
+                       @table["X2"])
+        end
       end
 
-      test("column name only") do
-        assert_equal(NMatrix[1, 2, 3, 4],
-                     @table["X0"])
-        assert_equal(NMatrix[5, 6, 7, 8],
-                     @table["X1"])
-        assert_equal(NMatrix[9, 10, 11, 12],
-                     @table["X2"])
+      sub_test_case("with symbol column name") do
+        test("row index and column name") do
+          assert_equal(2,
+                       @table[1, :X0])
+          assert_equal(11,
+                       @table[2, :X2])
+        end
+
+        test("column name only") do
+          assert_equal(NMatrix[1, 2, 3, 4],
+                       @table[:X0])
+          assert_equal(NMatrix[5, 6, 7, 8],
+                       @table[:X1])
+          assert_equal(NMatrix[9, 10, 11, 12],
+                       @table[:X2])
+        end
       end
     end
   end
