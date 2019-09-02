@@ -4,11 +4,18 @@ require 'numo/narray'
 class TableNArrayTest < Test::Unit::TestCase
   sub_test_case("an array of vectors as records") do
     def setup
-      @data = [
+      @data = Numo::DFloat[
                 Numo::DFloat[1, 2, 3, 4],
                 Numo::DFloat[5, 6, 7, 8],
               ]
       @table = Charty::Table.new(@data)
+    end
+
+    sub_test_case("#adapter") do
+      test("use Charty::TableAdapters::NArrayAdapter") do
+        assert_equal(Charty::TableAdapters::NArrayAdapter,
+                     @table.adapter.class)
+      end
     end
 
     test("#column_names") do
