@@ -1,4 +1,5 @@
 require 'matplotlib/pyplot'
+require 'fileutils'
 
 module Charty
   class PyPlot < PlotterAdapter

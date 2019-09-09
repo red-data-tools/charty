@@ -1,4 +1,5 @@
 require 'rubyplot'
+require 'fileutils'
 
 module Charty
   class Rubyplot < PlotterAdapter
