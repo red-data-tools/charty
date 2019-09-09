@@ -2,10 +2,32 @@ require 'test_helper'
 require 'datasets'
 
 class TableRedDatasetsTest < Test::Unit::TestCase
-  sub_test_case("Charty::Table.new") do
-    test("CIFAR dataset is unsupported yet") do
-      assert_raise(ArgumentError) do
-        Charty::Table.new(Datasets::CIFAR.new)
+  sub_test_case("CIFAR") do
+    def setup
+      @data = Datasets::CIFAR.new
+      @table = Charty::Table.new(@data)
+    end
+
+    test("#column_names") do
+      assert_equal([
+                     :data,
+                     :label,
+                     :pixels,
+                   ],
+                   @table.column_names)
+    end
+
+    sub_test_case("#[]") do
+      test("row index and column name") do
+        first_record = @data.first
+        assert_equal(first_record.label,
+                     @table[0, :label])
+      end
+
+      test("column name only") do
+        label_column = @data.map(&:label)
+        assert_equal(label_column,
+                     @table[:label])
       end
     end
   end
@@ -86,7 +108,6 @@ class TableRedDatasetsTest < Test::Unit::TestCase
 
   sub_test_case("mushroom") do
     def setup
-      omit("Datasets::Mushroom is required") unless defined?(Datasets::Mushroom)
       @data = Datasets::Mushroom.new
       @table = Charty::Table.new(@data)
     end
@@ -137,7 +158,6 @@ class TableRedDatasetsTest < Test::Unit::TestCase
 
   sub_test_case("postal-code-japan") do
     def setup
-      omit("Datasets::PostalCodeJapan is required") unless defined?(Datasets::PostalCodeJapan)
       @data = Datasets::PostalCodeJapan.new
       @table = Charty::Table.new(@data)
     end
@@ -180,7 +200,6 @@ class TableRedDatasetsTest < Test::Unit::TestCase
 
   sub_test_case("wine") do
     def setup
-      omit("Datasets::Wine is required") unless defined?(Datasets::Wine)
       @data = Datasets::Wine.new
       @table = Charty::Table.new(@data)
     end
