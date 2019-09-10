@@ -1,5 +1,4 @@
 require 'json'
-require 'securerandom'
 
 module Charty
   class Plotly < PlotterAdapter
