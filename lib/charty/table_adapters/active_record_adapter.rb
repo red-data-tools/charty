@@ -25,10 +25,9 @@ module Charty
       end
 
       private def resolve_column_index(column)
-        column = column.to_s if column.instance_of?(Symbol)
         case column
-        when String
-          index = column_names.index(column)
+        when String, Symbol
+          index = column_names.index(column.to_s)
           unless index
             raise IndexError, "invalid column name: #{column.inspect}"
           end
