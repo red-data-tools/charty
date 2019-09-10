@@ -6,6 +6,24 @@ module Charty
     Name = "plotly"
     attr_reader :context
 
+    class << self
+      attr_writer :chart_id, :with_api_load_tag, :plotly_src
+
+      def chart_id
+        @chart_id ||= 0
+      end
+
+      def with_api_load_tag
+        return @with_api_load_tag unless @with_api_load_tag.nil?
+
+        @with_api_load_tag = true
+      end
+
+      def plotly_src
+        @plotly_src ||= 'https://cdn.plot.ly/plotly-latest.min.js'
+      end
+    end
+
     def initilize
     end
 
@@ -22,6 +40,7 @@ module Charty
 
     def plot(plot, context)
       context = context
+      self.class.chart_id += 1
 
       case context.method
       when :bar
@@ -37,8 +56,15 @@ module Charty
 
     private
 
+    def plotly_load_tag
+      if self.class.with_api_load_tag
+        "<script type='text/javascript' src='#{self.class.plotly_src}'></script>"
+      else
+      end
+    end
+
     def div_id
-      "charty-plotly-#{SecureRandom.uuid}"
+      "charty-plotly-#{self.class.chart_id}"
     end
 
     def div_style
@@ -69,12 +95,11 @@ module Charty
     end
 
     def render_html(data, layout)
-      id = div_id
       <<~FRAGMENT
-        <script type='text/javascript' src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-        <div id="#{id}" style="#{div_style}"></div>
+        #{plotly_load_tag unless self.class.chart_id > 1}
+        <div id="#{div_id}" style="#{div_style}"></div>
         <script>
-          Plotly.plot('#{id}', #{JSON.dump(data)}, #{JSON.dump(layout)} );
+          Plotly.plot('#{div_id}', #{JSON.dump(data)}, #{JSON.dump(layout)} );
         </script>
       FRAGMENT
     end
