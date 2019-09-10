@@ -1,4 +1,5 @@
 require 'gruff'
+require 'fileutils'
 
 module Charty
   class Gruff < PlotterAdapter
