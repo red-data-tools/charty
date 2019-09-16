@@ -4,8 +4,6 @@ require 'fileutils'
 module Charty
   module Backends
     class Gruff < Base
-      Name = "gruff"
-
       def initialize
         @plot = ::Gruff
       end

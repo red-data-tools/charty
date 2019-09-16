@@ -3,16 +3,14 @@ require 'fileutils'
 
 module Charty
   module Backends
-    class PyPlot < Base
-      Name = "pyplot"
-
+    class Pyplot < Base
       def initialize
-        @plot = Matplotlib::Pyplot
+        @plot = ::Matplotlib::Pyplot
       end
 
       def self.activate_iruby_integration
         require 'matplotlib/iruby'
-        Matplotlib::IRuby.activate
+        ::Matplotlib::IRuby.activate
       end
 
       def label(x, y)

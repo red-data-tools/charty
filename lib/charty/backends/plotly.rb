@@ -3,7 +3,6 @@ require 'json'
 module Charty
   module Backends
     class Plotly < Base
-      Name = "plotly"
       attr_reader :context
 
       class << self

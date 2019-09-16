@@ -4,8 +4,6 @@ require 'fileutils'
 module Charty
   module Backends
     class Rubyplot < Base
-      Name = "rubyplot"
-
       def initialize
         @plot = ::Rubyplot
       end

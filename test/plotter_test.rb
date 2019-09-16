@@ -3,7 +3,7 @@ require_relative './test_helper'
 class PlotterTest < Test::Unit::TestCase
   def setup
     @plotter = Charty::Plotter.new(:pyplot)
-    assert_instance_of(Charty::Backends::PyPlot,
+    assert_instance_of(Charty::Backends::Pyplot,
                        @plotter.instance_variable_get(:@backend))
 
     @data = {
