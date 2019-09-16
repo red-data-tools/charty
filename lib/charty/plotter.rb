@@ -1,7 +1,7 @@
 module Charty
   class Plotter
     def initialize(adapter_name)
-      @plotter_adapter =  PlotterAdapter.create(adapter_name)
+      @backend =  Backends.create(adapter_name)
     end
 
     def table=(data, **kwargs)
@@ -116,46 +116,46 @@ module Charty
 
     def bar(**args, &block)
       context = RenderContext.new :bar, **args, &block
-      context.apply(@plotter_adapter)
+      context.apply(@backend)
     end
 
     def barh(**args, &block)
       context = RenderContext.new :barh, **args, &block
-      context.apply(@plotter_adapter)
+      context.apply(@backend)
     end
 
     def box_plot(**args, &block)
       context = RenderContext.new :box_plot, **args, &block
-      context.apply(@plotter_adapter)
+      context.apply(@backend)
     end
 
     def bubble(**args, &block)
       context = RenderContext.new :bubble, **args, &block
-      context.apply(@plotter_adapter)
+      context.apply(@backend)
     end
 
     def curve(**args, &block)
       context = RenderContext.new :curve, **args, &block
-      context.apply(@plotter_adapter)
+      context.apply(@backend)
     end
 
     def scatter(**args, &block)
       context = RenderContext.new :scatter, **args, &block
-      context.apply(@plotter_adapter)
+      context.apply(@backend)
     end
 
     def error_bar(**args, &block)
       context = RenderContext.new :error_bar, **args, &block
-      context.apply(@plotter_adapter)
+      context.apply(@backend)
     end
 
     def hist(**args, &block)
       context = RenderContext.new :hist, **args, &block
-      context.apply(@plotter_adapter)
+      context.apply(@backend)
     end
 
     def layout(definition=:horizontal)
-      Layout.new(@plotter_adapter, definition)
+      Layout.new(@backend, definition)
     end
   end
 
@@ -236,17 +236,17 @@ module Charty
     end
 
     def render(filename=nil)
-      @plotter_adapter.render(self, filename)
+      @backend.render(self, filename)
     end
 
     def save(filename=nil)
-      @plotter_adapter.save(self, filename)
+      @backend.save(self, filename)
     end
 
-    def apply(plotter_adapter)
+    def apply(backend)
       case
         when !@series.empty?
-          plotter_adapter.series = @series
+          backend.series = @series
         when @function
           linspace = Linspace.new(@range[:x], 100)
           # TODO: set label with function
@@ -254,7 +254,7 @@ module Charty
           @series << Series.new(linspace.to_a, linspace.map{|x| @function.call(x) }, label: "function" )
       end
 
-      @plotter_adapter = plotter_adapter
+      @backend = backend
       self
     end
   end

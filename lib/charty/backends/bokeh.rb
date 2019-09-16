@@ -2,7 +2,7 @@ require 'pycall'
 
 module Charty
   module Backends
-    class Bokeh < PlotterAdapter
+    class Bokeh < Base
       Name = "bokeh"
 
       def initialize

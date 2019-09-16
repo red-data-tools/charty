@@ -3,7 +3,7 @@ require 'fileutils'
 
 module Charty
   module Backends
-    class Gruff < PlotterAdapter
+    class Gruff < Base
       Name = "gruff"
 
       def initialize

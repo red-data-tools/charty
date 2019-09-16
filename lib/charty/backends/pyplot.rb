@@ -3,7 +3,7 @@ require 'fileutils'
 
 module Charty
   module Backends
-    class PyPlot < PlotterAdapter
+    class PyPlot < Base
       Name = "pyplot"
 
       def initialize

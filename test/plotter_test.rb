@@ -4,7 +4,7 @@ class PlotterTest < Test::Unit::TestCase
   def setup
     @plotter = Charty::Plotter.new(:pyplot)
     assert_instance_of(Charty::Backends::PyPlot,
-                       @plotter.instance_variable_get(:@plotter_adapter))
+                       @plotter.instance_variable_get(:@backend))
 
     @data = {
               foo: [1, 2, 3, 4, 5, 6, 7],

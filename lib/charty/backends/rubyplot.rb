@@ -3,7 +3,7 @@ require 'fileutils'
 
 module Charty
   module Backends
-    class Rubyplot < PlotterAdapter
+    class Rubyplot < Base
       Name = "rubyplot"
 
       def initialize

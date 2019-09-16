@@ -1,6 +1,6 @@
 module Charty
   module Backends
-    class GoogleChart < PlotterAdapter
+    class GoogleChart < Base
       Name = "google_chart"
       attr_reader :context
 
