@@ -1,5 +1,7 @@
 module Charty
-  class BackendNotLoadedError < RuntimeError; end
+  class BackendError < RuntimeError; end
+  class BackendNotFoundError < BackendError; end
+  class BackendLoadError < BackendError; end
 
   module Backends
     @backends = {}
@@ -8,31 +10,37 @@ module Charty
       @backends.keys
     end
 
-    def self.register(backend_class)
-      key = backend_class.name[/(?:::)?(\w+)\z/, 1]
-      key.gsub!(/\A([A-Z])/) { $1.downcase }
-      key.gsub!(/([a-z\d])([A-Z])/, '\1_\2')
-      @backends[key] = backend_class
+    def self.register(name, backend_class)
+      @backends[name] = {
+        class: backend_class,
+        prepared: false,
+      }
     end
 
-    def self.find_backend_class(backend_name)
-      case backend_name
-      when Symbol
-        backend_name = backend_name.to_s
-      else
-        backend_name = backend_name.to_str
+    def self.find_backend_class(name)
+      backend = @backends[name]
+      unless backend
+        raise BackendNotFoundError, "Backend is not found: #{name.inspect}"
       end
-      unless @backends.has_key?(backend_name)
-        begin
-          require "charty/backends/#{backend_name}"
-        rescue LoadError
-          # nothing to do
+      backend_class = backend[:class]
+      unless backend[:prepared]
+        if backend_class.respond_to?(:prepare)
+          begin
+            backend_class.prepare
+          rescue LoadError
+            raise BackendLoadError, "Backend load error: #{name.inspect}"
+          end
         end
-      end
-      unless (backend_class = @backends[backend_name])
-        raise BackendNotLoadedError, "Backend for '#{backend_name}' is not found."
+        backend[:prepared] = true
       end
       backend_class
     end
   end
 end
+
+require "charty/backends/bokeh"
+require "charty/backends/google_chart"
+require "charty/backends/gruff"
+require "charty/backends/plotly"
+require "charty/backends/pyplot"
+require "charty/backends/rubyplot"

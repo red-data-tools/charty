@@ -1,9 +1,16 @@
-require 'matplotlib/pyplot'
 require 'fileutils'
 
 module Charty
   module Backends
     class Pyplot
+      Backends.register(:pyplot, self)
+
+      class << self
+        def prepare
+          require 'matplotlib/pyplot'
+        end
+      end
+
       def initialize
         @plot = ::Matplotlib::Pyplot
       end
@@ -107,7 +114,5 @@ module Charty
         end
       end
     end
-
-    register Pyplot
   end
 end

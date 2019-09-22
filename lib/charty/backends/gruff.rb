@@ -1,9 +1,16 @@
-require 'gruff'
 require 'fileutils'
 
 module Charty
   module Backends
     class Gruff
+      Backends.register(:gruff, self)
+
+      class << self
+        def prepare
+          require 'gruff'
+        end
+      end
+
       def initialize
         @plot = ::Gruff
       end
@@ -96,7 +103,5 @@ module Charty
         end
       end
     end
-
-    register Gruff
   end
 end

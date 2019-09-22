@@ -1,8 +1,14 @@
-require 'pycall'
-
 module Charty
   module Backends
     class Bokeh
+      Backends.register(:bokeh, self)
+
+      class << self
+        def prepare
+          require 'pycall'
+        end
+      end
+
       def initialize
         @plot = PyCall.import_module('bokeh.plotting')
       end
@@ -70,7 +76,5 @@ module Charty
         plot
       end
     end
-
-    register Bokeh
   end
 end

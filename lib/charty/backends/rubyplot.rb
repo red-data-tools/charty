@@ -1,9 +1,16 @@
-require 'rubyplot'
 require 'fileutils'
 
 module Charty
   module Backends
     class Rubyplot
+      Backends.register(:rubyplot, self)
+
+      class << self
+        def prepare
+          require 'rubyplot'
+        end
+      end
+
       def initialize
         @plot = ::Rubyplot
       end
@@ -92,7 +99,5 @@ module Charty
         end
       end
     end
-
-    register Rubyplot
   end
 end
