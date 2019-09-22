@@ -1,6 +1,8 @@
 module Charty
   module TableAdapters
     class NArrayAdapter
+      TableAdapters.register(:narray, self)
+
       def self.supported?(data)
         defined?(Numo::NArray) && data.is_a?(Numo::NArray) && data.ndim <= 2
       end
@@ -51,7 +53,5 @@ module Charty
         end
       end
     end
-
-    register(:narray, NArrayAdapter)
   end
 end

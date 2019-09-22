@@ -1,6 +1,8 @@
 module Charty
   module TableAdapters
     class DatasetsAdapter
+      TableAdapters.register(:datasets, self)
+
       include Enumerable
 
       def self.supported?(data)
@@ -35,7 +37,5 @@ module Charty
         end
       end
     end
-
-    register(:datasets, DatasetsAdapter)
   end
 end

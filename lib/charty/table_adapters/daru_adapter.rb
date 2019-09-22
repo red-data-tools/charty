@@ -1,6 +1,8 @@
 module Charty
   module TableAdapters
     class DaruAdapter
+      TableAdapters.register(:daru, self)
+
       include Enumerable
 
       def self.supported?(data)
@@ -28,7 +30,5 @@ module Charty
         raise TypeError, "#{name} must be a #{type}"
       end
     end
-
-    register(:daru, DaruAdapter)
   end
 end

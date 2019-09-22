@@ -1,6 +1,8 @@
 module Charty
   module TableAdapters
     class ActiveRecordAdapter
+      TableAdapters.register(:active_record, self)
+
       include Enumerable
 
       def self.supported?(data)
@@ -49,7 +51,5 @@ module Charty
         raise TypeError, "#{name} must be a #{type}"
       end
     end
-
-    register(:active_record, ActiveRecordAdapter)
   end
 end

@@ -1,6 +1,8 @@
 module Charty
   module TableAdapters
     class NMatrixAdapter
+      TableAdapters.register(:nmatrix, self)
+
       def self.supported?(data)
         defined?(NMatrix) && data.is_a?(NMatrix) && data.shape.length <= 2
       end
@@ -51,7 +53,5 @@ module Charty
         end
       end
     end
-
-    register(:nmatrix, NMatrixAdapter)
   end
 end

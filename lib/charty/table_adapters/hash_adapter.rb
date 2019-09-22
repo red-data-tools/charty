@@ -4,6 +4,8 @@ require 'forwardable'
 module Charty
   module TableAdapters
     class HashAdapter
+      TableAdapters.register(:hash, self)
+
       extend Forwardable
       include Enumerable
 
@@ -102,7 +104,5 @@ module Charty
         raise ArgumentError, "Unsupported data format"
       end
     end
-
-    register(:hash, HashAdapter)
   end
 end
