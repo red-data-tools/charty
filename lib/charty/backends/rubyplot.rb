@@ -3,7 +3,7 @@ require 'fileutils'
 
 module Charty
   module Backends
-    class Rubyplot < Base
+    class Rubyplot
       def initialize
         @plot = ::Rubyplot
       end
@@ -92,5 +92,7 @@ module Charty
         end
       end
     end
+
+    register Rubyplot
   end
 end

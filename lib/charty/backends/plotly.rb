@@ -2,7 +2,7 @@ require 'json'
 
 module Charty
   module Backends
-    class Plotly < Base
+    class Plotly
       attr_reader :context
 
       class << self
@@ -103,5 +103,7 @@ module Charty
         FRAGMENT
       end
     end
+
+    register Plotly
   end
 end

@@ -1,7 +1,8 @@
 module Charty
   class Plotter
-    def initialize(adapter_name)
-      @backend =  Backends.create(adapter_name)
+    def initialize(backend_name)
+      backend_class = Backends.find_backend_class(backend_name)
+      @backend = backend_class.new
     end
 
     def table=(data, **kwargs)

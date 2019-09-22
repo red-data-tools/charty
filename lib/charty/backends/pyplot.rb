@@ -3,7 +3,7 @@ require 'fileutils'
 
 module Charty
   module Backends
-    class Pyplot < Base
+    class Pyplot
       def initialize
         @plot = ::Matplotlib::Pyplot
       end
@@ -107,5 +107,7 @@ module Charty
         end
       end
     end
+
+    register Pyplot
   end
 end

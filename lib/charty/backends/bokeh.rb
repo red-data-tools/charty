@@ -2,7 +2,7 @@ require 'pycall'
 
 module Charty
   module Backends
-    class Bokeh < Base
+    class Bokeh
       def initialize
         @plot = PyCall.import_module('bokeh.plotting')
       end
@@ -70,5 +70,7 @@ module Charty
         plot
       end
     end
+
+    register Bokeh
   end
 end

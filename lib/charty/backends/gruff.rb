@@ -3,7 +3,7 @@ require 'fileutils'
 
 module Charty
   module Backends
-    class Gruff < Base
+    class Gruff
       def initialize
         @plot = ::Gruff
       end
@@ -96,5 +96,7 @@ module Charty
         end
       end
     end
+
+    register Gruff
   end
 end
