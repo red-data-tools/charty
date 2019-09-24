@@ -11,6 +11,12 @@ module Charty
     end
 
     def self.register(name, backend_class)
+      case name
+      when Symbol
+        name = name.to_s
+      else
+        name = name.to_str
+      end
       @backends[name] = {
         class: backend_class,
         prepared: false,
@@ -18,7 +24,13 @@ module Charty
     end
 
     def self.find_backend_class(name)
-      backend = @backends[name]
+      case name
+      when Symbol
+        name_str = name.to_s
+      else
+        name_str = name.to_str
+      end
+      backend = @backends[name_str]
       unless backend
         raise BackendNotFoundError, "Backend is not found: #{name.inspect}"
       end
