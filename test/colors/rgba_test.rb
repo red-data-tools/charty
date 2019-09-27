@@ -225,4 +225,9 @@ class ColorsRGBATest < Test::Unit::TestCase
     assert_equal("#33333333",
                  Charty::Colors::RGBA.new(0x33, 0x33, 0x33, 0x33).to_hex_string)
   end
+
+  test("to_rgba") do
+    black = Charty::Colors::RGBA.new(0, 0, 0, 1.0)
+    assert_same(black, black.to_rgba)
+  end
 end

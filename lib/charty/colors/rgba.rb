@@ -53,6 +53,10 @@ module Charty
         "##{[r, g, b, a].map {|c| "%02x" % (255*c).to_i }.join('')}"
       end
 
+      def to_rgba
+        self
+      end
+
       private def canonicalize(r, g, b, a)
         if [r, g, b, a].map(&:class) == [Integer, Integer, Integer, Integer]
           canonicalize_from_integer(r, g, b, a)
