@@ -67,6 +67,16 @@ module Charty
         "##{[r, g, b].map {|c| "%02x" % (255*c).to_i }.join('')}"
       end
 
+      def to_rgba(alpha: 1.0)
+        case alpha
+        when Integer
+          alpha = check_range(alpha, 0..255, :alpha)/255r
+        else
+          alpha = Rational(check_range(alpha, 0..1, :alpha))
+        end
+        RGBA.new(r, g, b, alpha)
+      end
+
       private def canonicalize(r, g, b)
         if [r, g, b].map(&:class) == [Integer, Integer, Integer]
           canonicalize_from_integer(r, g, b)
