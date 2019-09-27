@@ -1,6 +1,3 @@
-require_relative "colors/rgb"
-require_relative "colors/rgba"
-
 module Charty
   class << self
     def RGB(*args)
@@ -42,3 +39,8 @@ module Charty
     alias rgba RGBA
   end
 end
+
+require_relative "colors/rgb"
+require_relative "colors/rgba"
+require_relative "colors/hsl"
+
