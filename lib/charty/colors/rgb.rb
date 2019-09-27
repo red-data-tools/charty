@@ -69,6 +69,10 @@ module Charty
         "##{[r, g, b].map {|c| "%02x" % (255*c).to_i }.join('')}"
       end
 
+      def to_rgb
+        self
+      end
+
       def to_rgba(alpha: 1.0)
         case alpha
         when Integer

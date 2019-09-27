@@ -55,6 +55,15 @@ module Charty
         "##{[r, g, b, a].map {|c| "%02x" % (255*c).to_i }.join('')}"
       end
 
+      def to_rgb
+        if a == 1r
+          RGB.new(r, g, b)
+        else
+          raise NotImplementedError,
+                "Unable to convert non-opaque RGBA to RGB"
+        end
+      end
+
       def to_rgba
         self
       end
