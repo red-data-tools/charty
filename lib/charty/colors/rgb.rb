@@ -22,6 +22,8 @@ module Charty
 
       def ==(other)
         case other
+        when RGBA
+          other == self
         when RGB
           r == other.r && g == other.g && b == other.b
         else

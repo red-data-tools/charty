@@ -132,6 +132,18 @@ class ColorsRGBTest < Test::Unit::TestCase
     end
   end
 
+  test("==") do
+    assert { Charty::Colors::RGB.new(0, 0, 0) == Charty::Colors::RGB.new(0, 0, 0) }
+    assert { Charty::Colors::RGB.new(0, 0, 0) == Charty::Colors::RGBA.new(0, 0, 0, 1r) }
+  end
+
+  test("!=") do
+    assert { Charty::Colors::RGB.new(0, 0, 0) != Charty::Colors::RGB.new(1, 0, 0) }
+    assert { Charty::Colors::RGB.new(0, 0, 0) != Charty::Colors::RGB.new(0, 1, 0) }
+    assert { Charty::Colors::RGB.new(0, 0, 0) != Charty::Colors::RGB.new(0, 0, 1) }
+    assert { Charty::Colors::RGB.new(0, 0, 0) != Charty::Colors::RGBA.new(0, 0, 0, 0) }
+  end
+
   test(".from_hex_string") do
     assert_equal(Charty::Colors::RGB.new(0, 0, 0),
                  Charty::Colors::RGB.from_hex_string("#000"))

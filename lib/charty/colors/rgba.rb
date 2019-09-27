@@ -30,6 +30,8 @@ module Charty
         case other
         when RGBA
           r == other.r && g == other.g && b == other.b && a == other.a
+        when RGB
+          r == other.r && g == other.g && b == other.b && a == 1r
         else
           super
         end
