@@ -179,6 +179,32 @@ class ColorsHSLTest < Test::Unit::TestCase
     assert_same(black, black.to_hsl)
   end
 
+  test("#to_hsla") do
+    black = Charty::Colors::HSL.new(0, 0, 0)
+    assert_equal(Charty::Colors::HSLA.new(0, 0, 0, 255),
+                 black.to_hsla)
+    assert_equal(Charty::Colors::HSLA.new(0, 0, 0, 0),
+                 black.to_hsla(alpha: 0))
+    assert_equal(Charty::Colors::HSLA.new(0, 0, 0, 0.5),
+                 black.to_hsla(alpha: 0.5))
+
+    assert_raise(ArgumentError) do
+      black.to_hsla(alpha: nil)
+    end
+
+    assert_raise(ArgumentError) do
+      black.to_hsla(alpha: 256)
+    end
+
+    assert_raise(ArgumentError) do
+      black.to_hsla(alpha: -0.1)
+    end
+
+    assert_raise(ArgumentError) do
+      black.to_hsla(alpha: 1.0.next_float)
+    end
+  end
+
   test("to_rgb") do
     # black
     assert_equal(Charty::Colors::RGB.new(0, 0, 0),

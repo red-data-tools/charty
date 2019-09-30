@@ -52,6 +52,16 @@ module Charty
         self
       end
 
+      def to_hsla(alpha: 1.0)
+        case alpha
+        when Integer
+          alpha = check_range(alpha, 0..255, :alpha) / 255r
+        else
+          alpha = Rational(check_range(alpha, 0..1, :alpha))
+        end
+        Charty::Colors::HSLA.new(h, s, l, alpha)
+      end
+
       def to_rgb
         Charty::Colors::RGB.new(*convert_to_rgb)
       end
