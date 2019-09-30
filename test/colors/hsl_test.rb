@@ -164,14 +164,14 @@ class ColorsHSLTest < Test::Unit::TestCase
 
   test("==") do
     assert { Charty::Colors::HSL.new(0, 0, 0) == Charty::Colors::HSL.new(0, 0, 0) }
-    #assert { Charty::Colors::HSL.new(0, 0, 0) == Charty::Colors::HSLA.new(0, 0, 0, 1r) }
+    assert { Charty::Colors::HSL.new(0, 0, 0) == Charty::Colors::HSLA.new(0, 0, 0, 1r) }
   end
 
   test("!=") do
     assert { Charty::Colors::HSL.new(0, 0, 0) != Charty::Colors::HSL.new(1, 0, 0) }
     assert { Charty::Colors::HSL.new(0, 0, 0) != Charty::Colors::HSL.new(0, 1, 0) }
     assert { Charty::Colors::HSL.new(0, 0, 0) != Charty::Colors::HSL.new(0, 0, 1) }
-    #assert { Charty::Colors::HSL.new(0, 0, 0) != Charty::Colors::HSLA.new(0, 0, 0, 0) }
+    assert { Charty::Colors::HSL.new(0, 0, 0) != Charty::Colors::HSLA.new(0, 0, 0, 0) }
   end
 
   test("to_hsl") do

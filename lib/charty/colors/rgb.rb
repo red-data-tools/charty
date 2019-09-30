@@ -1,6 +1,10 @@
+require_relative 'helper'
+
 module Charty
   module Colors
     class RGB
+      include Helper
+
       def self.from_hex_string(hex_string)
         case hex_string.to_str.match(/\A#(\h+)\z/) { $1 }.length
         when 3  # rgb
@@ -127,22 +131,6 @@ module Charty
           check_range(g, 0..255, :g)/255r,
           check_range(b, 0..255, :b)/255r
         ]
-      end
-
-      private def check_type(obj, type, name)
-        return obj if obj.instance_of?(Integer)
-        check_fail TypeError, "#{name} must be a #{type}"
-      end
-
-      private def check_range(value, range, name)
-        return value if range.cover?(value)
-        check_fail ArgumentError, "#{name} must be in #{range}"
-      end
-
-      private def check_fail(exc_class, *args)
-        exc = exc_class.new(*args)
-        exc.set_backtrace(caller(2))
-        raise exc
       end
     end
   end

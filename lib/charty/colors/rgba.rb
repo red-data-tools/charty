@@ -26,6 +26,8 @@ module Charty
         @r, @g, @b, @a = canonicalize(r, g, b, a)
       end
 
+      include AlphaComponent
+
       def ==(other)
         case other
         when RGBA
@@ -36,20 +38,6 @@ module Charty
           super
         end
       end
-
-      attr_reader :a
-
-      def a=(a)
-        @a = if a.instance_of?(Integer)
-               check_range(a, 0..255, :a) / 255r
-             else
-               Rational(check_range(a, 0..1, :a))
-             end
-      end
-
-      alias alpha a
-
-      alias alpha= a=
 
       def to_hex_string
         "##{[r, g, b, a].map {|c| "%02x" % (255*c).to_i }.join('')}"
