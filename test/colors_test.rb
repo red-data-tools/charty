@@ -65,4 +65,43 @@ class ColorsTest < Test::Unit::TestCase
       Charty.HSL(Charty::Colors::RGBA.new(1, 2, 3, 4))
     end
   end
+
+  test("Charty.HSLA") do
+    assert_equal(Charty::Colors::HSLA.new(1, 2, 3, 4),
+                 Charty.HSLA(1, 2, 3, 4))
+    assert_equal(Charty::Colors::HSLA.new(0.1, 0.2, 0.3, 0.4),
+                 Charty.HSLA(0.1, 0.2, 0.3, 0.4))
+    assert_equal(Charty::Colors::HSLA.new(1, 2, 3, 255),
+                 Charty.HSLA(Charty::Colors::HSL.new(1, 2, 3)))
+    assert_equal(Charty::Colors::HSLA.new(1, 2, 3, 4),
+                 Charty.HSLA(Charty::Colors::HSL.new(1, 2, 3), alpha: 4))
+
+    assert_raise(ArgumentError) do
+      Charty.HSLA(1, 2)
+    end
+
+    assert_raise(ArgumentError) do
+      Charty.HSLA(1, 2)
+    end
+
+    assert_raise(ArgumentError) do
+      Charty.HSLA(1, alpha: 1.0)
+    end
+
+    assert_raise(ArgumentError) do
+      Charty.HSLA(Charty::Colors::HSL.new(0, 0, 0), beta: 0.0)
+    end
+
+    assert_raise(ArgumentError) do
+      Charty.HSLA(Charty::Colors::HSL.new(0, 0, 0), alpha: 1.0, beta: 0.0)
+    end
+
+    assert_raise(ArgumentError) do
+      Charty.HSLA(1, 2, 3)
+    end
+
+    assert_raise(ArgumentError) do
+      Charty.HSLA(1, 2, 3, 4, 5)
+    end
+  end
 end
