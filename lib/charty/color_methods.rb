@@ -75,6 +75,10 @@ module Charty
     end
 
     alias hsla HSLA
+
+    def lookup_named_color(name)
+      Colors::NamedColors[name]
+    end
   end
 
   extend ColorMethods

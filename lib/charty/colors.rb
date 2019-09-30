@@ -6,3 +6,4 @@ require_relative "colors/rgba"
 require_relative "colors/hsl"
 require_relative "colors/hsla"
 
+require_relative "colors/named_colors"
