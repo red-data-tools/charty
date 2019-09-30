@@ -250,4 +250,31 @@ class ColorsRGBTest < Test::Unit::TestCase
       black.to_rgba(alpha: 1.0.next_float)
     end
   end
+
+  test("#to_hsl") do
+    # black
+    assert_equal(Charty::Colors::HSL.new(0r, 0r, 0r),
+                 Charty::Colors::RGB.new(0r, 0r, 0r).to_hsl)
+    # red
+    assert_equal(Charty::Colors::HSL.new(0r, 1r, 0.5r),
+                 Charty::Colors::RGB.new(1r, 0r, 0r).to_hsl)
+    # yellow
+    assert_equal(Charty::Colors::HSL.new(60r, 1r, 0.5r),
+                 Charty::Colors::RGB.new(1r, 1r, 0r).to_hsl)
+    # green
+    assert_equal(Charty::Colors::HSL.new(120r, 1r, 0.5r),
+                 Charty::Colors::RGB.new(0r, 1r, 0r).to_hsl)
+    # cyan
+    assert_equal(Charty::Colors::HSL.new(180r, 1r, 0.5r),
+                 Charty::Colors::RGB.new(0r, 1r, 1r).to_hsl)
+    # blue
+    assert_equal(Charty::Colors::HSL.new(240r, 1r, 0.5r),
+                 Charty::Colors::RGB.new(0r, 0r, 1r).to_hsl)
+    # magenta
+    assert_equal(Charty::Colors::HSL.new(300r, 1r, 0.5r),
+                 Charty::Colors::RGB.new(1r, 0r, 1r).to_hsl)
+    # white
+    assert_equal(Charty::Colors::HSL.new(0r, 0r, 1r),
+                 Charty::Colors::RGB.new(1r, 1r, 1r).to_hsl)
+  end
 end

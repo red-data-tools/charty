@@ -83,6 +83,29 @@ module Charty
         RGBA.new(r, g, b, alpha)
       end
 
+      def to_hsl
+        m1, m2 = [r, g, b].minmax
+        c = m2 - m1
+        hh = case
+             when c == 0
+               0r
+             when m2 == r
+               ((g - b) / c) % 6r
+             when m2 == g
+               ((b - r) / c + 2) % 6r
+             when m2 == b
+               ((r - g) / c + 4) % 6r
+             end
+        h = 60r * hh
+        l = 0.5r * m2 + 0.5r * m1
+        s = if l == 1 || l == 0
+              0r
+            else
+              c / (1 - (2*l - 1).abs)
+            end
+        Charty::Colors::HSL.new(h, s, l)
+      end
+
       private def canonicalize(r, g, b)
         if [r, g, b].map(&:class) == [Integer, Integer, Integer]
           canonicalize_from_integer(r, g, b)

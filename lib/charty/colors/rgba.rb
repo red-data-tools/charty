@@ -68,6 +68,15 @@ module Charty
         self
       end
 
+      def to_hsl
+        if a == 1r
+          super
+        else
+          raise NotImplementedError,
+                "Unable to convert non-opaque RGBA to RGB"
+        end
+      end
+
       private def canonicalize(r, g, b, a)
         if [r, g, b, a].map(&:class) == [Integer, Integer, Integer, Integer]
           canonicalize_from_integer(r, g, b, a)
