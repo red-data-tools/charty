@@ -37,6 +37,23 @@ module Charty
     end
 
     alias rgba RGBA
+
+    def HSL(*args)
+      case args.length
+      when 1
+        begin
+          return args[0].to_hsl
+        rescue NoMethodError
+          raise ArgumentError, "the argument must be a color"
+        end
+      when 3
+        return Colors::HSL.new(*args)
+      end
+      raise ArgumentError,
+            "wrong number of arguments (#{args.length}) for 1 or 3"
+    end
+
+    alias hsl HSL
   end
 end
 

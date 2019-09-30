@@ -52,4 +52,17 @@ class ColorsTest < Test::Unit::TestCase
       Charty.RGBA(1, 2, 3, 4, 5)
     end
   end
+
+  test("Charty.HSL") do
+    assert_equal(Charty::Colors::HSL.new(1, 2, 3),
+                 Charty.HSL(1, 2, 3))
+    assert_equal(Charty::Colors::HSL.new(0.1, 0.2, 0.3),
+                 Charty.HSL(0.1, 0.2, 0.3))
+    assert_equal(Charty::Colors::HSL.new(60, 1r, 0.5r),
+                 Charty.HSL(Charty::Colors::RGBA.new(1r, 1r, 0, 1r)))
+
+    assert_raise(NotImplementedError) do
+      Charty.HSL(Charty::Colors::RGBA.new(1, 2, 3, 4))
+    end
+  end
 end
