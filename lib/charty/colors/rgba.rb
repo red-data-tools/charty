@@ -28,6 +28,10 @@ module Charty
 
       include AlphaComponent
 
+      def components
+        [r, g, b, a]
+      end
+
       def ==(other)
         case other
         when RGBA

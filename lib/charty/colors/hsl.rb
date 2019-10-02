@@ -7,18 +7,11 @@ module Charty
         @h, @s, @l = canonicalize(h, s, l)
       end
 
-      def ==(other)
-        case other
-        when HSLA
-          other == self
-        when HSL
-          h == other.h && s == other.s && l == other.l
-        else
-          super
-        end
-      end
-
       attr_reader :h, :s, :l
+
+      def components
+        [h, s, l]
+      end
 
       def h=(h)
         @h = Rational(h) % 360
@@ -47,6 +40,17 @@ module Charty
       alias hue= h=
       alias saturation= s=
       alias lightness= l=
+
+      def ==(other)
+        case other
+        when HSLA
+          other == self
+        when HSL
+          h == other.h && s == other.s && l == other.l
+        else
+          super
+        end
+      end
 
       def to_hsl
         self

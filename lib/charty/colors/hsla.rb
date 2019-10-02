@@ -7,6 +7,10 @@ module Charty
 
       include AlphaComponent
 
+      def components
+        [h, s, l, a]
+      end
+
       def ==(other)
         case other
         when HSLA

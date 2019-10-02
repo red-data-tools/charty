@@ -24,18 +24,11 @@ module Charty
         @r, @g, @b = canonicalize(r, g, b)
       end
 
-      def ==(other)
-        case other
-        when RGBA
-          other == self
-        when RGB
-          r == other.r && g == other.g && b == other.b
-        else
-          super
-        end
-      end
-
       attr_reader :r, :g, :b
+
+      def components
+        [r, g, b]
+      end
 
       def r=(r)
         @r = if r.instance_of?(Integer)
@@ -68,6 +61,17 @@ module Charty
       alias red= r=
       alias green= g=
       alias blue= b=
+
+      def ==(other)
+        case other
+        when RGBA
+          other == self
+        when RGB
+          r == other.r && g == other.g && b == other.b
+        else
+          super
+        end
+      end
 
       def to_hex_string
         "##{[r, g, b].map {|c| "%02x" % (255*c).to_i }.join('')}"
