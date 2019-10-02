@@ -122,7 +122,8 @@ module Charty
         case palette
         when String
           @name = palette
-          n_colors ||= QUAL_PALETTE_SIZES.fetch(palette, 0)
+          # Use all colors in a qualitative palette or 6 of another kind
+          n_colors ||= QUAL_PALETTE_SIZES.fetch(palette, 6)
           case @name
           when SEABORN_PALETTES.method(:has_key?)
             palette = self.class.seaborn_colors(@name)

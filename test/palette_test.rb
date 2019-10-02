@@ -34,6 +34,17 @@ class PaletteTest < Test::Unit::TestCase
     end
   end
 
+  test("HSL color palette") do
+    assert_equal(6,
+                 Charty::Palette.new("hsl").n_colors)
+  end
+
+  test("HUSL color palette") do
+    omit("Not implemented yet")
+    assert_equal(6,
+                 Charty::Palette.new("husl").n_colors)
+  end
+
   test(".hsl_colors") do
     palette1 = Charty::Palette.hsl_colors(6, h: 0)
     palette2 = Charty::Palette.hsl_colors(6, h: 360/2r)
