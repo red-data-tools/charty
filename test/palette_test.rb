@@ -73,7 +73,30 @@ class PaletteTest < Test::Unit::TestCase
   end
 
   test("husl_colors") do
-    omit("Not implemented yet")
+    palette1 = Charty::Palette.husl_colors(6, h: 0)
+    palette2 = Charty::Palette.husl_colors(6, h: 360/2r)
+    palette2 = palette2[3..-1] + palette2[0...3]
+    palette1.zip(palette2).each do |c1, c2|
+      assert_in_delta(c1.h, c2.h, 1e-6)
+      assert_in_delta(c1.s, c2.s, 1e-6)
+      assert_in_delta(c1.l, c2.l, 1e-6)
+    end
+
+    palette_dark = Charty::Palette.husl_colors(5, l: 0.2)
+    palette_bright = Charty::Palette.husl_colors(5, l: 0.8)
+    palette_dark.zip(palette_bright).each do |c1, c2|
+      s1 = c1.to_rgb.components.sum
+      s2 = c2.to_rgb.components.sum
+      assert_operator(s1, :<, s2)
+    end
+
+    palette_flat = Charty::Palette.husl_colors(5, s: 0.1)
+    palette_bold = Charty::Palette.husl_colors(5, s: 0.9)
+    palette_flat.zip(palette_bold).each do |c1, c2|
+      s1 = c1.to_rgb.components.stdev
+      s2 = c2.to_rgb.components.stdev
+      assert_operator(s1, :<, s2)
+    end
   end
 
   test("cubehelix_colors") do

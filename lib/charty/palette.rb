@@ -77,9 +77,25 @@ module Charty
       (0...n_colors).map {|i| Charty::Colors::HSL.new(hues[i]*360r, s, l) }
     end
 
+    # Get a set of evenly spaced colors in HUSL hue space.
+    #
+    # @param n_colors [Integer]
+    #   The number of colors in the palette
+    # @param h [Numeric]
+    #   The hue value of the first color in degree
+    # @param s [Numeric]
+    #   The saturation value of the first color (between 0 and 1)
+    # @param l [Numeric]
+    #   The lightness value of the first color (between 0 and 1)
+    #
+    # @return [Array<Charty::Colors::HSL>]
+    #   The array of colors
     def self.husl_colors(n_colors=6, h: 3.6r, s: 0.9r, l: 0.65r)
-      raise NotImplementedError,
-            "HUSL color palette has not been implemented"
+      hues = Numo::DFloat.linspace(0, 1, n_colors + 1)[0...-1]
+      hues.inplace + (h/360r).to_f
+      hues.inplace % 1
+      hues.inplace * 359
+      (0...n_colors).map {|i| Charty::Colors::HUSL.new(hues[i], s, l) }
     end
 
     def self.cubehelix_colors(n_colors, start=0, rot=0.4r, gamma=1.0r, hue=0.8r,
