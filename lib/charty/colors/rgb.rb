@@ -74,7 +74,7 @@ module Charty
       end
 
       def to_hex_string
-        "##{[r, g, b].map {|c| "%02x" % (255*c).to_i }.join('')}"
+        "##{components.map {|c| "%02x" % (255*c).round.to_i }.join('')}"
       end
 
       def to_rgb

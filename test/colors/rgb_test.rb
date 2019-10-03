@@ -214,7 +214,7 @@ class ColorsRGBTest < Test::Unit::TestCase
                  Charty::Colors::RGB.new(0, 0, 1r).to_hex_string)
     assert_equal("#ffffff",
                  Charty::Colors::RGB.new(1r, 1r, 1r).to_hex_string)
-    assert_equal("#7f7f7f",
+    assert_equal("#808080",
                  Charty::Colors::RGB.new(0.5, 0.5, 0.5).to_hex_string)
     assert_equal("#333333",
                  Charty::Colors::RGB.new(0x33, 0x33, 0x33).to_hex_string)
