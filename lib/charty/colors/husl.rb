@@ -2,6 +2,8 @@ require "numo/narray"
 
 module Charty
   module Colors
+    # Human-friendly alternative to HSL color space.
+    # The definition of HUSL is provided in <http://www.hsluv.org>.
     class HUSL < HSL
       DEG2RAD = 0.01745329251994329577r  # 2 * pi / 360
 
