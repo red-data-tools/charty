@@ -1,7 +1,7 @@
 module Charty
   module Backends
-    class GoogleChart
-      Backends.register(:google_chart, self)
+    class GoogleCharts
+      Backends.register(:google_charts, self)
 
       attr_reader :context
 
