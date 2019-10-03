@@ -72,7 +72,7 @@ class PaletteTest < Test::Unit::TestCase
     end
   end
 
-  test("husl_colors") do
+  test(".husl_colors") do
     palette1 = Charty::Palette.husl_colors(6, h: 0)
     palette2 = Charty::Palette.husl_colors(6, h: 360/2r)
     palette2 = palette2[3..-1] + palette2[0...3]
@@ -99,11 +99,11 @@ class PaletteTest < Test::Unit::TestCase
     end
   end
 
-  test("cubehelix_colors") do
+  test(".cubehelix_colors") do
     omit("Not implemented yet")
   end
 
-  sub_test_case("matplotlib_colors") do
+  sub_test_case(".matplotlib_colors") do
     test("Set3") do
       omit("Not implemented yet")
       palette = Charty::Palette.new("Set3")
