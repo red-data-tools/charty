@@ -1,6 +1,8 @@
 require_relative '../test_helper'
 
 class ColorsHUSLTest < Test::Unit::TestCase
+  include TestHelper
+
   sub_test_case(".new") do
     test("with integer values") do
       c = Charty::Colors::HUSL.new(1, 128, 255)
@@ -174,17 +176,42 @@ class ColorsHUSLTest < Test::Unit::TestCase
     #assert { Charty::Colors::HUSL.new(0, 0, 0) != Charty::Colors::HUSLA.new(0, 0, 0, 0) }
   end
 
+  test("#desaturate") do
+    c = Charty::Colors::HUSL.from_rgb(1r, 1r, 0r).desaturate(0.8)
+    assert_instance_of(Charty::Colors::HUSL, c)
+    assert_near(Charty::Colors::HUSL.new(85.87432021817473r, 0.9838589961976354r, 0.8850923805142681r), c)
+  end
+
   test("to_husl") do
     black = Charty::Colors::HUSL.new(0, 0, 0)
     assert_same(black, black.to_hsl)
   end
 
-  def assert_near(c1, c2, eps=1e-8)
-    assert_equal(c1.class, c2.class)
-    c1.components.zip(c2.components).each do |x1, x2|
-      x1, x2 = [x1, x2].map(&:to_f)
-      assert { (x1 - x2).abs < eps }
-    end
+  test(".from_rgb") do
+    # black
+    assert_equal(Charty::Colors::HUSL.new(0, 0, 0),
+                 Charty::Colors::HUSL.from_rgb(0, 0, 0))
+    # red
+    assert_near(Charty::Colors::HUSL.new(12.177050630061776r, 1r, 0.5323711559542933r),
+                Charty::Colors::HUSL.from_rgb(1r, 0, 0))
+    ## yellow
+    assert_near(Charty::Colors::HUSL.new(85.87432021817473r, 1r, 0.9713855934179674r),
+                Charty::Colors::HUSL.from_rgb(1r, 1r, 0))
+    ## green
+    assert_near(Charty::Colors::HUSL.new(127.71501294924047r, 1r, 0.8773551910965973r),
+                Charty::Colors::HUSL.from_rgb(0r, 1r, 0))
+    ## cyan
+    assert_near(Charty::Colors::HUSL.new(192.17705063006116r, 1r, 0.9111475231670507r),
+                Charty::Colors::HUSL.from_rgb(0r, 1r, 1r))
+    ## blue
+    assert_near(Charty::Colors::HUSL.new(265.8743202181779r, 1r, 0.3230087290398002r),
+                Charty::Colors::HUSL.from_rgb(0r, 0r, 1r))
+    ## magenta
+    assert_near(Charty::Colors::HUSL.new(307.7150129492436r, 1r, 0.60322731354551294r),
+                Charty::Colors::HUSL.from_rgb(1r, 0r, 1r))
+    ## white
+    assert_near(Charty::Colors::HUSL.new(0r, 0r, 1r),
+                Charty::Colors::HUSL.from_rgb(1r, 1r, 1r))
   end
 
   test("to_rgb") do

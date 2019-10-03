@@ -1,6 +1,8 @@
 require_relative '../test_helper'
 
 class ColorsRGBTest < Test::Unit::TestCase
+  include TestHelper
+
   sub_test_case(".new") do
     test("with integer values") do
       c = Charty::Colors::RGB.new(1, 128, 255)
@@ -142,6 +144,12 @@ class ColorsRGBTest < Test::Unit::TestCase
     assert { Charty::Colors::RGB.new(0, 0, 0) != Charty::Colors::RGB.new(0, 1, 0) }
     assert { Charty::Colors::RGB.new(0, 0, 0) != Charty::Colors::RGB.new(0, 0, 1) }
     assert { Charty::Colors::RGB.new(0, 0, 0) != Charty::Colors::RGBA.new(0, 0, 0, 0) }
+  end
+
+  test("#desaturate") do
+    c = Charty::Colors::RGB.new(1r, 1r, 1r).desaturate(0.8)
+    assert_instance_of(Charty::Colors::RGB, c)
+    assert_near(Charty::Colors::HSL.new(0r, 0.8r, 1r).to_rgb, c)
   end
 
   test(".from_hex_string") do

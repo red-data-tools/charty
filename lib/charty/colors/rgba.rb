@@ -43,6 +43,10 @@ module Charty
         end
       end
 
+      def desaturate(factor)
+        to_hsla.desaturate(factor).to_rgba
+      end
+
       def to_rgb
         if a == 1r
           RGB.new(r, g, b)

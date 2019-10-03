@@ -127,7 +127,7 @@ module Charty
     #
     # @return [Palette]
     #   Color palette.  Behaves like a list.
-    def initialize(palette=nil, n_colors=nil, desaturate_factor=nil)
+    def initialize(palette=nil, n_colors=nil, desaturate_factor: nil)
       case
       when palette.nil?
         @name = nil
@@ -169,7 +169,7 @@ module Charty
         end
       end
       if desaturate_factor
-        palette = palette.map {|c| desaturate(c, desaturate_factor) }
+        palette = palette.map {|c| Colors.desaturate(c, desaturate_factor) }
       end
 
       # Always return as many colors as we asked for

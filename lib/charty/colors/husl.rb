@@ -7,6 +7,40 @@ module Charty
     class HUSL < HSL
       DEG2RAD = 0.01745329251994329577r  # 2 * pi / 360
 
+      def self.from_rgb(r, g, b)
+        c = Colors::XYZ.from_rgb(r, g, b)
+        l, u, v = c.luv_components(Charty::Colors::WHITE_POINT_D65)
+        l, c, h = convert_luv_to_lch(l, u, v)
+        h, s, l = convert_lch_to_husl(l, c, h)
+        new(h.to_r % 360r, s.to_r.clamp(0r, 1r), l.to_r.clamp(0r, 1r))
+      end
+
+      private_class_method def self.convert_luv_to_lch(l, u, v)
+        c = Math.sqrt(u*u + v*v).to_r
+
+        if c < 1e-8
+          h = 0r
+        else
+          h = Math.atan2(v, u).to_r * 180/Math::PI.to_r
+          h += 360r if h < 0
+        end
+
+        [l, c, h]
+      end
+
+      private_class_method def self.convert_lch_to_husl(l, c, h)
+        if l > 99.9999999 || l < 1e-8
+          s = 0r
+        else
+          mx = max_chroma(l, h)
+          s = c / mx * 100r
+        end
+
+        h = 0r if c < 1e-8
+
+        [h, s/100r, l/100r]
+      end
+
       def ==(other)
         case other
         when HUSL
@@ -14,6 +48,10 @@ module Charty
         else
           other == self
         end
+      end
+
+      def desaturate(factor)
+        to_rgb.desaturate(factor).to_husl
       end
 
       def to_husl
@@ -38,7 +76,7 @@ module Charty
         if l > 99.9999999 || l < 1e-8
           c = 0r
         else
-          mx = max_chroma(l, h)
+          mx = self.class.max_chroma(l, h)
           c = mx / 100r * s
         end
 
@@ -53,11 +91,6 @@ module Charty
         v = Math.sin(h_rad).to_r * c
         [l, u, v]
       end
-
-      # ITU-R BT.709 D65 white point
-      # See https://en.wikipedia.org/wiki/Rec._709 for details
-      WHITE_POINT_D65 = Colors::XYZ.from_xyY(0.3127r, 0.3290r, 1r)
-      private_constant :WHITE_POINT_D65
 
       private def convert_luv_to_xyz(l, u, v)
         return [0r, 0r, 0r] if l <= 1e-8
@@ -75,7 +108,7 @@ module Charty
         [x, y, z]
       end
 
-      private def max_chroma(l, h)
+      def self.max_chroma(l, h)
         h_rad = h * DEG2RAD
         sin_h = Math.sin(h_rad).to_r
         cos_h = Math.cos(h_rad).to_r
@@ -88,7 +121,7 @@ module Charty
         result
       end
 
-      private def get_bounds(l)
+      def self.get_bounds(l)
         sub1 = (l + 16)**3 / 1560896r
         sub2 = sub1 > Colors::XYZ::EPSILON ? sub1 : l/Colors::XYZ::KAPPA
 

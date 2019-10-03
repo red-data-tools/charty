@@ -3,6 +3,8 @@ require_relative "test_helper"
 require "enumerable/statistics"
 
 class PaletteTest < Test::Unit::TestCase
+  include TestHelper
+
   test("array palette") do
     palette = Charty::Palette.new(["red", "green", "blue"])
     assert_equal(nil, palette.name)
@@ -115,5 +117,13 @@ class PaletteTest < Test::Unit::TestCase
                    },
                    palette.colors)
     end
+  end
+
+  test("desaturation feature") do
+    desaturated_colors = Charty::Palette.new(["#ff0000", "#00ff0099"], desaturate_factor: 0.8).colors
+    assert_near(Charty::Colors::HSL.new(0, 0.8r, 0.5r).to_rgb,
+                desaturated_colors[0])
+    assert_near(Charty::Colors::HSLA.new(120r, 0.8r, 0.5r, 0x99/255r).to_rgba,
+                desaturated_colors[1])
   end
 end

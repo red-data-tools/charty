@@ -2,7 +2,7 @@ require_relative 'helper'
 
 module Charty
   module Colors
-    class RGB
+    class RGB < AbstractColor
       include Helper
 
       def self.from_hex_string(hex_string)
@@ -73,6 +73,10 @@ module Charty
         end
       end
 
+      def desaturate(factor)
+        to_hsl.desaturate(factor).to_rgb
+      end
+
       def to_hex_string
         "##{components.map {|c| "%02x" % (255*c).round.to_i }.join('')}"
       end
@@ -92,6 +96,10 @@ module Charty
       end
 
       def to_hsl
+        Charty::Colors::HSL.new(*to_hsl_components)
+      end
+
+      def to_hsl_components
         m1, m2 = [r, g, b].minmax
         c = m2 - m1
         hh = case
@@ -111,7 +119,11 @@ module Charty
             else
               c / (1 - (2*l - 1).abs)
             end
-        Charty::Colors::HSL.new(h, s, l)
+        [h, s, l]
+      end
+
+      def to_husl
+        Colors::HUSL.from_rgb(r, g, b)
       end
 
       private def canonicalize(r, g, b)

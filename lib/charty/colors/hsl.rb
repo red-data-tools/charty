@@ -1,6 +1,6 @@
 module Charty
   module Colors
-    class HSL
+    class HSL < AbstractColor
       include Helper
 
       def initialize(h, s, l)
@@ -50,6 +50,10 @@ module Charty
         else
           super
         end
+      end
+
+      def desaturate(factor)
+        HSL.new(h, s*factor, l)
       end
 
       def to_hsl

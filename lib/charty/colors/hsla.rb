@@ -22,6 +22,10 @@ module Charty
         end
       end
 
+      def desaturate(factor)
+        HSLA.new(h, s*factor, l, a)
+      end
+
       def to_hsla
         self
       end
