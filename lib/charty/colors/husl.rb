@@ -12,7 +12,7 @@ module Charty
         l, u, v = c.luv_components(Charty::Colors::WHITE_POINT_D65)
         l, c, h = convert_luv_to_lch(l, u, v)
         h, s, l = convert_lch_to_husl(l, c, h)
-        new(h.to_r % 360r, s.to_r.clamp(0r, 1r), l.to_r.clamp(0r, 1r))
+        new(h, s.to_r.clamp(0r, 1r), l.to_r.clamp(0r, 1r))
       end
 
       private_class_method def self.convert_luv_to_lch(l, u, v)
@@ -59,17 +59,16 @@ module Charty
       end
 
       def to_rgb
-        Colors::RGB.new(*convert_to_rgb)
+        Colors::RGB.new(*rgb_components)
       end
 
-      private def convert_to_rgb
-        l, c, h = convert_to_lch
-        l, u, v = convert_lch_to_luv(l, c, h)
+      def rgb_components
+        l, u, v = convert_lch_to_luv(*lch_components)
         x, y, z = convert_luv_to_xyz(l, u, v)
-        Colors::XYZ.new(x, y, z).to_rgb_values
+        Colors::XYZ.new(x, y, z).rgb_components
       end
 
-      private def convert_to_lch
+      def lch_components
         l = self.l * 100r
         s = self.s * 100r
 
@@ -95,11 +94,11 @@ module Charty
       private def convert_luv_to_xyz(l, u, v)
         return [0r, 0r, 0r] if l <= 1e-8
 
-        wp_u, wp_v = WHITE_POINT_D65.uv_values
+        wp_u, wp_v = Colors::WHITE_POINT_D65.uv_values
         var_u = u / (13 * l) + wp_u
         var_v = v / (13 * l) + wp_v
         y = if l < 8
-              l / Colors::CYZ::KAPPA
+              l / Colors::XYZ::KAPPA
             else
               ((l + 16r) / 116r)**3
             end

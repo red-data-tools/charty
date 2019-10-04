@@ -13,6 +13,8 @@ module Charty
         [h, s, l]
       end
 
+      alias hsl_components components
+
       def h=(h)
         @h = Rational(h) % 360
       end
@@ -61,24 +63,20 @@ module Charty
       end
 
       def to_hsla(alpha: 1.0)
-        case alpha
-        when Integer
-          alpha = check_range(alpha, 0..255, :alpha) / 255r
-        else
-          alpha = Rational(check_range(alpha, 0..1, :alpha))
-        end
+        alpha = canonicalize_component(alpha, :alpha)
         Charty::Colors::HSLA.new(h, s, l, alpha)
       end
 
       def to_rgb
-        Charty::Colors::RGB.new(*convert_to_rgb)
+        Charty::Colors::RGB.new(*rgb_components)
       end
 
-      def to_rgba
-        Charty::Colors::RGBA.new(*convert_to_rgb, 1r)
+      def to_rgba(alpha: 1.0)
+        alpha = canonicalize_component(alpha, :alpha)
+        Charty::Colors::RGBA.new(*rgb_components, alpha)
       end
 
-      private def convert_to_rgb
+      def rgb_components
         t2 = if l <= 0.5r
                l * (s + 1r)
              else
@@ -112,8 +110,8 @@ module Charty
         else
           [
             Rational(h) % 360,
-            Rational(check_range(s, 0..1, :s)),
-            Rational(check_range(l, 0..1, :l))
+            canonicalize_component_to_rational(s, :s),
+            canonicalize_component_to_rational(l, :l)
           ]
         end
       end
@@ -123,8 +121,8 @@ module Charty
         check_type(l, Integer, :l)
         [
           Rational(h) % 360,
-          check_range(s, 0..255, :s)/255r,
-          check_range(l, 0..255, :l)/255r
+          canonicalize_component_from_integer(s, :s),
+          canonicalize_component_from_integer(l, :l)
         ]
       end
     end

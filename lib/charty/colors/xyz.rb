@@ -62,10 +62,10 @@ module Charty
       end
 
       def to_rgb
-        Charty::Colors::RGB.new(*to_rgb_values)
+        Charty::Colors::RGB.new(*rgb_components)
       end
 
-      def to_rgb_values
+      def rgb_components
         c = XYZ2RGB.dot(Numo::DFloat[x, y, z])
         [
           srgb_compand(c[0]).clamp(0r, 1r),

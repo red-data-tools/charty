@@ -30,28 +30,18 @@ module Charty
         [r, g, b]
       end
 
+      alias rgb_components components
+
       def r=(r)
-        @r = if r.instance_of?(Integer)
-               check_range(r, 0..255, :r) / 255r
-             else
-               Rational(check_range(r, 0..1, :r))
-             end
+        @r = canonicalize_component(r, :r)
       end
 
       def g=(g)
-        @g = if g.instance_of?(Integer)
-               check_range(g, 0..255, :g) / 255r
-             else
-               Rational(check_range(g, 0..1, :g))
-             end
+        @g = canonicalize_component(g, :g)
       end
 
       def b=(b)
-        @b = if b.instance_of?(Integer)
-               check_range(b, 0..255, :b) / 255r
-             else
-               Rational(check_range(b, 0..1, :b))
-             end
+        @b = canonicalize_component(b, :b)
       end
 
       alias red r
@@ -86,20 +76,20 @@ module Charty
       end
 
       def to_rgba(alpha: 1.0)
-        case alpha
-        when Integer
-          alpha = check_range(alpha, 0..255, :alpha)/255r
-        else
-          alpha = Rational(check_range(alpha, 0..1, :alpha))
-        end
+        alpha = canonicalize_component(alpha, :alpha)
         RGBA.new(r, g, b, alpha)
       end
 
       def to_hsl
-        Charty::Colors::HSL.new(*to_hsl_components)
+        Charty::Colors::HSL.new(*hsl_components)
       end
 
-      def to_hsl_components
+      def to_hsla(alpha: 1.0)
+        alpha = canonicalize_component(alpha, :alpha)
+        Charty::Colors::HSLA.new(*hsl_components, alpha)
+      end
+
+      def hsl_components
         m1, m2 = [r, g, b].minmax
         c = m2 - m1
         hh = case
@@ -131,9 +121,9 @@ module Charty
           canonicalize_from_integer(r, g, b)
         else
           [
-            Rational(check_range(r, 0..1, :r)),
-            Rational(check_range(g, 0..1, :g)),
-            Rational(check_range(b, 0..1, :b))
+            canonicalize_component_to_rational(r, :r),
+            canonicalize_component_to_rational(g, :g),
+            canonicalize_component_to_rational(b, :b)
           ]
         end
       end
@@ -143,9 +133,9 @@ module Charty
         check_type(g, Integer, :g)
         check_type(b, Integer, :b)
         [
-          check_range(r, 0..255, :r)/255r,
-          check_range(g, 0..255, :g)/255r,
-          check_range(b, 0..255, :b)/255r
+          canonicalize_component_from_integer(r, :r),
+          canonicalize_component_from_integer(g, :g),
+          canonicalize_component_from_integer(b, :b)
         ]
       end
     end

@@ -11,6 +11,8 @@ module Charty
         [h, s, l, a]
       end
 
+      alias hlsa_components components
+
       def ==(other)
         case other
         when HSLA
@@ -31,7 +33,7 @@ module Charty
       end
 
       def to_rgba
-        Charty::Colors::RGBA.new(*convert_to_rgb, a)
+        Charty::Colors::RGBA.new(*rgb_components, a)
       end
 
       def to_hsl
@@ -48,7 +50,7 @@ module Charty
           super
         else
           raise NotImplementedError,
-                "Unable to convert non-opaque HSLA to HSL"
+                "Unable to convert non-opaque HSLA to RGB"
         end
       end
 
@@ -58,9 +60,9 @@ module Charty
         else
           [
             Rational(h) % 360,
-            Rational(check_range(s, 0..1, :s)),
-            Rational(check_range(l, 0..1, :l)),
-            Rational(check_range(a, 0..1, :a)),
+            canonicalize_component_to_rational(s, :s),
+            canonicalize_component_to_rational(l, :l),
+            canonicalize_component_to_rational(a, :a)
           ]
         end
       end
@@ -71,9 +73,9 @@ module Charty
         check_type(a, Integer, :a)
         [
           Rational(h) % 360,
-          check_range(s, 0..255, :s)/255r,
-          check_range(l, 0..255, :l)/255r,
-          check_range(a, 0..255, :a)/255r
+          canonicalize_component_from_integer(s, :s),
+          canonicalize_component_from_integer(l, :l),
+          canonicalize_component_from_integer(a, :a)
         ]
       end
     end

@@ -12,6 +12,23 @@ module Charty
         exc.set_backtrace(caller(2))
         raise exc
       end
+
+      private def canonicalize_component(value, name)
+        case value
+        when Integer
+          canonicalize_component_from_integer(value, name)
+        else
+          canonicalize_component_to_rational(value, name)
+        end
+      end
+
+      private def canonicalize_component_from_integer(value, name)
+        check_range(value, 0..255, name)/255r
+      end
+
+      private def canonicalize_component_to_rational(value, name)
+        Rational(check_range(value, 0..1, name))
+      end
     end
   end
 end

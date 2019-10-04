@@ -70,7 +70,7 @@ module Charty
       end
 
       def to_hsla
-        HSLA.new(*to_hsl_components, a)
+        HSLA.new(*hsl_components, a)
       end
 
       private def canonicalize(r, g, b, a)
@@ -78,10 +78,10 @@ module Charty
           canonicalize_from_integer(r, g, b, a)
         else
           [
-            Rational(check_range(r, 0..1, :r)),
-            Rational(check_range(g, 0..1, :g)),
-            Rational(check_range(b, 0..1, :b)),
-            Rational(check_range(a, 0..1, :a))
+            canonicalize_component_to_rational(r, :r),
+            canonicalize_component_to_rational(g, :g),
+            canonicalize_component_to_rational(b, :b),
+            canonicalize_component_to_rational(a, :a)
           ]
         end
       end
@@ -92,10 +92,10 @@ module Charty
         check_type(b, Integer, :b)
         check_type(a, Integer, :a)
         [
-          check_range(r, 0..255, :r)/255r,
-          check_range(g, 0..255, :g)/255r,
-          check_range(b, 0..255, :b)/255r,
-          check_range(a, 0..255, :a)/255r
+          canonicalize_component_from_integer(r, :r),
+          canonicalize_component_from_integer(g, :g),
+          canonicalize_component_from_integer(b, :b),
+          canonicalize_component_from_integer(a, :a)
         ]
       end
     end
