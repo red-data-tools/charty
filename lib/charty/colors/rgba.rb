@@ -65,6 +65,10 @@ module Charty
         end
       end
 
+      def to_hsla
+        HSLA.new(*to_hsl_components, a)
+      end
+
       private def canonicalize(r, g, b, a)
         if [r, g, b, a].map(&:class) == [Integer, Integer, Integer, Integer]
           canonicalize_from_integer(r, g, b, a)

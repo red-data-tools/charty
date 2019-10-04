@@ -284,4 +284,31 @@ class ColorsRGBATest < Test::Unit::TestCase
       Charty::Colors::RGBA.new(0, 0, 0, 0).to_hsl
     end
   end
+
+  test("#to_hsla") do
+    # black
+    assert_equal(Charty::Colors::HSLA.new(0r, 0r, 0r, 0.8r),
+                 Charty::Colors::RGBA.new(0r, 0r, 0r, 0.8r).to_hsla)
+    # red
+    assert_equal(Charty::Colors::HSLA.new(0r, 1r, 0.5r, 0.8r),
+                 Charty::Colors::RGBA.new(1r, 0r, 0r, 0.8r).to_hsla)
+    # yellow
+    assert_equal(Charty::Colors::HSLA.new(60r, 1r, 0.5r, 0.8r),
+                 Charty::Colors::RGBA.new(1r, 1r, 0r, 0.8r).to_hsla)
+    # green
+    assert_equal(Charty::Colors::HSLA.new(120r, 1r, 0.5r, 0.8r),
+                 Charty::Colors::RGBA.new(0r, 1r, 0r, 0.8r).to_hsla)
+    # cyan
+    assert_equal(Charty::Colors::HSLA.new(180r, 1r, 0.5r, 0.8r),
+                 Charty::Colors::RGBA.new(0r, 1r, 1r, 0.8r).to_hsla)
+    # blue
+    assert_equal(Charty::Colors::HSLA.new(240r, 1r, 0.5r, 0.8r),
+                 Charty::Colors::RGBA.new(0r, 0r, 1r, 0.8r).to_hsla)
+    # magenta
+    assert_equal(Charty::Colors::HSLA.new(300r, 1r, 0.5r, 0.8r),
+                 Charty::Colors::RGBA.new(1r, 0r, 1r, 0.8r).to_hsla)
+    # white
+    assert_equal(Charty::Colors::HSLA.new(0r, 0r, 1r, 0.8r),
+                 Charty::Colors::RGBA.new(1r, 1r, 1r, 0.8r).to_hsla)
+  end
 end
