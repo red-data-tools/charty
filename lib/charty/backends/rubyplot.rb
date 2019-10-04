@@ -23,7 +23,7 @@ module Charty
       end
 
       def render_layout(layout)
-        (fig, axes) = *@plot.subplots(nrows: layout.num_rows, ncols: layout.num_cols)
+        (_fig, axes) = *@plot.subplots(nrows: layout.num_rows, ncols: layout.num_cols)
         layout.rows.each_with_index do |row, y|
           row.each_with_index do |cel, x|
             plot = layout.num_rows > 1 ? axes[y][x] : axes[x]
