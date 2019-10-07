@@ -183,6 +183,17 @@ module Charty
       @colors.length
     end
 
+    # Two palettes are equal if they have the same colors, even if they have
+    # the different names and different desaturate factors.
+    def ==(other)
+      case other
+      when Palette
+        colors == other.colors
+      else
+        super
+      end
+    end
+
     def [](i)
       @palette[i % n_colors]
     end
@@ -203,5 +214,27 @@ module Charty
     rescue NoMethodError, TypeError
       palette
     end
+
+    class << self
+      attr_reader :default
+
+      def default=(args)
+        @default = case args
+                   when Palette
+                     args
+                   when Array
+                     case args[0]
+                     when Array
+                       Palette.new(*args)
+                     else
+                       Palette.new(args)
+                     end
+                   else
+                     Palette.new(args)
+                   end
+      end
+    end
+
+    self.default = Palette.new("deep").freeze
   end
 end

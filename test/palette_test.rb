@@ -5,6 +5,23 @@ require "enumerable/statistics"
 class PaletteTest < Test::Unit::TestCase
   include TestHelper
 
+  sub_test_case(".default") do
+    test("the initial value") do
+      assert_equal(Charty::Palette.new("deep"), Charty::Palette.default)
+    end
+  end
+
+  test(".default=") do
+    begin
+      save = Charty::Palette.default
+      palette = Charty::Palette.new("colorblind")
+      Charty::Palette.default = palette
+      assert_same(palette, Charty::Palette.default)
+    ensure
+      Charty::Palette.default = save
+    end
+  end
+
   test("array palette") do
     palette = Charty::Palette.new(["red", "green", "blue"])
     assert_equal(nil, palette.name)
