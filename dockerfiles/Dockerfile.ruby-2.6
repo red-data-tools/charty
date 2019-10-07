@@ -1,0 +1,41 @@
+FROM ruby:2.6
+
+RUN \
+  apt update && \
+  apt install -y \
+    apt-transport-https \
+    wget && \
+  wget -O /usr/share/keyrings/red-data-tools-keyring.gpg \
+    https://packages.red-data-tools.org/debian/red-data-tools-keyring.gpg && \
+  echo "deb [signed-by=/usr/share/keyrings/red-data-tools-keyring.gpg] https://packages.red-data-tools.org/debian/ buster main" > \
+    /etc/apt/sources.list.d/red-data-tools.list && \
+  apt update && \
+  apt install -y \
+    python3-pip \
+    sudo \
+    xvfb && \
+  gem install \
+    bundler \
+    rake && \
+  pip3 install \
+    matplotlib
+
+RUN \
+  useradd --user-group --create-home charty
+
+RUN \
+  echo "charty ALL=(ALL:ALL) NOPASSWD:ALL" | \
+    EDITOR=tee visudo -f /etc/sudoers.d/charty
+
+COPY . /home/charty/charty
+RUN chown -R charty:charty /home/charty/charty
+
+USER charty
+WORKDIR /home/charty/charty
+
+RUN bundle install
+
+CMD \
+  dbus-run-session \
+    xvfb-run --server-args "-screen 0 640x480x24" \
+    bundle exec rake
