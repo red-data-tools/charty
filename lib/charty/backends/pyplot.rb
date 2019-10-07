@@ -51,7 +51,7 @@ module Charty
         plot(context)
         if filename
           FileUtils.mkdir_p(File.dirname(filename))
-          @plot.savefig(filename)
+          @pyplot.savefig(filename)
         end
       end
 
