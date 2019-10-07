@@ -246,13 +246,13 @@ module Charty
 
     def apply(backend)
       case
-        when !@series.empty?
-          backend.series = @series
-        when @function
-          linspace = Linspace.new(@range[:x], 100)
-          # TODO: set label with function
-          # TODO: set ys to xs when gruff curve with function
-          @series << Series.new(linspace.to_a, linspace.map{|x| @function.call(x) }, label: "function" )
+      when !@series.empty?
+        backend.series = @series
+      when @function
+        linspace = Linspace.new(@range[:x], 100)
+        # TODO: set label with function
+        # TODO: set ys to xs when gruff curve with function
+        @series << Series.new(linspace.to_a, linspace.map{|x| @function.call(x) }, label: "function" )
       end
 
       @backend = backend
