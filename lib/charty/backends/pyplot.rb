@@ -12,7 +12,7 @@ module Charty
       end
 
       def initialize
-        @plot = ::Matplotlib::Pyplot
+        @pyplot = ::Matplotlib::Pyplot
       end
 
       def self.activate_iruby_integration
@@ -28,79 +28,79 @@ module Charty
       end
 
       def render_layout(layout)
-        _fig, axes = @plot.subplots(nrows: layout.num_rows, ncols: layout.num_cols)
+        _fig, axes = @pyplot.subplots(nrows: layout.num_rows, ncols: layout.num_cols)
         layout.rows.each_with_index do |row, y|
           row.each_with_index do |cel, x|
             plot = layout.num_rows > 1 ? axes[y][x] : axes[x]
             plot(plot, cel, subplot: true)
           end
         end
-        @plot.show
+        @pyplot.show
       end
 
       def render(context, filename)
-        plot(@plot, context)
+        plot(context)
         if filename
           FileUtils.mkdir_p(File.dirname(filename))
-          @plot.savefig(filename)
+          @pyplot.savefig(filename)
         end
-        @plot.show
+        @pyplot.show
       end
 
       def save(context, filename)
-        plot(@plot, context)
+        plot(context)
         if filename
           FileUtils.mkdir_p(File.dirname(filename))
           @plot.savefig(filename)
         end
       end
 
-      def plot(plot, context, subplot: false)
+      def plot(context, subplot: false)
         # TODO: Since it is not required, research and change conditions.
         # case
-        # when plot.respond_to?(:xlim)
-        #   plot.xlim(context.range_x.begin, context.range_x.end)
-        #   plot.ylim(context.range_y.begin, context.range_y.end)
-        # when plot.respond_to?(:set_xlim)
-        #   plot.set_xlim(context.range_x.begin, context.range_x.end)
-        #   plot.set_ylim(context.range_y.begin, context.range_y.end)
+        # when @pyplot.respond_to?(:xlim)
+        #   @pyplot.xlim(context.range_x.begin, context.range_x.end)
+        #   @pyplot.ylim(context.range_y.begin, context.range_y.end)
+        # when @pyplot.respond_to?(:set_xlim)
+        #   @pyplot.set_xlim(context.range_x.begin, context.range_x.end)
+        #   @pyplot.set_ylim(context.range_y.begin, context.range_y.end)
         # end
 
-        plot.title(context.title) if context.title
+        @pyplot.title(context.title) if context.title
         if !subplot
-          plot.xlabel(context.xlabel) if context.xlabel
-          plot.ylabel(context.ylabel) if context.ylabel
+          @pyplot.xlabel(context.xlabel) if context.xlabel
+          @pyplot.ylabel(context.ylabel) if context.ylabel
         end
 
         case context.method
         when :bar
           context.series.each do |data|
-            plot.bar(data.xs.to_a.map(&:to_s), data.ys.to_a, label: data.label)
+            @pyplot.bar(data.xs.to_a.map(&:to_s), data.ys.to_a, label: data.label)
           end
-          plot.legend()
+          @pyplot.legend()
         when :barh
           context.series.each do |data|
-            plot.barh(data.xs.to_a.map(&:to_s), data.ys.to_a)
+            @pyplot.barh(data.xs.to_a.map(&:to_s), data.ys.to_a)
           end
         when :box_plot
-          plot.boxplot(context.data.to_a, labels: context.labels)
+          @pyplot.boxplot(context.data.to_a, labels: context.labels)
         when :bubble
           context.series.each do |data|
-            plot.scatter(data.xs.to_a, data.ys.to_a, s: data.zs.to_a, alpha: 0.5, label: data.label)
+            @pyplot.scatter(data.xs.to_a, data.ys.to_a, s: data.zs.to_a, alpha: 0.5, label: data.label)
           end
-          plot.legend()
+          @pyplot.legend()
         when :curve
           context.series.each do |data|
-            plot.plot(data.xs.to_a, data.ys.to_a)
+            @pyplot.plot(data.xs.to_a, data.ys.to_a)
           end
         when :scatter
           context.series.each do |data|
-            plot.scatter(data.xs.to_a, data.ys.to_a, label: data.label)
+            @pyplot.scatter(data.xs.to_a, data.ys.to_a, label: data.label)
           end
-          plot.legend()
+          @pyplot.legend()
         when :error_bar
           context.series.each do |data|
-            plot.errorbar(
+            @pyplot.errorbar(
               data.xs.to_a,
               data.ys.to_a,
               data.xerr,
@@ -108,9 +108,9 @@ module Charty
               label: data.label,
             )
           end
-          plot.legend()
+          @pyplot.legend()
         when :hist
-          plot.hist(context.data.to_a)
+          @pyplot.hist(context.data.to_a)
         end
       end
     end
