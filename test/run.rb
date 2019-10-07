@@ -5,13 +5,13 @@
 
 require "pathname"
 
-base_dir = Pathname(__dir__).expand_path
+base_dir = Pathname(__dir__).parent.expand_path
 
 lib_dir = base_dir + "lib"
 test_dir = base_dir + "test"
 
 $LOAD_PATH.unshift(lib_dir.to_s)
 
-require_relative "test/test_helper"
+require_relative "test_helper"
 
 exit(Test::Unit::AutoRunner.run(true, test_dir.to_s))
