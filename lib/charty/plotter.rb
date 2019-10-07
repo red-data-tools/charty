@@ -240,8 +240,8 @@ module Charty
       @backend.render(self, filename)
     end
 
-    def save(filename=nil)
-      @backend.save(self, filename)
+    def save(filename=nil, **kw)
+      @backend.save(self, filename, **kw)
     end
 
     def apply(backend)

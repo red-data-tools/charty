@@ -47,12 +47,13 @@ module Charty
         @pyplot.show
       end
 
-      def save(context, filename)
+      def save(context, filename, finish: true)
         plot(context)
         if filename
           FileUtils.mkdir_p(File.dirname(filename))
           @pyplot.savefig(filename)
         end
+        @pyplot.clf if finish
       end
 
       def plot(context, subplot: false)
