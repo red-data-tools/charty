@@ -70,47 +70,65 @@ module Charty
         def data_column_js
           case context.method
           when :bubble
-            column_js = <<-COLUMN_JS
-              data.addColumn('string', 'ID');
-              data.addColumn('number', 'X');
-              data.addColumn('number', 'Y');
-              data.addColumn('string', 'GROUP');
-              data.addColumn('number', 'SIZE');
-            COLUMN_JS
+            schema = [
+              ["string", "ID"],
+              ["number", "X"],
+              ["number", "Y"],
+              ["string", "GROUP"],
+              ["number", "SIZE"],
+            ]
           when :curve
-            column_js = "data.addColumn('number', '#{context.xlabel}');"
+            schema = []
+            schema << [detect_type(context.series.first.xs), context.xlabel]
             context.series.to_a.each_with_index do |series_data, index|
-              column_js << "data.addColumn('number', '#{series_data.label || index}');"
+              schema << ["number", series_data.label || index]
             end
           else
-            column_js = "data.addColumn('string', '#{context.xlabel}');"
+            schema = ["string", context.xlabel]
             context.series.to_a.each_with_index do |series_data, index|
-              column_js << "data.addColumn('number', '#{series_data.label || index}');"
+              schema << ["number", series_data.label || index]
             end
           end
 
-          column_js
+          columns = schema.collect do |type, label|
+            "data.addColumn(#{type.to_json}, #{label.to_s.to_json});"
+          end
+          columns.join
+        end
+
+        def detect_type(values)
+          case values.first
+          when Time
+            "date"
+          when String
+            "string"
+          else
+            "number"
+          end
         end
 
         def x_labels
-          [].tap do |label|
-            context.series.each do |series|
-              xs_series = if series.xs.detect { |xs_data| xs_data.is_a?(String) }
-                            series.xs.sort_by {|x| format('%10s', "#{x}")}
-                          else
-                            series.xs.sort
-                          end
-              xs_series.each do |xs_data|
-                label << xs_data unless label.any? { |label| label == xs_data }
-              end
+          labels = {}
+          have_string = false
+          context.series.each do |series|
+            series.xs.each do |x|
+              next if labels.key?(x)
+              have_string = true if x.is_a?(String)
+              labels[x] = true
             end
+          end
+          if have_string
+            labels.keys.sort_by {|label| "%10s" % x.to_s}
+          else
+            labels.keys.sort
           end
         end
 
         def data_hash
           {}.tap do |hash|
+            _x_labels = x_labels
             context.series.to_a.each_with_index do |series_data, series_index|
-              x_labels.each do |x_label|
+              _x_labels.each do |x_label|
                 unless hash[x_label]
                   hash[x_label] = []
                 end
@@ -118,14 +136,14 @@ module Charty
                 if data_index = series_data.xs.to_a.index(x_label)
                   hash[x_label] << series_data.ys.to_a[data_index]
                 else
-                  hash[x_label] << "null"
+                  hash[x_label] << nil
                 end
               end
             end
           end
         end
 
-        def formatted_data_array
+        def rows
           case context.method
           when :bubble
             [].tap do |data_array|
@@ -133,10 +151,10 @@ module Charty
                 series_data.xs.to_a.each_with_index do |data, data_index|
                   data_array << [
                     "",
-                    series_data.xs.to_a[data_index] || "null",
-                    series_data.ys.to_a[data_index] || "null",
+                    series_data.xs.to_a[data_index],
+                    series_data.ys.to_a[data_index],
                     series_data[:label] || series_index.to_s,
-                    series_data.zs.to_a[data_index] || "null",
+                    series_data.zs.to_a[data_index],
                   ]
                 end
               end
@@ -150,9 +168,33 @@ module Charty
           else
             [].tap do |data_array|
               data_hash.each do |k, v|
-                data_array << [k.to_s, v].flatten
+                data_array << [k, v].flatten
               end
             end
+          end
+        end
+
+        def convert_to_javascript(data)
+          case data
+          when Array
+            converted_data = data.collect do |element|
+              convert_to_javascript(element)
+            end
+            "[#{converted_data.join(", ")}]"
+          when Time
+            time = data.dup.utc
+            args = [
+              time.year,
+              time.month - 1,
+              time.day,
+              time.hour,
+              time.min,
+              time.sec,
+              time.nsec / 1000 / 1000,
+            ]
+            "new Date(Date.UTC(#{args.join(", ")}))"
+          else
+            data.to_json
           end
         end
 
@@ -189,7 +231,7 @@ module Charty
               function drawChart() {
                 const data = new google.visualization.DataTable();
                 #{data_column_js}
-                data.addRows(#{formatted_data_array})
+                data.addRows(#{convert_to_javascript(rows)})
 
                 const view = new google.visualization.DataView(data);
 
