@@ -73,30 +73,38 @@ module Charty
           @pyplot.ylabel(context.ylabel) if context.ylabel
         end
 
+        palette = Charty::Palette.default
+        colors = palette.colors.map {|c| c.to_rgb.to_hex_string }.cycle
         case context.method
         when :bar
           context.series.each do |data|
-            @pyplot.bar(data.xs.to_a.map(&:to_s), data.ys.to_a, label: data.label)
+            @pyplot.bar(data.xs.to_a.map(&:to_s), data.ys.to_a, label: data.label,
+                        color: colors.next)
           end
           @pyplot.legend()
         when :barh
           context.series.each do |data|
-            @pyplot.barh(data.xs.to_a.map(&:to_s), data.ys.to_a)
+            @pyplot.barh(data.xs.to_a.map(&:to_s), data.ys.to_a, color: colors.next)
           end
         when :box_plot
-          @pyplot.boxplot(context.data.to_a, labels: context.labels)
+          min_l = palette.colors.map {|c| c.to_rgb.to_hsl.l }.min
+          lum = min_l*0.6
+          gray = Charty::RGB(lum, lum, lum).to_hex_string
+          box_plot(context, subplot, colors, gray)
         when :bubble
           context.series.each do |data|
-            @pyplot.scatter(data.xs.to_a, data.ys.to_a, s: data.zs.to_a, alpha: 0.5, label: data.label)
+            @pyplot.scatter(data.xs.to_a, data.ys.to_a, s: data.zs.to_a, alpha: 0.5,
+                            color: colors.next, label: data.label)
           end
           @pyplot.legend()
         when :curve
           context.series.each do |data|
-            @pyplot.plot(data.xs.to_a, data.ys.to_a)
+            @pyplot.plot(data.xs.to_a, data.ys.to_a, color: colors.next)
           end
         when :scatter
           context.series.each do |data|
-            @pyplot.scatter(data.xs.to_a, data.ys.to_a, label: data.label)
+            @pyplot.scatter(data.xs.to_a, data.ys.to_a, label: data.label,
+                            color: colors.next)
           end
           @pyplot.legend()
         when :error_bar
@@ -107,11 +115,47 @@ module Charty
               data.xerr,
               data.yerr,
               label: data.label,
+              color: colors.next
             )
           end
           @pyplot.legend()
         when :hist
-          @pyplot.hist(context.data.to_a)
+          data = Array(context.data)
+          @pyplot.hist(data, color: colors.take(data.length), alpha: 0.4)
+        end
+      end
+
+      private def box_plot(context, subplot, colors, gray)
+        Array(context.data).each_with_index do |group_data, i|
+          next if group_data.empty?
+
+          box_data = group_data.compact
+          next if box_data.empty?
+
+          artist_dict = @pyplot.boxplot(box_data, vert: "v", patch_artist: true,
+                                        positions: [i], widths: 0.8)
+
+          color = colors.next
+          artist_dict["boxes"].each do |box|
+            box.update({facecolor: color, zorder: 0.9, edgecolor: gray}, {})
+          end
+          artist_dict["whiskers"].each do |whisker|
+            whisker.update({color: gray, linestyle: "-"}, {})
+          end
+          artist_dict["caps"].each do |cap|
+            cap.update({color: gray}, {})
+          end
+          artist_dict["medians"].each do |median|
+            median.update({color: gray}, {})
+          end
+          artist_dict["fliers"].each do |flier|
+            flier.update({
+              markerfacecolor: gray,
+              marker: "d",
+              markeredgecolor: gray,
+              markersize: 5
+            }, {})
+          end
         end
       end
     end
