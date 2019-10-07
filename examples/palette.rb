@@ -1,6 +1,6 @@
 require "charty"
 
-Dir.chdir __dir__
+Charty::Palette.default = ARGV[0] if ARGV[0]
 
 charty = Charty::Plotter.new(:pyplot)
 figure = charty.bar do
@@ -8,21 +8,21 @@ figure = charty.bar do
   series [1, 2, 3, 4, 5], [20, 10, 15, 20, 50], label: "b"
   series [1, 2, 3, 4, 5], [30, 25, 20, 10,  5], label: "cd"
 end
-figure.save("simple_bar.png")
+figure.save("bar_sample.png")
 
 figure = charty.barh do
   series [1, 2, 3, 4, 5], [10, 20, 25, 30, 40], label: "a"
   series [1, 2, 3, 4, 5], [20, 10, 15, 20, 50], label: "b"
   series [1, 2, 3, 4, 5], [30, 25, 20, 10,  5], label: "cd"
 end
-figure.save("simple_barh.png")
+figure.save("barh_sample.png")
 
 figure = charty.curve do
   series [1, 2, 3, 4, 5], [10, 20, 25, 30, 40], label: "a"
   series [1, 2, 3, 4, 5], [20, 10, 15, 20, 50], label: "b"
   series [1, 2, 3, 4, 5], [30, 25, 20, 10,  5], label: "cd"
 end
-figure.save("simple_curve.png")
+figure.save("curve_sample.png")
 
 figure = charty.box_plot do
   data [
@@ -34,14 +34,14 @@ figure = charty.box_plot do
   ylabel "bar"
   title "box plot"
 end
-figure.save("simple_box_plot.png")
+figure.save("box_plot_sample.png")
 
 figure = charty.scatter do
   series 0..10, (0..1).step(0.1), label: 'sample1'
   series 0..5, (0..1).step(0.2), label: 'sample2'
   series [0, 1, 2, 3, 4], [0, -0.1, -0.5, -0.5, 0.1]
 end
-figure.save("simple_scatter.png")
+figure.save("scatter_sample.png")
 
 figure = charty.bubble do
   series 0..10, (0..1).step(0.1), [10, 100, 1000, 20, 200, 2000, 5, 50, 500, 4, 40], label: 'sample1'
@@ -52,7 +52,7 @@ figure = charty.bubble do
   ylabel 'y label'
   title 'bubble sample'
 end
-figure.save("simple_bubble.png")
+figure.save("bubble_sample.png")
 
 def randn(n, mu=0.0, sigma=1.0)
   Array.new(n) do
@@ -66,4 +66,4 @@ figure = charty.hist do
          randn(100, 2.0, 2.0) ]
   title "histogram sample"
 end
-figure.save("simple_hist.png")
+figure.save("hist_sample.png")
