@@ -1,10 +1,24 @@
----
-dist: xenial
-language: ruby
-cache: bundler
-rvm:
-  - 2.6
-env:
-  - PYENV_VERSION=3.7 PYTHON=python
-before_install:
-  - pip install --user matplotlib
+notifications:
+  webhooks:
+    - https://webhook.commit-email.info/
+
+services:
+  - docker
+
+matrix:
+  include:
+    - name: Ruby 2.6
+      env: TYPE=ruby-2.6
+
+install:
+  - docker build
+      -t red-data-tools/charty-${TYPE}
+      -f dockerfiles/Dockerfile.${TYPE}
+      .
+
+script:
+  - docker run
+      --interactive
+      --tty
+      red-data-tools/charty-${TYPE}
+      bundle exec rake
