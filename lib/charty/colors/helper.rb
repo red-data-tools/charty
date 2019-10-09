@@ -2,7 +2,7 @@ module Charty
   module Colors
     module Helper
       private def check_type(obj, type, name)
-        return obj if obj.instance_of?(Integer)
+        return obj if obj.instance_of?(type)
         check_fail TypeError, "#{name} must be a #{type}, but #{obj.class} is given"
       end
 
