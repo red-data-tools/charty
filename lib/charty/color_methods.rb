@@ -33,7 +33,7 @@ module Charty
         return Colors::RGBA.new(*args)
       end
       raise ArgumentError,
-            "wrong number of arguments (#{args.length} for 1 or 3)"
+            "wrong number of arguments (#{args.length} for 1, 2, or 4)"
     end
 
     alias rgba RGBA
@@ -71,7 +71,7 @@ module Charty
         return Colors::HSLA.new(*args)
       end
       raise ArgumentError,
-            "wrong number of arguments (#{args.length} for 1 or 3)"
+            "wrong number of arguments (#{args.length} for 1, 2, or 4)"
     end
 
     alias hsla HSLA
