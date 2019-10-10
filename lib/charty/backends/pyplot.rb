@@ -31,15 +31,15 @@ module Charty
         _fig, axes = @pyplot.subplots(nrows: layout.num_rows, ncols: layout.num_cols)
         layout.rows.each_with_index do |row, y|
           row.each_with_index do |cel, x|
-            plot = layout.num_rows > 1 ? axes[y][x] : axes[x]
-            plot(plot, cel, subplot: true)
+            ax = layout.num_rows > 1 ? axes[y][x] : axes[x]
+            plot(ax, cel, subplot: true)
           end
         end
         @pyplot.show
       end
 
       def render(context, filename)
-        plot(context)
+        plot(@pyplot, context)
         if filename
           FileUtils.mkdir_p(File.dirname(filename))
           @pyplot.savefig(filename)
@@ -56,7 +56,7 @@ module Charty
         @pyplot.clf if finish
       end
 
-      def plot(context, subplot: false)
+      def plot(ax, context, subplot: false)
         # TODO: Since it is not required, research and change conditions.
         # case
         # when @pyplot.respond_to?(:xlim)
@@ -67,10 +67,10 @@ module Charty
         #   @pyplot.set_ylim(context.range_y.begin, context.range_y.end)
         # end
 
-        @pyplot.title(context.title) if context.title
+        ax.title(context.title) if context.title
         if !subplot
-          @pyplot.xlabel(context.xlabel) if context.xlabel
-          @pyplot.ylabel(context.ylabel) if context.ylabel
+          ax.xlabel(context.xlabel) if context.xlabel
+          ax.ylabel(context.ylabel) if context.ylabel
         end
 
         palette = Charty::Palette.default
@@ -78,13 +78,13 @@ module Charty
         case context.method
         when :bar
           context.series.each do |data|
-            @pyplot.bar(data.xs.to_a.map(&:to_s), data.ys.to_a, label: data.label,
-                        color: colors.next)
+            ax.bar(data.xs.to_a.map(&:to_s), data.ys.to_a, label: data.label,
+                   color: colors.next)
           end
-          @pyplot.legend()
+          ax.legend()
         when :barh
           context.series.each do |data|
-            @pyplot.barh(data.xs.to_a.map(&:to_s), data.ys.to_a, color: colors.next)
+            ax.barh(data.xs.to_a.map(&:to_s), data.ys.to_a, color: colors.next)
           end
         when :box_plot
           min_l = palette.colors.map {|c| c.to_rgb.to_hsl.l }.min
@@ -93,23 +93,23 @@ module Charty
           box_plot(context, subplot, colors, gray)
         when :bubble
           context.series.each do |data|
-            @pyplot.scatter(data.xs.to_a, data.ys.to_a, s: data.zs.to_a, alpha: 0.5,
-                            color: colors.next, label: data.label)
+            ax.scatter(data.xs.to_a, data.ys.to_a, s: data.zs.to_a, alpha: 0.5,
+                       color: colors.next, label: data.label)
           end
-          @pyplot.legend()
+          ax.legend()
         when :curve
           context.series.each do |data|
-            @pyplot.plot(data.xs.to_a, data.ys.to_a, color: colors.next)
+            ax.plot(data.xs.to_a, data.ys.to_a, color: colors.next)
           end
         when :scatter
           context.series.each do |data|
-            @pyplot.scatter(data.xs.to_a, data.ys.to_a, label: data.label,
-                            color: colors.next)
+            ax.scatter(data.xs.to_a, data.ys.to_a, label: data.label,
+                       color: colors.next)
           end
-          @pyplot.legend()
+          ax.legend()
         when :error_bar
           context.series.each do |data|
-            @pyplot.errorbar(
+            ax.errorbar(
               data.xs.to_a,
               data.ys.to_a,
               data.xerr,
@@ -118,10 +118,10 @@ module Charty
               color: colors.next
             )
           end
-          @pyplot.legend()
+          ax.legend()
         when :hist
           data = Array(context.data)
-          @pyplot.hist(data, color: colors.take(data.length), alpha: 0.4)
+          ax.hist(data, color: colors.take(data.length), alpha: 0.4)
         end
       end
 
