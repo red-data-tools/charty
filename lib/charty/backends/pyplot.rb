@@ -158,6 +158,61 @@ module Charty
           end
         end
       end
+
+      # ===== methods for the new plot engine =====
+
+      class RenderingContext
+        def initialize(plt)
+          @plt = plt
+        end
+
+        def bar(x, y, width:, color:, align:, orient:)
+          if orient == :v
+            @plt.bar(x, y, width, color=color, align=align)
+          else
+            @plt.barh(x, y, width, color=color, align=align)
+          end
+        end
+
+        def draw_confidence_interval(x, range, err_color, err_width, cap_size)
+        end
+
+        def set_xlabel(label)
+        end
+
+        def set_ylabel(label)
+        end
+
+        def set_xticks(ticks)
+        end
+
+        def set_xtick_labels(labels)
+        end
+
+        def set_yticks(ticks)
+        end
+
+        def set_ytick_labels(labels)
+        end
+
+        def disable_xaxis_grid
+        end
+
+        def disable_yaxis_grid
+        end
+
+        def set_xlim(min, max)
+        end
+
+        def set_ylim(min, max)
+        end
+
+        def show_legend(location:)
+        end
+
+        def set_legend_title(title)
+        end
+      end
     end
   end
 end

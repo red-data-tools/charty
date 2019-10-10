@@ -127,7 +127,7 @@ module Charty
     #
     # @return [Palette]
     #   Color palette.  Behaves like a list.
-    def initialize(palette=nil, n_colors=nil, desaturate_factor: nil)
+    def initialize(palette=nil, n_colors=nil, desaturate_factor: nil, **kwd)
       case
       when palette.nil?
         @name = nil
@@ -142,11 +142,11 @@ module Charty
           n_colors ||= QUAL_PALETTE_SIZES.fetch(palette, 6)
           case @name
           when SEABORN_PALETTES.method(:has_key?)
-            palette = self.class.seaborn_colors(@name)
+            palette = self.class.seaborn_colors(@name, **kwd)
           when "hls", "HLS", "hsl", "HSL"
-            palette = self.class.hsl_colors(n_colors)
+            palette = self.class.hsl_colors(n_colors, **kwd)
           when "husl", "HUSL"
-            palette = self.class.husl_colors(n_colors)
+            palette = self.class.husl_colors(n_colors, **kwd)
           when /\Ach:/
             # Cubehelix palette with params specified in string
             args, kwargs = parse_cubehelix_args(palette)
