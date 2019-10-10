@@ -1,3 +1,5 @@
+#! /usr/bin/env ruby
+
 require "charty"
 
 Charty::Palette.default = ARGV[0] if ARGV[0]
