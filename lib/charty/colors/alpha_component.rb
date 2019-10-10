@@ -4,11 +4,7 @@ module Charty
       attr_reader :a
 
       def a=(a)
-        @a = if a.instance_of?(Integer)
-               check_range(a, 0..255, :a) / 255r
-             else
-               Rational(check_range(a, 0..1, :a))
-             end
+        @a = canonicalize_component(a, :a)
       end
 
       alias alpha a
