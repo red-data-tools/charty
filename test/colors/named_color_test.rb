@@ -1,7 +1,7 @@
 require_relative '../test_helper'
 
 class ColorsNamedColorTest < Test::Unit::TestCase
-  sub_test_case("Charty.lookup_named_color") do
+  sub_test_case("Charty::Colors[]") do
     Charty::Colors::ColorData::DEFAULT_COLOR_CYCLE.each_with_index do |c, i|
       name = "C#{i}"
       expected = Charty::Colors::RGB.from_hex_string(c)
@@ -33,7 +33,7 @@ class ColorsNamedColorTest < Test::Unit::TestCase
     end
     def test_lookup_named_color(data)
       name, expected = data
-      assert_equal(expected, Charty.lookup_named_color(name))
+      assert_equal(expected, Charty::Colors[name])
     end
   end
 

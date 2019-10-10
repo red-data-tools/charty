@@ -24,5 +24,9 @@ module Charty
       end
       c.desaturate(factor)
     end
+
+    def self.[](name)
+      NamedColors[name]
+    end
   end
 end
