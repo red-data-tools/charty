@@ -4,15 +4,16 @@ module Charty
       case args.length
       when 1
         begin
-          return args[0].to_rgb
+          args[0].to_rgb
         rescue NoMethodError
           raise ArgumentError, "the argument must be a color"
         end
       when 3
-        return Colors::RGB.new(*args)
+        Colors::RGB.new(*args)
+      else
+        raise ArgumentError,
+              "wrong number of arguments (#{args.length} for 1 or 3)"
       end
-      raise ArgumentError,
-            "wrong number of arguments (#{args.length} for 1 or 3)"
     end
 
     alias rgb RGB
@@ -22,18 +23,19 @@ module Charty
       when 1..2
         begin
           if args[1].is_a?(Hash)
-            return args[0].to_rgba(**args[1])
+            args[0].to_rgba(**args[1])
           else
-            return args[0].to_rgba
+            args[0].to_rgba
           end
         rescue NoMethodError
           raise ArgumentError, "the argument must be a color"
         end
       when 4
-        return Colors::RGBA.new(*args)
+        Colors::RGBA.new(*args)
+      else
+        raise ArgumentError,
+              "wrong number of arguments (#{args.length} for 1, 2, or 4)"
       end
-      raise ArgumentError,
-            "wrong number of arguments (#{args.length} for 1, 2, or 4)"
     end
 
     alias rgba RGBA
@@ -42,15 +44,16 @@ module Charty
       case args.length
       when 1
         begin
-          return args[0].to_hsl
+          args[0].to_hsl
         rescue NoMethodError
           raise ArgumentError, "the argument must be a color"
         end
       when 3
-        return Colors::HSL.new(*args)
+        Colors::HSL.new(*args)
+      else
+        raise ArgumentError,
+              "wrong number of arguments (#{args.length}) for 1 or 3"
       end
-      raise ArgumentError,
-            "wrong number of arguments (#{args.length}) for 1 or 3"
     end
 
     alias hsl HSL
@@ -60,18 +63,19 @@ module Charty
       when 1..2
         begin
           if args[1].is_a?(Hash)
-            return args[0].to_hsla(**args[1])
+            args[0].to_hsla(**args[1])
           else
-            return args[0].to_hsla
+            args[0].to_hsla
           end
         rescue NoMethodError
           raise ArgumentError, "the argument must be a color"
         end
       when 4
-        return Colors::HSLA.new(*args)
+        Colors::HSLA.new(*args)
+      else
+        raise ArgumentError,
+              "wrong number of arguments (#{args.length} for 1, 2, or 4)"
       end
-      raise ArgumentError,
-            "wrong number of arguments (#{args.length} for 1, 2, or 4)"
     end
 
     alias hsla HSLA
