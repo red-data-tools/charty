@@ -12,7 +12,7 @@ module Charty
         Colors::RGB.new(*args)
       else
         raise ArgumentError,
-              "wrong number of arguments (#{args.length} for 1 or 3)"
+              "wrong number of arguments (given #{args.length}, expected 1 or 3)"
       end
     end
 
@@ -34,7 +34,7 @@ module Charty
         Colors::RGBA.new(*args)
       else
         raise ArgumentError,
-              "wrong number of arguments (#{args.length} for 1, 2, or 4)"
+              "wrong number of arguments (given #{args.length}, expected 1, 2, or 4)"
       end
     end
 
@@ -52,7 +52,7 @@ module Charty
         Colors::HSL.new(*args)
       else
         raise ArgumentError,
-              "wrong number of arguments (#{args.length}) for 1 or 3"
+              "wrong number of arguments (given #{args.length}, expected 1 or 3)"
       end
     end
 
@@ -74,7 +74,7 @@ module Charty
         Colors::HSLA.new(*args)
       else
         raise ArgumentError,
-              "wrong number of arguments (#{args.length} for 1, 2, or 4)"
+              "wrong number of arguments (given #{args.length}, expected 1, 2, or 4)"
       end
     end
 
