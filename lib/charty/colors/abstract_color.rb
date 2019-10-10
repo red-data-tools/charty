@@ -8,9 +8,7 @@ module Charty
       private
 
       def unsupported(name)
-        exc = NotImplementedError.new("#{name} is unsupported in #{self.class}")
-        exc.set_backtrace(caller(2))
-        raise exc
+        raise NotImplementedError, "#{name} is unsupported in #{self.class}", caller(2)
       end
 
       private def canonicalize_component(value, name)
