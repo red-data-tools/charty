@@ -11,7 +11,7 @@ module Charty
         [h, s, l, a]
       end
 
-      alias hlsa_components components
+      alias hsla_components components
 
       def ==(other)
         case other
