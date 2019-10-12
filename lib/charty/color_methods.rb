@@ -3,9 +3,12 @@ module Charty
     def RGB(*args)
       case args.length
       when 1
-        begin
+        case args[0]
+        when Colors::AbstractColor
           args[0].to_rgb
-        rescue NoMethodError
+        when ->(x) { x.respond_to?(:to_charty_rgb) }
+          args[0].to_charty_rgb
+        else
           raise ArgumentError, "the argument must be a color"
         end
       when 3
@@ -21,13 +24,20 @@ module Charty
     def RGBA(*args)
       case args.length
       when 1..2
-        begin
+        case args[0]
+        when Colors::AbstractColor
           if args[1].is_a?(Hash)
             args[0].to_rgba(**args[1])
           else
             args[0].to_rgba
           end
-        rescue NoMethodError
+        when ->(x) { x.respond_to?(:to_charty_rgba) }
+          if args[1].is_a?(Hash)
+            args[0].to_charty_rgba(**args[1])
+          else
+            args[0].to_charty_rgba
+          end
+        else
           raise ArgumentError, "the argument must be a color"
         end
       when 4
@@ -43,9 +53,12 @@ module Charty
     def HSL(*args)
       case args.length
       when 1
-        begin
+        case args[0]
+        when Colors::AbstractColor
           args[0].to_hsl
-        rescue NoMethodError
+        when ->(x) { x.respond_to?(:to_charty_hsl) }
+          args[0].to_charty_hsl
+        else
           raise ArgumentError, "the argument must be a color"
         end
       when 3
@@ -61,13 +74,20 @@ module Charty
     def HSLA(*args)
       case args.length
       when 1..2
-        begin
+        case args[0]
+        when Colors::AbstractColor
           if args[1].is_a?(Hash)
             args[0].to_hsla(**args[1])
           else
             args[0].to_hsla
           end
-        rescue NoMethodError
+        when ->(x) { x.respond_to?(:to_charty_hsla) }
+          if args[1].is_a?(Hash)
+            args[0].to_charty_hsla(**args[1])
+          else
+            args[0].to_charty_hsla
+          end
+        else
           raise ArgumentError, "the argument must be a color"
         end
       when 4
