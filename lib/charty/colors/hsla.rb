@@ -33,7 +33,7 @@ module Charty
       end
 
       def to_rgba
-        Charty::Colors::RGBA.new(*rgb_components, a)
+        RGBA.new(*rgb_components, a)
       end
 
       def to_hsl

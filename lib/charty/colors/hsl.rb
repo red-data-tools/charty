@@ -64,16 +64,16 @@ module Charty
 
       def to_hsla(alpha: 1.0)
         alpha = canonicalize_component(alpha, :alpha)
-        Charty::Colors::HSLA.new(h, s, l, alpha)
+        HSLA.new(h, s, l, alpha)
       end
 
       def to_rgb
-        Charty::Colors::RGB.new(*rgb_components)
+        RGB.new(*rgb_components)
       end
 
       def to_rgba(alpha: 1.0)
         alpha = canonicalize_component(alpha, :alpha)
-        Charty::Colors::RGBA.new(*rgb_components, alpha)
+        RGBA.new(*rgb_components, alpha)
       end
 
       def rgb_components

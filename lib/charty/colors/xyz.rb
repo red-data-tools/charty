@@ -62,7 +62,7 @@ module Charty
       end
 
       def to_rgb
-        Charty::Colors::RGB.new(*rgb_components)
+        RGB.new(*rgb_components)
       end
 
       def rgb_components

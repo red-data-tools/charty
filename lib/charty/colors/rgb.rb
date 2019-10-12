@@ -81,12 +81,12 @@ module Charty
       end
 
       def to_hsl
-        Charty::Colors::HSL.new(*hsl_components)
+        HSL.new(*hsl_components)
       end
 
       def to_hsla(alpha: 1.0)
         alpha = canonicalize_component(alpha, :alpha)
-        Charty::Colors::HSLA.new(*hsl_components, alpha)
+        HSLA.new(*hsl_components, alpha)
       end
 
       def hsl_components
@@ -113,7 +113,7 @@ module Charty
       end
 
       def to_husl
-        Colors::HUSL.from_rgb(r, g, b)
+        HUSL.from_rgb(r, g, b)
       end
 
       private def canonicalize(r, g, b)

@@ -8,8 +8,8 @@ module Charty
       DEG2RAD = 0.01745329251994329577r  # 2 * pi / 360
 
       def self.from_rgb(r, g, b)
-        c = Colors::XYZ.from_rgb(r, g, b)
-        l, u, v = c.luv_components(Charty::Colors::WHITE_POINT_D65)
+        c = XYZ.from_rgb(r, g, b)
+        l, u, v = c.luv_components(WHITE_POINT_D65)
         l, c, h = convert_luv_to_lch(l, u, v)
         h, s, l = convert_lch_to_husl(l, c, h)
         new(h, s.to_r.clamp(0r, 1r), l.to_r.clamp(0r, 1r))
@@ -59,13 +59,13 @@ module Charty
       end
 
       def to_rgb
-        Colors::RGB.new(*rgb_components)
+        RGB.new(*rgb_components)
       end
 
       def rgb_components
         l, u, v = convert_lch_to_luv(*lch_components)
         x, y, z = convert_luv_to_xyz(l, u, v)
-        Colors::XYZ.new(x, y, z).rgb_components
+        XYZ.new(x, y, z).rgb_components
       end
 
       def lch_components
@@ -94,11 +94,11 @@ module Charty
       private def convert_luv_to_xyz(l, u, v)
         return [0r, 0r, 0r] if l <= 1e-8
 
-        wp_u, wp_v = Colors::WHITE_POINT_D65.uv_values
+        wp_u, wp_v = WHITE_POINT_D65.uv_values
         var_u = u / (13 * l) + wp_u
         var_v = v / (13 * l) + wp_v
         y = if l < 8
-              l / Colors::XYZ::KAPPA
+              l / XYZ::KAPPA
             else
               ((l + 16r) / 116r)**3
             end
@@ -122,7 +122,7 @@ module Charty
 
       def self.get_bounds(l)
         sub1 = (l + 16)**3 / 1560896r
-        sub2 = sub1 > Colors::XYZ::EPSILON ? sub1 : l/Colors::XYZ::KAPPA
+        sub2 = sub1 > XYZ::EPSILON ? sub1 : l/XYZ::KAPPA
 
         bounds = Array.new(6) { [0r, 0r] }
         0.upto(2) do |ch|

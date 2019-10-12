@@ -31,20 +31,20 @@ module Charty
 
       MAPPING = {}
       MAPPING.extend(ColorMapping)
-      MAPPING.update(Colors::ColorData::XKCD_COLORS)
-      Colors::ColorData::XKCD_COLORS.each do |key, value|
+      MAPPING.update(ColorData::XKCD_COLORS)
+      ColorData::XKCD_COLORS.each do |key, value|
         MAPPING[key.sub("grey", "gray")] = value if key.include? "grey"
       end
-      MAPPING.update(Colors::ColorData::CSS4_COLORS)
-      MAPPING.update(Colors::ColorData::TABLEAU_COLORS)
-      Colors::ColorData::TABLEAU_COLORS.each do |key, value|
+      MAPPING.update(ColorData::CSS4_COLORS)
+      MAPPING.update(ColorData::TABLEAU_COLORS)
+      ColorData::TABLEAU_COLORS.each do |key, value|
         MAPPING[key.sub("gray", "grey")] = value if key.include? "gray"
       end
-      MAPPING.update(Colors::ColorData::BASE_COLORS)
+      MAPPING.update(ColorData::BASE_COLORS)
 
       def self.[](name)
         if nth_color?(name)
-          cycle = Colors::ColorData::DEFAULT_COLOR_CYCLE
+          cycle = ColorData::DEFAULT_COLOR_CYCLE
           name = cycle[name[1..-1].to_i % cycle.length]
         end
         if MAPPING.cache.has_key?(name)
@@ -60,7 +60,7 @@ module Charty
         orig_color = color
         case color
         when /\Anone\z/i
-          return Colors::RGBA.new(0, 0, 0, 0)
+          return RGBA.new(0, 0, 0, 0)
         when String
           # nothing to do
         when Symbol
@@ -73,9 +73,9 @@ module Charty
         when /\A#\h+\z/
           case color.length - 1
           when 3, 6
-            Colors::RGB.from_hex_string(color)
+            RGB.from_hex_string(color)
           when 4, 8
-            Colors::RGBA.from_hex_string(color)
+            RGBA.from_hex_string(color)
           else
             raise RuntimeError,
                   "[BUG] Invalid hex string form #{color.inspect} for #{name.inspect}"
@@ -83,9 +83,9 @@ module Charty
         when Array
           case color.length
           when 3
-            Colors::RGB.new(*color)
+            RGB.new(*color)
           when 4
-            Colors::RGBA.new(*color)
+            RGBA.new(*color)
           else
             raise RuntimeError,
                   "[BUG] Invalid number of color components #{color} for #{name.inspect}"
