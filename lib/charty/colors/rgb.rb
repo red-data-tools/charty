@@ -116,6 +116,10 @@ module Charty
         HUSL.from_rgb(r, g, b)
       end
 
+      def to_xyz
+        XYZ.from_rgb(r, g, b)
+      end
+
       private def canonicalize(r, g, b)
         if [r, g, b].map(&:class) == [Integer, Integer, Integer]
           canonicalize_from_integer(r, g, b)
