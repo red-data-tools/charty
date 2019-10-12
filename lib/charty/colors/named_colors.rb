@@ -40,9 +40,9 @@ module Charty
           when /\A#\h+\z/
             case color.length - 1
             when 3, 6
-              RGB.from_hex_string(color)
+              RGB.parse(color)
             when 4, 8
-              RGBA.from_hex_string(color)
+              RGBA.parse(color)
             else
               raise RuntimeError,
                     "[BUG] Invalid hex string form #{color.inspect} for #{name.inspect}"

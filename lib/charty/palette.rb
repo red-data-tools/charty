@@ -52,7 +52,7 @@ module Charty
 
     def self.seaborn_colors(name)
       SEABORN_PALETTES[name].map do |hex_string|
-        Charty::Colors::RGB.from_hex_string(hex_string)
+        Charty::Colors::RGB.parse(hex_string)
       end
     end
 

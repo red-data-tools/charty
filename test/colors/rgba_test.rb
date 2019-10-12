@@ -184,47 +184,59 @@ class ColorsRGBATest < Test::Unit::TestCase
     assert_near(Charty::Colors::HSLA.new(0r, 0.8r, 1r, 0.7r).to_rgba, c)
   end
 
-  test(".from_hex_string") do
-    assert_equal(Charty::Colors::RGBA.new(0, 0, 0, 0),
-                 Charty::Colors::RGBA.from_hex_string("#0000"))
-    assert_equal(Charty::Colors::RGBA.new(0, 0, 0, 0),
-                 Charty::Colors::RGBA.from_hex_string("#00000000"))
-    assert_equal(Charty::Colors::RGBA.new(1, 0, 0, 0),
-                 Charty::Colors::RGBA.from_hex_string("#01000000"))
-    assert_equal(Charty::Colors::RGBA.new(0, 1, 0, 0),
-                 Charty::Colors::RGBA.from_hex_string("#00010000"))
-    assert_equal(Charty::Colors::RGBA.new(0, 0, 1, 0),
-                 Charty::Colors::RGBA.from_hex_string("#00000100"))
-    assert_equal(Charty::Colors::RGBA.new(0, 0, 0, 1),
-                 Charty::Colors::RGBA.from_hex_string("#00000001"))
-    assert_equal(Charty::Colors::RGBA.new(0x33, 0x66, 0x99, 0xcc),
-                 Charty::Colors::RGBA.from_hex_string("#369c"))
-    assert_equal(Charty::Colors::RGBA.new(255, 255, 255, 255),
-                 Charty::Colors::RGBA.from_hex_string("#ffff"))
-
-    assert_equal(Charty::Colors::RGBA.new(0x33, 0x66, 0x99, 0xff),
-                 Charty::Colors::RGBA.from_hex_string("#369"))
-    assert_equal(Charty::Colors::RGBA.new(0x33, 0x66, 0x99, 0xff),
-                 Charty::Colors::RGBA.from_hex_string("#336699"))
-
-    assert_raise(ArgumentError) do
-      Charty::Colors::RGBA.from_hex_string(nil)
+  sub_test_case(".parse") do
+    test("for #rgba") do
+      assert_equal(Charty::Colors::RGBA.new(0, 0, 0, 0),
+                   Charty::Colors::RGBA.parse("#0000"))
+      assert_equal(Charty::Colors::RGBA.new(0x33, 0x66, 0x99, 0xcc),
+                   Charty::Colors::RGBA.parse("#369c"))
+      assert_equal(Charty::Colors::RGBA.new(255, 255, 255, 255),
+                   Charty::Colors::RGBA.parse("#ffff"))
     end
 
-    assert_raise(ArgumentError) do
-      Charty::Colors::RGBA.from_hex_string(1)
+    test("for #rrggbbaa") do
+      assert_equal(Charty::Colors::RGBA.new(0, 0, 0, 0),
+                   Charty::Colors::RGBA.parse("#00000000"))
+      assert_equal(Charty::Colors::RGBA.new(1, 0, 0, 0),
+                   Charty::Colors::RGBA.parse("#01000000"))
+      assert_equal(Charty::Colors::RGBA.new(0, 1, 0, 0),
+                   Charty::Colors::RGBA.parse("#00010000"))
+      assert_equal(Charty::Colors::RGBA.new(0, 0, 1, 0),
+                   Charty::Colors::RGBA.parse("#00000100"))
+      assert_equal(Charty::Colors::RGBA.new(0, 0, 0, 1),
+                   Charty::Colors::RGBA.parse("#00000001"))
     end
 
-    assert_raise(ArgumentError) do
-      Charty::Colors::RGBA.from_hex_string("")
+    test("for #rgb") do
+      assert_equal(Charty::Colors::RGBA.new(0x33, 0x66, 0x99, 0xff),
+                   Charty::Colors::RGBA.parse("#369"))
     end
 
-    assert_raise(ArgumentError) do
-      Charty::Colors::RGBA.from_hex_string("333")
+    test("for #rrggbb") do
+      assert_equal(Charty::Colors::RGBA.new(0x33, 0x66, 0x99, 0xff),
+                   Charty::Colors::RGBA.parse("#336699"))
     end
 
-    assert_raise(ArgumentError) do
-      Charty::Colors::RGBA.from_hex_string("#xxx")
+    test("error cases") do
+      assert_raise(ArgumentError) do
+        Charty::Colors::RGBA.parse(nil)
+      end
+
+      assert_raise(ArgumentError) do
+        Charty::Colors::RGBA.parse(1)
+      end
+
+      assert_raise(ArgumentError) do
+        Charty::Colors::RGBA.parse("")
+      end
+
+      assert_raise(ArgumentError) do
+        Charty::Colors::RGBA.parse("333")
+      end
+
+      assert_raise(ArgumentError) do
+        Charty::Colors::RGBA.parse("#xxx")
+      end
     end
   end
 

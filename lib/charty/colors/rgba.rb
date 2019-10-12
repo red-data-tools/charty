@@ -1,7 +1,7 @@
 module Charty
   module Colors
     class RGBA < RGB
-      def self.from_hex_string(hex_string)
+      def self.parse(hex_string)
         case hex_string.to_str.match(/\A#(\h+)\z/) { $1 }.length
         when 3  # rgb
           r, g, b = hex_string.scan(/\h/).map {|h| h.hex * 17 }

@@ -152,62 +152,70 @@ class ColorsRGBTest < Test::Unit::TestCase
     assert_near(Charty::Colors::HSL.new(0r, 0.8r, 1r).to_rgb, c)
   end
 
-  test(".from_hex_string") do
-    assert_equal(Charty::Colors::RGB.new(0, 0, 0),
-                 Charty::Colors::RGB.from_hex_string("#000"))
-    assert_equal(Charty::Colors::RGB.new(0, 0, 0),
-                 Charty::Colors::RGB.from_hex_string("#000000"))
-    assert_equal(Charty::Colors::RGB.new(1, 0, 0),
-                 Charty::Colors::RGB.from_hex_string("#010000"))
-    assert_equal(Charty::Colors::RGB.new(0, 1, 0),
-                 Charty::Colors::RGB.from_hex_string("#000100"))
-    assert_equal(Charty::Colors::RGB.new(0, 0, 1),
-                 Charty::Colors::RGB.from_hex_string("#000001"))
-    assert_equal(Charty::Colors::RGB.new(0x33, 0x66, 0x99),
-                 Charty::Colors::RGB.from_hex_string("#369"))
-    assert_equal(Charty::Colors::RGB.new(255, 255, 255),
-                 Charty::Colors::RGB.from_hex_string("#fff"))
-
-    # `#rgba` is error
-    assert_raise(ArgumentError) do
-      Charty::Colors::RGB.from_hex_string("#0000")
+  sub_test_case(".parse") do
+    test("for #rgb") do
+      assert_equal(Charty::Colors::RGB.new(0, 0, 0),
+                   Charty::Colors::RGB.parse("#000"))
+      assert_equal(Charty::Colors::RGB.new(0x33, 0x66, 0x99),
+                   Charty::Colors::RGB.parse("#369"))
+      assert_equal(Charty::Colors::RGB.new(255, 255, 255),
+                   Charty::Colors::RGB.parse("#fff"))
     end
 
-    # `#rrggbbaa` is error
-    assert_raise(ArgumentError) do
-      Charty::Colors::RGB.from_hex_string("#00000000")
+    test("for #rrggbb") do
+      assert_equal(Charty::Colors::RGB.new(0, 0, 0),
+                   Charty::Colors::RGB.parse("#000000"))
+      assert_equal(Charty::Colors::RGB.new(1, 0, 0),
+                   Charty::Colors::RGB.parse("#010000"))
+      assert_equal(Charty::Colors::RGB.new(0, 1, 0),
+                   Charty::Colors::RGB.parse("#000100"))
+      assert_equal(Charty::Colors::RGB.new(0, 0, 1),
+                   Charty::Colors::RGB.parse("#000001"))
     end
 
-    assert_raise(ArgumentError) do
-      Charty::Colors::RGB.from_hex_string("#00")
-    end
 
-    assert_raise(ArgumentError) do
-      Charty::Colors::RGB.from_hex_string("#00000")
-    end
+    test("error cases") do
+      # `#rgba` is error
+      assert_raise(ArgumentError) do
+        Charty::Colors::RGB.parse("#0000")
+      end
 
-    assert_raise(ArgumentError) do
-      Charty::Colors::RGB.from_hex_string("#0000000")
-    end
+      # `#rrggbbaa` is error
+      assert_raise(ArgumentError) do
+        Charty::Colors::RGB.parse("#00000000")
+      end
 
-    assert_raise(ArgumentError) do
-      Charty::Colors::RGB.from_hex_string(nil)
-    end
+      assert_raise(ArgumentError) do
+        Charty::Colors::RGB.parse("#00")
+      end
 
-    assert_raise(ArgumentError) do
-      Charty::Colors::RGB.from_hex_string(1)
-    end
+      assert_raise(ArgumentError) do
+        Charty::Colors::RGB.parse("#00000")
+      end
 
-    assert_raise(ArgumentError) do
-      Charty::Colors::RGB.from_hex_string("")
-    end
+      assert_raise(ArgumentError) do
+        Charty::Colors::RGB.parse("#0000000")
+      end
 
-    assert_raise(ArgumentError) do
-      Charty::Colors::RGB.from_hex_string("333")
-    end
+      assert_raise(ArgumentError) do
+        Charty::Colors::RGB.parse(nil)
+      end
 
-    assert_raise(ArgumentError) do
-      Charty::Colors::RGB.from_hex_string("#xxx")
+      assert_raise(ArgumentError) do
+        Charty::Colors::RGB.parse(1)
+      end
+
+      assert_raise(ArgumentError) do
+        Charty::Colors::RGB.parse("")
+      end
+
+      assert_raise(ArgumentError) do
+        Charty::Colors::RGB.parse("333")
+      end
+
+      assert_raise(ArgumentError) do
+        Charty::Colors::RGB.parse("#xxx")
+      end
     end
   end
 

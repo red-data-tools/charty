@@ -36,7 +36,7 @@ class PaletteTest < Test::Unit::TestCase
       assert_equal(Charty::Palette::QUAL_PALETTE_SIZES["deep"],
                    palette.n_colors)
       assert_equal(Charty::Palette::SEABORN_PALETTES["deep"].map {|c|
-                     Charty::Colors::RGB.from_hex_string(c)
+                     Charty::Colors::RGB.parse(c)
                    },
                    palette.colors)
     end
@@ -47,7 +47,7 @@ class PaletteTest < Test::Unit::TestCase
       assert_equal(Charty::Palette::QUAL_PALETTE_SIZES["pastel6"],
                    palette.n_colors)
       assert_equal(Charty::Palette::SEABORN_PALETTES["pastel6"].map {|c|
-                     Charty::Colors::RGB.from_hex_string(c)
+                     Charty::Colors::RGB.parse(c)
                    },
                    palette.colors)
     end
@@ -130,7 +130,7 @@ class PaletteTest < Test::Unit::TestCase
       assert_equal(Charty::Palette::QUAL_PALETTE_SIZES["Set3"],
                    palette.n_colors)
       assert_equal(Charty::Palette::SEABORN_PALETTES["Set3"].map {|c|
-                     Charty::Colors::RGB.from_hex_string(c)
+                     Charty::Colors::RGB.parse(c)
                    },
                    palette.colors)
     end
