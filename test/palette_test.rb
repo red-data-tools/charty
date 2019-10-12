@@ -79,7 +79,9 @@ class PaletteTest < Test::Unit::TestCase
     palette_dark.zip(palette_bright).each do |c1, c2|
       s1 = c1.to_rgb.components.sum
       s2 = c2.to_rgb.components.sum
-      assert_operator(s1, :<, s2)
+      assert do
+        s1 < s2
+      end
     end
 
     palette_flat = Charty::Palette.hsl_colors(5, s: 0.1)
@@ -87,7 +89,9 @@ class PaletteTest < Test::Unit::TestCase
     palette_flat.zip(palette_bold).each do |c1, c2|
       s1 = c1.to_rgb.components.stdev(population: true).to_f
       s2 = c2.to_rgb.components.stdev(population: true).to_f
-      assert_operator(s1, :<, s2)
+      assert do
+        s1 < s2
+      end
     end
   end
 
@@ -106,7 +110,9 @@ class PaletteTest < Test::Unit::TestCase
     palette_dark.zip(palette_bright).each do |c1, c2|
       s1 = c1.to_rgb.components.sum
       s2 = c2.to_rgb.components.sum
-      assert_operator(s1, :<, s2)
+      assert do
+        s1 < s2
+      end
     end
 
     palette_flat = Charty::Palette.husl_colors(5, s: 0.1)
@@ -114,7 +120,9 @@ class PaletteTest < Test::Unit::TestCase
     palette_flat.zip(palette_bold).each do |c1, c2|
       s1 = c1.to_rgb.components.stdev
       s2 = c2.to_rgb.components.stdev
-      assert_operator(s1, :<, s2)
+      assert do
+        s1 < s2
+      end
     end
   end
 
