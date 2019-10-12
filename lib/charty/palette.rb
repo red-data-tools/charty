@@ -147,11 +147,6 @@ module Charty
             palette = self.class.hsl_colors(n_colors)
           when "husl", "HUSL"
             palette = self.class.husl_colors(n_colors)
-          when "jet"
-            # Paternalism
-            raise ArgumentError,
-                  "Don't use jet palette, " +
-                  "see http://jakevdp.github.io/blog/2014/10/16/how-bad-is-your-colormap/"
           when /\Ach:/
             # Cubehelix palette with params specified in string
             args, kwargs = parse_cubehelix_args(palette)
