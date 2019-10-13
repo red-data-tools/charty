@@ -1,6 +1,7 @@
 require_relative "charty/version"
 
 require_relative "charty/backends"
+require_relative "charty/backend_methods"
 require_relative "charty/colors"
 require_relative "charty/color_methods"
 require_relative "charty/plotter"

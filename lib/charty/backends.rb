@@ -6,6 +6,17 @@ module Charty
   module Backends
     @backends = {}
 
+    @current = nil
+
+    def self.current
+      @current
+    end
+
+    def self.current=(backend_name)
+      backend_class = Backends.find_backend_class(backend_name)
+      @current = backend_class.new
+    end
+
     def self.names
       @backends.keys
     end
