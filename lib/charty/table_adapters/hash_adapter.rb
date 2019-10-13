@@ -61,6 +61,8 @@ module Charty
         end
       end
 
+      attr_reader :data
+
       def_delegator :@data, :keys, :column_names
 
       def [](row, column)

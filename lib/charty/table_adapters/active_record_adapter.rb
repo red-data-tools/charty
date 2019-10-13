@@ -15,7 +15,7 @@ module Charty
         @columns = nil
       end
 
-      attr_reader :column_names
+      attr_reader :column_names, :data
 
       def [](row, column)
         fetch_records unless @columns
