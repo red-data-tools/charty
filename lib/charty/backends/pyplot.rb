@@ -158,6 +158,49 @@ module Charty
           end
         end
       end
+
+      # ==== NEW PLOTTING API ====
+
+      def bar(bar_pos, values, color: nil, width: 0.8r, align: :center, orient: :v)
+        case color
+        when Array
+          color = color.map(&:to_hex_string)
+        end
+        width = Float(width)
+        if orient == :v
+          @pyplot.bar(bar_pos, values, width: width, color: color, align: align)
+        else
+          @pyplot.barh(bar_pos, values, width: width, color: color, align: align)
+        end
+      end
+
+      def set_xlabel(label)
+        @pyplot.gca.set_xlabel(label)
+      end
+
+      def set_ylabel(label)
+        @pyplot.gca.set_ylabel(label)
+      end
+
+      def set_xticks(values)
+        @pyplot.gca.set_xticks(values)
+      end
+
+      def set_xtick_labels(labels)
+        @pyplot.gca.set_xticklabels(labels)
+      end
+
+      def set_xlim(min, max)
+        @pyplot.gca.set_xlim(min, max)
+      end
+
+      def disable_xaxis_grid
+        @pyplot.gca.xaxis.grid(false)
+      end
+
+      def show
+        @pyplot.show
+      end
     end
   end
 end
