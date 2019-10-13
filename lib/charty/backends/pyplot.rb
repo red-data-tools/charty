@@ -31,15 +31,15 @@ module Charty
         _fig, axes = @pyplot.subplots(nrows: layout.num_rows, ncols: layout.num_cols)
         layout.rows.each_with_index do |row, y|
           row.each_with_index do |cel, x|
-            plot = layout.num_rows > 1 ? axes[y][x] : axes[x]
-            plot(plot, cel, subplot: true)
+            ax = layout.num_rows > 1 ? axes[y][x] : axes[x]
+            plot(ax, cel, subplot: true)
           end
         end
         @pyplot.show
       end
 
       def render(context, filename)
-        plot(context)
+        plot(@pyplot, context)
         if filename
           FileUtils.mkdir_p(File.dirname(filename))
           @pyplot.savefig(filename)
@@ -56,7 +56,7 @@ module Charty
         @pyplot.clf if finish
       end
 
-      def plot(context, subplot: false)
+      def plot(ax, context, subplot: false)
         # TODO: Since it is not required, research and change conditions.
         # case
         # when @pyplot.respond_to?(:xlim)
@@ -67,51 +67,95 @@ module Charty
         #   @pyplot.set_ylim(context.range_y.begin, context.range_y.end)
         # end
 
-        @pyplot.title(context.title) if context.title
+        ax.title(context.title) if context.title
         if !subplot
-          @pyplot.xlabel(context.xlabel) if context.xlabel
-          @pyplot.ylabel(context.ylabel) if context.ylabel
+          ax.xlabel(context.xlabel) if context.xlabel
+          ax.ylabel(context.ylabel) if context.ylabel
         end
 
+        palette = Charty::Palette.default
+        colors = palette.colors.map {|c| c.to_rgb.to_hex_string }.cycle
         case context.method
         when :bar
           context.series.each do |data|
-            @pyplot.bar(data.xs.to_a.map(&:to_s), data.ys.to_a, label: data.label)
+            ax.bar(data.xs.to_a.map(&:to_s), data.ys.to_a, label: data.label,
+                   color: colors.next)
           end
-          @pyplot.legend()
+          ax.legend()
         when :barh
           context.series.each do |data|
-            @pyplot.barh(data.xs.to_a.map(&:to_s), data.ys.to_a)
+            ax.barh(data.xs.to_a.map(&:to_s), data.ys.to_a, color: colors.next)
           end
         when :box_plot
-          @pyplot.boxplot(context.data.to_a, labels: context.labels)
+          min_l = palette.colors.map {|c| c.to_rgb.to_hsl.l }.min
+          lum = min_l*0.6
+          gray = Charty::RGB(lum, lum, lum).to_hex_string
+          box_plot(context, subplot, colors, gray)
         when :bubble
           context.series.each do |data|
-            @pyplot.scatter(data.xs.to_a, data.ys.to_a, s: data.zs.to_a, alpha: 0.5, label: data.label)
+            ax.scatter(data.xs.to_a, data.ys.to_a, s: data.zs.to_a, alpha: 0.5,
+                       color: colors.next, label: data.label)
           end
-          @pyplot.legend()
+          ax.legend()
         when :curve
           context.series.each do |data|
-            @pyplot.plot(data.xs.to_a, data.ys.to_a)
+            ax.plot(data.xs.to_a, data.ys.to_a, color: colors.next)
           end
         when :scatter
           context.series.each do |data|
-            @pyplot.scatter(data.xs.to_a, data.ys.to_a, label: data.label)
+            ax.scatter(data.xs.to_a, data.ys.to_a, label: data.label,
+                       color: colors.next)
           end
-          @pyplot.legend()
+          ax.legend()
         when :error_bar
           context.series.each do |data|
-            @pyplot.errorbar(
+            ax.errorbar(
               data.xs.to_a,
               data.ys.to_a,
               data.xerr,
               data.yerr,
               label: data.label,
+              color: colors.next
             )
           end
-          @pyplot.legend()
+          ax.legend()
         when :hist
-          @pyplot.hist(context.data.to_a)
+          data = Array(context.data)
+          ax.hist(data, color: colors.take(data.length), alpha: 0.4)
+        end
+      end
+
+      private def box_plot(context, subplot, colors, gray)
+        Array(context.data).each_with_index do |group_data, i|
+          next if group_data.empty?
+
+          box_data = group_data.compact
+          next if box_data.empty?
+
+          artist_dict = @pyplot.boxplot(box_data, vert: "v", patch_artist: true,
+                                        positions: [i], widths: 0.8)
+
+          color = colors.next
+          artist_dict["boxes"].each do |box|
+            box.update({facecolor: color, zorder: 0.9, edgecolor: gray}, {})
+          end
+          artist_dict["whiskers"].each do |whisker|
+            whisker.update({color: gray, linestyle: "-"}, {})
+          end
+          artist_dict["caps"].each do |cap|
+            cap.update({color: gray}, {})
+          end
+          artist_dict["medians"].each do |median|
+            median.update({color: gray}, {})
+          end
+          artist_dict["fliers"].each do |flier|
+            flier.update({
+              markerfacecolor: gray,
+              marker: "d",
+              markeredgecolor: gray,
+              markersize: 5
+            }, {})
+          end
         end
       end
     end
