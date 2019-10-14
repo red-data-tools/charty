@@ -3,6 +3,7 @@ module Charty
     class BarPlotter < CategoricalPlotter
       def render
         backend = Backends.current
+        backend.begin_figure
         draw_bars(backend)
         annotate_axes(backend)
         backend.show
