@@ -54,7 +54,7 @@ module Charty
           end
 
           # FIXME: Assume groups has only unique values
-          @group_names = groups.to_a
+          @group_names = groups
           @plot_data = vals.map {|v| [v] }
         end
       end
