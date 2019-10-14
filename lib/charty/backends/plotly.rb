@@ -55,24 +55,22 @@ module Charty
         end
       end
 
-      private
-
-      def plotly_load_tag
+      private def plotly_load_tag
         if self.class.with_api_load_tag
           "<script type='text/javascript' src='#{self.class.plotly_src}'></script>"
         else
         end
       end
 
-      def div_id
+      private def div_id
         "charty-plotly-#{self.class.chart_id}"
       end
 
-      def div_style
+      private def div_style
         "width: 100%;height: 100%;"
       end
 
-      def render_graph(context, type, options: {})
+      private def render_graph(context, type, options: {})
         data = context.series.map do |series|
           {
             type: type,
@@ -95,7 +93,7 @@ module Charty
         render_html(data, layout)
       end
 
-      def render_html(data, layout)
+      private def render_html(data, layout)
         <<~FRAGMENT
           #{plotly_load_tag unless self.class.chart_id > 1}
           <div id="#{div_id}" style="#{div_style}"></div>
