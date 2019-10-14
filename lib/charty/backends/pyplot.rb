@@ -173,6 +173,45 @@ module Charty
         end
       end
 
+      def box_plot(plot_data, positions, color:, gray:,
+                   width: 0.8r, flier_size: 5, whisker: 1.5, notch: false)
+        color = Array(color).map(&:to_hex_string)
+        gray = gray.to_hex_string
+        width = Float(width)
+        flier_size = Float(flier_size)
+        whisker = Float(whisker)
+        plot_data.each_with_index do |group_data, i|
+          next if group_data.nil? || group_data.empty?
+
+          artist_dict = @pyplot.boxplot(group_data, vert: :v,
+                                        patch_artist: true,
+                                        positions: [i],
+                                        widths: width,
+                                        whis: whisker, )
+
+          artist_dict["boxes"].each do |box|
+            box.update({facecolor: color[i], zorder: 0.9, edgecolor: gray}, {})
+          end
+          artist_dict["whiskers"].each do |whisker|
+            whisker.update({color: gray, linestyle: "-"}, {})
+          end
+          artist_dict["caps"].each do |cap|
+            cap.update({color: gray}, {})
+          end
+          artist_dict["medians"].each do |median|
+            median.update({color: gray}, {})
+          end
+          artist_dict["fliers"].each do |flier|
+            flier.update({
+              markerfacecolor: gray,
+              marker: "d",
+              markeredgecolor: gray,
+              markersize: flier_size
+            }, {})
+          end
+        end
+      end
+
       def set_xlabel(label)
         @pyplot.gca.set_xlabel(String(label))
       end

@@ -62,7 +62,9 @@ module Charty
         when ->(x) { x.respond_to?(:to_str) }
           value.to_str
         else
-          raise ArgumentError, "invalid type of dimension for #{name}", caller
+          raise ArgumentError,
+                "invalid type of dimension for #{name} (given #{value.inspect})",
+                caller
         end
       end
 
