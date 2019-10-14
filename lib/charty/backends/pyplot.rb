@@ -90,7 +90,7 @@ module Charty
           min_l = palette.colors.map {|c| c.to_rgb.to_hsl.l }.min
           lum = min_l*0.6
           gray = Charty::RGB(lum, lum, lum).to_hex_string
-          box_plot(context, subplot, colors, gray)
+          draw_box_plot(context, subplot, colors, gray)
         when :bubble
           context.series.each do |data|
             ax.scatter(data.xs.to_a, data.ys.to_a, s: data.zs.to_a, alpha: 0.5,
@@ -125,7 +125,7 @@ module Charty
         end
       end
 
-      private def box_plot(context, subplot, colors, gray)
+      private def draw_box_plot(context, subplot, colors, gray)
         Array(context.data).each_with_index do |group_data, i|
           next if group_data.empty?
 
