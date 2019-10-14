@@ -10,7 +10,7 @@ module Charty
         setup_colors
       end
 
-      attr_reader :group_names, :plot_data
+      attr_reader :group_names, :plot_data, :group_label, :value_label
 
       private def setup_variables
         if x.nil? && y.nil?
@@ -43,9 +43,19 @@ module Charty
           setup_single_data
         else
           # FIXME: Assume vertical plot
-          # FIXME: Assume x has only unique values
-          @group_names = x
-          @plot_data = y.map {|v| [v] }
+          groups, vals = x, y
+
+          if groups.respond_to?(:name)
+            @group_label = groups.name
+          end
+
+          if vals.respond_to?(:name)
+            @value_label = vals.name
+          end
+
+          # FIXME: Assume groups has only unique values
+          @group_names = groups.to_a
+          @plot_data = vals.map {|v| [v] }
         end
       end
 
