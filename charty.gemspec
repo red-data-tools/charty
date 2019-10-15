@@ -29,12 +29,17 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler", ">= 1.16"
   spec.add_development_dependency "rake"
   spec.add_development_dependency "test-unit"
-  spec.add_development_dependency "numo-narray"
-  spec.add_development_dependency "nmatrix"
   spec.add_development_dependency "red-datasets", ">= 0.0.9"
   spec.add_development_dependency "daru"
   spec.add_development_dependency "activerecord"
-  spec.add_development_dependency "sqlite3"
-  spec.add_development_dependency "matplotlib"
-  spec.add_development_dependency "enumerable-statistics"
+
+  if RUBY_PLATFORM.match?(/java/)
+    spec.platform = 'java'
+  else
+    spec.add_development_dependency "enumerable-statistics"
+    spec.add_development_dependency "matplotlib"
+    spec.add_development_dependency "nmatrix"
+    spec.add_development_dependency "numo-narray"
+    spec.add_development_dependency "sqlite3"
+  end
 end
