@@ -17,6 +17,19 @@ module Charty
       @current = backend_class.new
     end
 
+    def self.use(backend)
+      if block_given?
+        begin
+          saved, self.current = self.current, backend
+          yield
+        ensure
+          self.current = saved
+        end
+      else
+        self.current = backend
+      end
+    end
+
     def self.names
       @backends.keys
     end
