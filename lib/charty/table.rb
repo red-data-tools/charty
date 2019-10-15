@@ -26,6 +26,7 @@ module Charty
     attr_reader :adapter
 
     def_delegator :@adapter, :column_names
+    def_delegator :@adapter, :data, :raw_data
 
     def columns
       @column_accessor ||= ColumnAccessor.new(@adapter)

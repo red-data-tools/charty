@@ -13,6 +13,8 @@ module Charty
         @data = check_type(Daru::DataFrame, data, :data)
       end
 
+      attr_reader :data
+
       def column_names
         @data.vectors.to_a
       end

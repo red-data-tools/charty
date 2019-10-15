@@ -15,6 +15,10 @@ module Charty
         @records = []
       end
 
+      def data
+        @table
+      end
+
       def column_names
         @table.column_names
       end

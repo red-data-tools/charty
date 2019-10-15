@@ -20,7 +20,7 @@ module Charty
         @column_names = generate_column_names(data.shape[1], columns)
       end
 
-      attr_reader :column_names
+      attr_reader :column_names, :data
 
       def [](row, column)
         if row
