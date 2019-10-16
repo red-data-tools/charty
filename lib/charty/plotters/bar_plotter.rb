@@ -88,7 +88,7 @@ module Charty
         @colors = palette.colors.map {|c| c.to_rgb }
         lightness_values = @colors.map {|c| c.to_hsl.l }
         lum = lightness_values.min * 0.6r
-        @gray = Charty.RGB(lum, lum, lum)  # TODO: Use Charty::Gray
+        @gray = Colors::RGB.new(lum, lum, lum)  # TODO: Add and use Colors::Gray
       end
 
       def render

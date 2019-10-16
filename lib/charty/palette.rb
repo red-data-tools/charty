@@ -52,7 +52,7 @@ module Charty
 
     def self.seaborn_colors(name)
       SEABORN_PALETTES[name].map do |hex_string|
-        Charty::Colors::RGB.parse(hex_string)
+        Colors::RGB.parse(hex_string)
       end
     end
 
@@ -67,14 +67,14 @@ module Charty
     # @param l [Numeric]
     #   The lightness value of the first color (between 0 and 1)
     #
-    # @return [Array<Charty::Colors::HSL>]
+    # @return [Array<Colors::HSL>]
     #   The array of colors
     def self.hsl_colors(n_colors=6, h: 3.6r, s: 0.65r, l: 0.6r)
       hues = Numo::DFloat.linspace(0, 1, n_colors + 1)[0...-1]
       hues.inplace + (h/360r).to_f
       hues.inplace % 1
       hues.inplace - Numo::Int32.cast(hues)
-      (0...n_colors).map {|i| Charty::Colors::HSL.new(hues[i]*360r, s, l) }
+      (0...n_colors).map {|i| Colors::HSL.new(hues[i]*360r, s, l) }
     end
 
     # Get a set of evenly spaced colors in HUSL hue space.
@@ -88,14 +88,14 @@ module Charty
     # @param l [Numeric]
     #   The lightness value of the first color (between 0 and 1)
     #
-    # @return [Array<Charty::Colors::HSL>]
+    # @return [Array<Colors::HSL>]
     #   The array of colors
     def self.husl_colors(n_colors=6, h: 3.6r, s: 0.9r, l: 0.65r)
       hues = Numo::DFloat.linspace(0, 1, n_colors + 1)[0...-1]
       hues.inplace + (h/360r).to_f
       hues.inplace % 1
       hues.inplace * 359
-      (0...n_colors).map {|i| Charty::Colors::HUSL.new(hues[i], s, l) }
+      (0...n_colors).map {|i| Colors::HUSL.new(hues[i], s, l) }
     end
 
     def self.cubehelix_colors(n_colors, start=0, rot=0.4r, gamma=1.0r, hue=0.8r,
@@ -131,7 +131,7 @@ module Charty
       case
       when palette.nil?
         @name = nil
-        palette = Charty::Colors::ColorDate::DEFAULT_COLOR_CYCLE
+        palette = Colors::ColorDate::DEFAULT_COLOR_CYCLE
         n_colors ||= palette.length
       else
         palette = normalize_palette_name(palette)

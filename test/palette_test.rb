@@ -36,7 +36,7 @@ class PaletteTest < Test::Unit::TestCase
       assert_equal(Charty::Palette::QUAL_PALETTE_SIZES["deep"],
                    palette.n_colors)
       assert_equal(Charty::Palette::SEABORN_PALETTES["deep"].map {|c|
-                     Charty::Colors::RGB.parse(c)
+                     Colors::RGB.parse(c)
                    },
                    palette.colors)
     end
@@ -47,7 +47,7 @@ class PaletteTest < Test::Unit::TestCase
       assert_equal(Charty::Palette::QUAL_PALETTE_SIZES["pastel6"],
                    palette.n_colors)
       assert_equal(Charty::Palette::SEABORN_PALETTES["pastel6"].map {|c|
-                     Charty::Colors::RGB.parse(c)
+                     Colors::RGB.parse(c)
                    },
                    palette.colors)
     end
@@ -138,7 +138,7 @@ class PaletteTest < Test::Unit::TestCase
       assert_equal(Charty::Palette::QUAL_PALETTE_SIZES["Set3"],
                    palette.n_colors)
       assert_equal(Charty::Palette::SEABORN_PALETTES["Set3"].map {|c|
-                     Charty::Colors::RGB.parse(c)
+                     Colors::RGB.parse(c)
                    },
                    palette.colors)
     end
@@ -146,9 +146,9 @@ class PaletteTest < Test::Unit::TestCase
 
   test("desaturation feature") do
     desaturated_colors = Charty::Palette.new(["#ff0000", "#00ff0099"], desaturate_factor: 0.8).colors
-    assert_near(Charty::Colors::HSL.new(0, 0.8r, 0.5r).to_rgb,
+    assert_near(Colors::HSL.new(0, 0.8r, 0.5r).to_rgb,
                 desaturated_colors[0])
-    assert_near(Charty::Colors::HSLA.new(120r, 0.8r, 0.5r, 0x99/255r).to_rgba,
+    assert_near(Colors::HSLA.new(120r, 0.8r, 0.5r, 0x99/255r).to_rgba,
                 desaturated_colors[1])
   end
 end
