@@ -3,6 +3,7 @@ module Charty
     class BoxPlotter < CategoricalPlotter
       def render
         backend = Backends.current
+        backend.begin_figure
         draw_box_plot(backend)
         annotate_axes(backend)
         backend.show

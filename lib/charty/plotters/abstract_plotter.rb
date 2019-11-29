@@ -71,6 +71,11 @@ module Charty
       private def array?(value)
         TableAdapters::HashAdapter.array?(value)
       end
+
+      def to_iruby
+        result = render
+        ["text/html", result] if result
+      end
     end
   end
 end

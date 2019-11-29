@@ -161,6 +161,10 @@ module Charty
 
       # ==== NEW PLOTTING API ====
 
+      def begin_figure
+        # do nothing
+      end
+
       def bar(bar_pos, values, color: nil, width: 0.8r, align: :center, orient: :v)
         bar_pos = Array(bar_pos)
         values = Array(values)
