@@ -90,7 +90,7 @@ module Charty
           min_l = palette.colors.map {|c| c.to_rgb.to_hsl.l }.min
           lum = min_l*0.6
           gray = Charty::RGB(lum, lum, lum).to_hex_string
-          box_plot(context, subplot, colors, gray)
+          draw_box_plot(context, subplot, colors, gray)
         when :bubble
           context.series.each do |data|
             ax.scatter(data.xs.to_a, data.ys.to_a, s: data.zs.to_a, alpha: 0.5,
@@ -125,7 +125,7 @@ module Charty
         end
       end
 
-      private def box_plot(context, subplot, colors, gray)
+      private def draw_box_plot(context, subplot, colors, gray)
         Array(context.data).each_with_index do |group_data, i|
           next if group_data.empty?
 
@@ -170,6 +170,45 @@ module Charty
           @pyplot.bar(bar_pos, values, width: width, color: color, align: align)
         else
           @pyplot.barh(bar_pos, values, width: width, color: color, align: align)
+        end
+      end
+
+      def box_plot(plot_data, positions, color:, gray:,
+                   width: 0.8r, flier_size: 5, whisker: 1.5, notch: false)
+        color = Array(color).map(&:to_hex_string)
+        gray = gray.to_hex_string
+        width = Float(width)
+        flier_size = Float(flier_size)
+        whisker = Float(whisker)
+        plot_data.each_with_index do |group_data, i|
+          next if group_data.nil? || group_data.empty?
+
+          artist_dict = @pyplot.boxplot(group_data, vert: :v,
+                                        patch_artist: true,
+                                        positions: [i],
+                                        widths: width,
+                                        whis: whisker, )
+
+          artist_dict["boxes"].each do |box|
+            box.update({facecolor: color[i], zorder: 0.9, edgecolor: gray}, {})
+          end
+          artist_dict["whiskers"].each do |whisker|
+            whisker.update({color: gray, linestyle: "-"}, {})
+          end
+          artist_dict["caps"].each do |cap|
+            cap.update({color: gray}, {})
+          end
+          artist_dict["medians"].each do |median|
+            median.update({color: gray}, {})
+          end
+          artist_dict["fliers"].each do |flier|
+            flier.update({
+              markerfacecolor: gray,
+              marker: "d",
+              markeredgecolor: gray,
+              markersize: flier_size
+            }, {})
+          end
         end
       end
 
