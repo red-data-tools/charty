@@ -89,7 +89,7 @@ module Charty
         when :box_plot
           min_l = palette.colors.map {|c| c.to_rgb.to_hsl.l }.min
           lum = min_l*0.6
-          gray = Charty::RGB(lum, lum, lum).to_hex_string
+          gray = Colors::RGB.new(lum, lum, lum).to_hex_string
           draw_box_plot(context, subplot, colors, gray)
         when :bubble
           context.series.each do |data|
