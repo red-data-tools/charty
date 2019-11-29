@@ -1,7 +1,5 @@
 require_relative "test_helper"
 
-require "enumerable/statistics"
-
 class PaletteTest < Test::Unit::TestCase
   include TestHelper
 
@@ -87,8 +85,8 @@ class PaletteTest < Test::Unit::TestCase
     palette_flat = Charty::Palette.hsl_colors(5, s: 0.1)
     palette_bold = Charty::Palette.hsl_colors(5, s: 0.9)
     palette_flat.zip(palette_bold).each do |c1, c2|
-      s1 = c1.to_rgb.components.stdev(population: true).to_f
-      s2 = c2.to_rgb.components.stdev(population: true).to_f
+      s1 = Charty::Statistics.stdev(c1.to_rgb.components, population: true).to_f
+      s2 = Charty::Statistics.stdev(c2.to_rgb.components, population: true).to_f
       assert do
         s1 < s2
       end
@@ -118,8 +116,8 @@ class PaletteTest < Test::Unit::TestCase
     palette_flat = Charty::Palette.husl_colors(5, s: 0.1)
     palette_bold = Charty::Palette.husl_colors(5, s: 0.9)
     palette_flat.zip(palette_bold).each do |c1, c2|
-      s1 = c1.to_rgb.components.stdev
-      s2 = c2.to_rgb.components.stdev
+      s1 = Charty::Statistics.stdev(c1.to_rgb.components)
+      s2 = Charty::Statistics.stdev(c2.to_rgb.components)
       assert do
         s1 < s2
       end

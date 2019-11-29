@@ -1,5 +1,3 @@
-require "enumerable/statistics"
-
 module Charty
   module Plotters
     class BarPlotter < AbstractPlotter
@@ -99,7 +97,7 @@ module Charty
       end
 
       private def draw_bars(backend)
-        statistic = @plot_data.map(&:mean)
+        statistic = @plot_data.map {|xs| Statistics.mean(xs) }
         bar_pos = (0 ... statistic.length).to_a
         backend.bar(bar_pos, statistic, color: @colors)
       end

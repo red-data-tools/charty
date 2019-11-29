@@ -37,5 +37,4 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "activerecord"
   spec.add_development_dependency "sqlite3"
   spec.add_development_dependency "matplotlib"
-  spec.add_development_dependency "enumerable-statistics"
 end
