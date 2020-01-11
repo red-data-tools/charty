@@ -55,7 +55,7 @@ module Charty
       def show
         case @figure[:type]
         when :bar
-          plot = ::UnicodePlot.barplot(@figure[:bar_pos], @figure[:values], xlabel: @layout[:xlabel])
+          plot = ::UnicodePlot.barplot(@layout[:xtick_labels], @figure[:values], xlabel: @layout[:xlabel])
         when :box
           plot = ::UnicodePlot.boxplot(@layout[:xtick_labels], @figure[:data], xlabel: @layout[:xlabel])
         end
