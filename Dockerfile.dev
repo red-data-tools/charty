@@ -1,2 +1,10 @@
 ARG BASE_IMAGE_TAG=e1a22a2
 FROM rubydata/minimal-notebook:$BASE_IMAGE_TAG
+
+USER root
+RUN mkdir -p /charty && \
+    chown ${NB_USER}:users /charty
+
+USER ${NB_USER}
+
+WORKDIR /charty

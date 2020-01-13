@@ -43,14 +43,14 @@ sudo python3 -m pip install -U pip matplotlib
 e.g.
 
 ```
-$ docker build -f ./Dockerfile.dev -t charty-dev:0.1 .
-$ docker run --rm -v ${PWD}:/charty -w /charty charty-dev:0.1 bundle install --path vendor/bundle
-$ docker run -it -v ${PWD}:/charty -w /charty charty-dev:0.1 ./bin/console
+$ docker build -f ./Dockerfile.dev -t charty-dev:latest .
+$ docker run --rm -v $(pwd):/charty charty-dev:latest bundle install
+$ docker run --rm -it -v $(pwd):/charty charty-dev:latest ./bin/console
 irb(main):001:0> Charty::VERSION
-=> "0.1.4-dev"
+=> "0.2.2"
 
 # When using jupyter notebook
-$ docker run -it -v ${PWD}:/charty -w /charty -p 8888:8888 charty-dev:0.1
+$ docker run --rm -it -v $(pwd):/charty -p 8888:8888 charty-dev:latest
 ```
 
 ## Usage
