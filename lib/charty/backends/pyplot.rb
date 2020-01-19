@@ -73,7 +73,7 @@ module Charty
           ax.ylabel(context.ylabel) if context.ylabel
         end
 
-        palette = Charty::Palette.default
+        palette = Palette.default
         colors = palette.colors.map {|c| c.to_rgb.to_hex_string }.cycle
         case context.method
         when :bar
