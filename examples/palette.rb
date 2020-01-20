@@ -2,7 +2,7 @@
 
 require "charty"
 
-Charty::Palette.default = ARGV[0] if ARGV[0]
+Palette.default = ARGV[0] if ARGV[0]
 
 charty = Charty::Plotter.new(:pyplot)
 figure = charty.bar do

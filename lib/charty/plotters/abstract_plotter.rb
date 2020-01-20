@@ -40,12 +40,12 @@ module Charty
 
       def palette=(palette)
         @palette = case palette
-                   when nil, Charty::Palette, Symbol, String
+                   when nil, Palette, Symbol, String
                      palette
                    else
                      raise ArgumentError,
                        "invalid type for palette (given #{palette.class}, " +
-                       "expected Charty::Palette, Symbol, or String)"
+                       "expected Palette, Symbol, or String)"
                    end
       end
 
