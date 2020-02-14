@@ -1,5 +1,3 @@
-require_relative "../test_helper"
-
 class PlotMethodsBarPlotTest < Test::Unit::TestCase
   sub_test_case("function-call style") do
     test("given x and y") do

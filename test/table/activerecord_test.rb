@@ -1,6 +1,5 @@
-require 'test_helper'
-require 'active_record'
-require 'tmpdir'
+require "active_record"
+require "tmpdir"
 
 class TableActiveRecordTest < Test::Unit::TestCase
   class TestRecord < ActiveRecord::Base

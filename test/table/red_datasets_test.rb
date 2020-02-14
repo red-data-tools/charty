@@ -1,5 +1,4 @@
-require 'test_helper'
-require 'datasets'
+require "datasets"
 
 class TableRedDatasetsTest < Test::Unit::TestCase
   sub_test_case("CIFAR") do

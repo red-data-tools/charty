@@ -1,5 +1,4 @@
-require 'test_helper'
-require 'nmatrix'
+require "nmatrix"
 
 class TableNMatrixTest < Test::Unit::TestCase
   sub_test_case("an array of vectors as records") do

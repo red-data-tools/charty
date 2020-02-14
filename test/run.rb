@@ -12,6 +12,6 @@ test_dir = base_dir + "test"
 
 $LOAD_PATH.unshift(lib_dir.to_s)
 
-require_relative "test_helper"
+require_relative "helper"
 
 exit(Test::Unit::AutoRunner.run(true, test_dir.to_s))

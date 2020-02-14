@@ -1,5 +1,4 @@
-require 'test_helper'
-require 'numo/narray'
+require "numo/narray"
 
 class TableNArrayTest < Test::Unit::TestCase
   sub_test_case("an array of vectors as records") do

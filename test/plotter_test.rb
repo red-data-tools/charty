@@ -1,5 +1,3 @@
-require_relative './test_helper'
-
 class PlotterTest < Test::Unit::TestCase
   def setup
     @plotter = Charty::Plotter.new(:pyplot)

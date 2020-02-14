@@ -1,6 +1,5 @@
-require 'test_helper'
-require 'daru'
-require 'numo/narray'
+require "daru"
+require "numo/narray"
 
 class TableAdaptersTest < Test::Unit::TestCase
   sub_test_case(".find_adapter_class") do

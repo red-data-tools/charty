@@ -1,5 +1,3 @@
-require 'test_helper'
-
 class TableArrayTest < Test::Unit::TestCase
   sub_test_case("an array of arrays as records") do
     def setup

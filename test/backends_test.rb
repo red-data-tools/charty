@@ -1,4 +1,3 @@
-require_relative "./test_helper"
 require_relative "./lib/load_error_backend"
 
 class BackendsTest < Test::Unit::TestCase

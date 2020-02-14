@@ -1,5 +1,4 @@
-require 'test_helper'
-require 'daru'
+require "daru"
 
 class TableDaruTest < Test::Unit::TestCase
   def setup

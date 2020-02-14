@@ -1,5 +1,3 @@
-require 'test_helper'
-
 class TableHashTest < Test::Unit::TestCase
   def setup
     @data = {
