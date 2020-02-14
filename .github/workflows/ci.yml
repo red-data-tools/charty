@@ -10,13 +10,23 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby_version:
+          - 2.7
+          - 2.6
+          - 2.5
+          - 2.4
+          - jruby
+
     steps:
     - uses: actions/checkout@v1
 
-    - name: Set up Ruby 2.6
-      uses: actions/setup-ruby@v1
+    - name: Set up Ruby ${{ matrix.ruby_version }}
+      uses: eregon/use-ruby-action@v1
       with:
-        ruby-version: 2.6.x
+        ruby-version: ${{ matrix.ruby_version }}
 
     - name: Set up Python 3.7
       uses: actions/setup-python@v1
@@ -28,11 +38,16 @@ jobs:
         sudo apt install build-essential libsqlite3-dev
 
     - name: Install matplotlib
+      if: matrix.ruby_version != 'jruby'
       run: |
         pip install --user matplotlib
 
     - name: Build and test with Rake
       run: |
         gem install bundler
-        bundle install --jobs 4 --retry 3
+        if [ "${{ matrix.ruby_version }}" = "jruby" ]; then
+          bundle install --jobs 4 --retry 3 --without matplotlib nmatrix numo
+        else
+          bundle install --jobs 4 --retry 3
+        fi
         bundle exec rake
