@@ -1,4 +1,4 @@
-require_relative "./lib/load_error_backend"
+require "load_error_backend"
 
 class BackendsTest < Test::Unit::TestCase
   sub_test_case(".find_backend_class") do
