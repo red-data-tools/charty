@@ -18,6 +18,7 @@ class TableActiveRecordTest < Test::Unit::TestCase
   end
 
   def setup
+    adapter_name = defined?(JRUBY_VERSION) ? "jdbcsqlite3" : "sqlite3"
     TestRecord.establish_connection(adapter: "sqlite3", database: ":memory:")
     TestRecordMigration.new.exec_migration(TestRecord.connection, :up)
     TestRecord.create(id: 1, name: "foo",  rate: 0.1)

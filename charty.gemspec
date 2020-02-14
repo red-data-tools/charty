@@ -35,5 +35,4 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "red-datasets", ">= 0.0.9"
   spec.add_development_dependency "daru"
   spec.add_development_dependency "activerecord"
-  spec.add_development_dependency "sqlite3"
 end
