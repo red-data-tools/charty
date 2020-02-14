@@ -28,14 +28,12 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "red-colors"
   spec.add_dependency "red-palette", ">= 0.2.0"
+
   spec.add_development_dependency "bundler", ">= 1.16"
   spec.add_development_dependency "rake"
   spec.add_development_dependency "test-unit"
-  spec.add_development_dependency "numo-narray"
-  spec.add_development_dependency "nmatrix"
   spec.add_development_dependency "red-datasets", ">= 0.0.9"
   spec.add_development_dependency "daru"
   spec.add_development_dependency "activerecord"
   spec.add_development_dependency "sqlite3"
-  spec.add_development_dependency "matplotlib"
 end

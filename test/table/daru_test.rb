@@ -1,5 +1,3 @@
-require "daru"
-
 class TableDaruTest < Test::Unit::TestCase
   def setup
     @data = Daru::DataFrame.new(

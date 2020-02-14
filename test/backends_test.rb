@@ -3,13 +3,13 @@ require "load_error_backend"
 class BackendsTest < Test::Unit::TestCase
   sub_test_case(".find_backend_class") do
     test("find by symbol") do
-      backend_class = Charty::Backends.find_backend_class(:pyplot)
-      assert_equal(Charty::Backends::Pyplot, backend_class)
+      backend_class = Charty::Backends.find_backend_class(:plotly)
+      assert_equal(Charty::Backends::Plotly, backend_class)
     end
 
     test("find by string") do
-      backend_class = Charty::Backends.find_backend_class("pyplot")
-      assert_equal(Charty::Backends::Pyplot, backend_class)
+      backend_class = Charty::Backends.find_backend_class("plotly")
+      assert_equal(Charty::Backends::Plotly, backend_class)
     end
 
     test("unregistered backend") do

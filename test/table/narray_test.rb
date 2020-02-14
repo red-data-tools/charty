@@ -1,8 +1,13 @@
-require "numo/narray"
-
 class TableNArrayTest < Test::Unit::TestCase
+  include Charty::TestHelpers
+
+  def setup
+    numo_required
+  end
+
   sub_test_case("an array of vectors as records") do
     def setup
+      super
       @data = [
                 Numo::DFloat[1, 2, 3, 4],
                 Numo::DFloat[5, 6, 7, 8],
@@ -38,6 +43,7 @@ class TableNArrayTest < Test::Unit::TestCase
 
   sub_test_case("a vector") do
     def setup
+      super
       @data = Numo::DFloat[1, 2, 3, 4, 5]
       @table = Charty::Table.new(@data)
     end
@@ -80,6 +86,7 @@ class TableNArrayTest < Test::Unit::TestCase
 
   sub_test_case("a matrix") do
     def setup
+      super
       @data = Numo::DFloat[
                             [1, 5,  9],
                             [2, 6, 10],

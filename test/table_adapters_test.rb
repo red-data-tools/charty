@@ -1,7 +1,6 @@
-require "daru"
-require "numo/narray"
-
 class TableAdaptersTest < Test::Unit::TestCase
+  include Charty::TestHelpers
+
   sub_test_case(".find_adapter_class") do
     test("for a hash of arrays") do
       data = {
@@ -57,6 +56,8 @@ class TableAdaptersTest < Test::Unit::TestCase
     end
 
     test("for a Numo::NArray matrix") do
+      numo_required
+
       data = Numo::Int32[
                           [1, 5,  9],
                           [2, 6, 10],
@@ -68,6 +69,8 @@ class TableAdaptersTest < Test::Unit::TestCase
     end
 
     test("for a NMatrix matrix") do
+      nmatrix_required
+
       data = NMatrix.new([4, 3],
                          [
                            1, 5,  9,

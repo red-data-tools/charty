@@ -1,8 +1,13 @@
-require "nmatrix"
-
 class TableNMatrixTest < Test::Unit::TestCase
+  include Charty::TestHelpers
+
+  def setup
+    nmatrix_required
+  end
+
   sub_test_case("an array of vectors as records") do
     def setup
+      super
       @data = [
                 NMatrix[1, 2, 3, 4],
                 NMatrix[5, 6, 7, 8],
@@ -38,6 +43,7 @@ class TableNMatrixTest < Test::Unit::TestCase
 
   sub_test_case("a vector") do
     def setup
+      super
       @data = NMatrix[1, 2, 3, 4, 5]
       @table = Charty::Table.new(@data)
     end
@@ -80,6 +86,7 @@ class TableNMatrixTest < Test::Unit::TestCase
 
   sub_test_case("a matrix") do
     def setup
+      super
       @data = NMatrix[
                        [1, 5,  9],
                        [2, 6, 10],

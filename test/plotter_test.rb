@@ -1,6 +1,6 @@
 class PlotterTest < Test::Unit::TestCase
   def setup
-    @plotter = Charty::Plotter.new(:pyplot)
+    @plotter = Charty::Plotter.new(:plotly)
     @data = {
               foo: [1, 2, 3, 4, 5, 6, 7],
               square: [1, 4, 9, 16, 25, 36, 49],
