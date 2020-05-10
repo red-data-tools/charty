@@ -33,8 +33,8 @@ $ CONFIGURE_OPTS="--enable-shared" pyenv install 3.x.x
 ### With Matplotlib
 
 ```
-sudo gem install charty --pre
-sudo gem install matplotlib
+gem install charty --pre
+gem install matplotlib
 sudo apt install python3-pip
 sudo python3 -m pip install -U pip matplotlib
 ```
