@@ -83,7 +83,7 @@ module Charty
           p.x_axis_label = context.xlabel if context.xlabel
           p.y_axis_label = context.ylabel if context.ylabel
           context.series.each do |data|
-            p.data(data.label, data.xs.to_a)
+            p.dataxy(data.label, data.xs.to_a, data.ys.to_a)
           end
           p
         when :scatter
