@@ -99,7 +99,18 @@ module Charty
           # refs. https://github.com/topfunky/gruff/issues/163
           raise NotImplementedError
         when :hist
-          raise NotImplementedError
+          p = plot::Histogram.new
+          p.title = context.title if context.title
+          p.x_axis_label = context.xlabel if context.xlabel
+          p.y_axis_label = context.ylabel if context.ylabel
+          if context.range_x
+            p.minimum_bin = context.range_x.first
+            p.maximum_bin = context.range_x.last
+          end
+          context.data.each do |data|
+            p.data('', data.to_a)
+          end
+          p
         end
       end
     end
