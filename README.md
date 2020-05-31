@@ -355,7 +355,7 @@ hist.render("sample_images/hist_pyplot.png")
 
 #### Gruff
 
-Not supported
+![hist_gruff](https://raw.githubusercontent.com/red-data-tools/charty/master/examples/sample_images/hist_gruff.png)
 
 #### Rubyplot
 
