@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/red-data-tools/charty.svg?branch=master)](https://travis-ci.org/red-data-tools/charty)
 [![Gem Version](https://badge.fury.io/rb/charty.svg)](https://badge.fury.io/rb/charty)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/red-data-tools/charty/master?filepath=iris_dataset.ipynb)
-[![docs](https://img.shields.io/badge/docs-stable-blue.svg)](https://rubydoc.info/gems/charty)
+[![Docs](https://img.shields.io/badge/docs-stable-blue.svg)](https://rubydoc.info/gems/charty)
 
 Charty is open-source Ruby library for visualizing your data in a simple way.
 In Charty, you need to write very few lines of code for representing what you want to do.
