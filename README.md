@@ -1,6 +1,6 @@
 # Charty - Visualizing your data in Ruby
 
-[![Build Status](https://travis-ci.org/red-data-tools/charty.svg?branch=master)](https://travis-ci.org/red-data-tools/charty)
+![Build Status](https://github.com/red-data-tools/charty/workflows/CI/badge.svg)
 [![Gem Version](https://badge.fury.io/rb/charty.svg)](https://badge.fury.io/rb/charty)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/red-data-tools/charty/master?filepath=iris_dataset.ipynb)
 [![Docs](https://img.shields.io/badge/docs-stable-blue.svg)](https://rubydoc.info/gems/charty)
