@@ -8,8 +8,8 @@ class PlotMethodsBarPlotTest < Test::Unit::TestCase
       fig = Charty.bar_plot(x: x, y: y)
       assert_instance_of(Charty::Plotters::BarPlotter, fig)
       assert_equal({
-                     x: x,
-                     y: y,
+                     x: Charty::Vector.new(x),
+                     y: Charty::Vector.new(y),
                      color: nil,
                      data: nil,
                      palette: nil,
@@ -65,8 +65,8 @@ class PlotMethodsBarPlotTest < Test::Unit::TestCase
       end
       assert_instance_of(Charty::Plotters::BarPlotter, fig)
       assert_equal({
-                     x: x,
-                     y: y,
+                     x: Charty::Vector.new(x),
+                     y: Charty::Vector.new(y),
                      color: nil,
                      data: nil,
                      palette: nil,

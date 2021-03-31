@@ -300,6 +300,28 @@ module Charty
         end
       end
 
+      def scatter(x, y, color=nil, style=nil, size=nil)
+        kwd = {}
+        kwd[:edgecolor] = "w"
+
+        ax = @pyplot.gca
+        points = ax.scatter(x.to_a, y.to_a, **kwd)
+
+        unless color.nil?
+          color = color.map(&:to_hex_string)
+          points.set_facecolors(color)
+        end
+
+        unless style.nil?
+        end
+
+        unless size.nil?
+        end
+
+        sizes = points.get_sizes
+        points.set_linewidths(0.08 * Numpy.sqrt(Numpy.percentile(sizes, 10)))
+      end
+
       def set_xlabel(label)
         @pyplot.gca.set_xlabel(String(label))
       end

@@ -5,3 +5,7 @@ require_relative "plotters/categorical_plotter"
 require_relative "plotters/bar_plotter"
 require_relative "plotters/box_plotter"
 require_relative "plotters/count_plotter"
+
+require_relative "plotters/vector_plotter"
+require_relative "plotters/relational_plotter"
+require_relative "plotters/scatter_plotter"

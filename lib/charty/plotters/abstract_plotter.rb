@@ -43,6 +43,7 @@ module Charty
         end
       end
 
+      # TODO: move to categorical_plotter
       def key_color=(key_color)
         #@key_color = XXX
         unless key_color.nil?
@@ -70,10 +71,12 @@ module Charty
 
       private def check_dimension(value, name)
         case value
-        when nil, Symbol, String, method(:array?)
+        when nil, Symbol, String
           value
         when ->(x) { x.respond_to?(:to_str) }
           value.to_str
+        when method(:array?)
+          Charty::Vector.new(value)
         else
           raise ArgumentError,
                 "invalid type of dimension for #{name} (given #{value.inspect})",
