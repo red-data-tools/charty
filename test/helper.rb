@@ -21,12 +21,8 @@ end
 
 module Charty
   module TestHelpers
-    @numo_available = defined?(::Numo::NArray)
-    @nmatrix_available = defined?(::NMatrix::VERSION::STRING)
-    @matplotlib_available = defined?(::Matplotlib)
-
     module_function def numo_available?
-      @numo_available
+      defined?(::Numo::NArray)
     end
 
     module_function def numo_required
@@ -34,7 +30,7 @@ module Charty
     end
 
     module_function def nmatrix_available?
-      @nmatrix_available
+      defined?(::NMatrix::VERSION::STRING)
     end
 
     module_function def nmatrix_required
@@ -46,7 +42,7 @@ module Charty
     end
 
     module_function def matplotlib_required
-      omit("Matplotlib is requried") unless matplotlib_available?
+      defined?(::Matplotlib)
     end
 
     def assert_near(c1, c2, eps=1e-8)
