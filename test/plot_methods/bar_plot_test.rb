@@ -3,7 +3,7 @@ class PlotMethodsBarPlotTest < Test::Unit::TestCase
     test("given x and y") do
       x = [1, 2, 3, 4, 5]
       y = [10, 20, 30, 25, 15]
-      fig = Charty.bar_plot(x, y)
+      fig = Charty.bar_plot(x: x, y: y)
       assert_instance_of(Charty::Plotters::BarPlotter, fig)
       assert_equal({
                      x: x,
@@ -30,7 +30,7 @@ class PlotMethodsBarPlotTest < Test::Unit::TestCase
         x: [1, 2, 3, 4, 5],
         y: [10, 20, 30, 25, 15]
       }
-      fig = Charty.bar_plot(:x, :y, data: data)
+      fig = Charty.bar_plot(x: :x, y: :y, data: data)
       assert_instance_of(Charty::Plotters::BarPlotter, fig)
       assert_equal({
                      x: :x,
