@@ -1,4 +1,4 @@
-name: CI
+name: CI with matplotlib
 
 on:
   push:
@@ -12,8 +12,9 @@ on:
 
 jobs:
   test:
-    name: ${{ matrix.os }}/${{ matrix.ruby }}
+    name: ${{ matrix.os }}/${{ matrix.ruby }}/${{ matrix.python }}-${{ matrix.python_architecture }}
     runs-on: ${{ matrix.os }}
+
     strategy:
       fail-fast: false
       matrix:
@@ -24,16 +25,27 @@ jobs:
         - "3.0"
         - 2.7
         - 2.6
+        python:
+        - 3.x
+        - 2.x
+        python_architecture:
+        - x64
         include:
-        - { os: ubuntu-20.04 , ruby: head }
+        - { os: ubuntu-20.04 , ruby: head , python: 3.x , python_architecture: x64 }
 
     steps:
     - uses: actions/checkout@v2
 
-    - name: Set up Ruby
+    - name: Setup Ruby
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
+
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python }}
+        architecture: ${{ matrix.python_architecture }}
 
     - uses: actions/cache@v2
       if: runner.os == 'Linux'
@@ -48,8 +60,8 @@ jobs:
       with:
         path: |
           ~/Library/Caches/red-datasets
-        key: ${{ runner.os }}-${{ hashFiles('lib/**') }}
-        restore-keys: ${{ runner.os }}-
+          key: ${{ runner.os }}-${{ hashFiles('lib/**') }}
+          restore-keys: ${{ runner.os }}-
 
     - uses: actions/cache@v2
       if: |
@@ -62,10 +74,12 @@ jobs:
 
     - run: sudo apt install build-essential libsqlite3-dev
 
-    - run: bundle install --jobs 4 --retry 3 --without matplotlib
+    - run: pip install --user matplotlib
+
+    - run: bundle install --jobs 4 --retry 3 --without "nmatrix numo"
+
+    - run: python -V
 
     - run: bundle exec rake
-
-    - run: rake build
-
-    - run: gem install --user pkg/*.gem
+      env:
+        PYTHON: python
