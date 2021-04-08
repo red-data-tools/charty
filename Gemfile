@@ -16,3 +16,7 @@ end
 group :numo do
   gem "numo-narray"
 end
+
+group :python do
+  gem "pandas"
+end
