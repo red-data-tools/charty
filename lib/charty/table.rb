@@ -25,12 +25,11 @@ module Charty
 
     attr_reader :adapter
 
+    def_delegators :adapter, :columns, :columns=
+    def_delegators :adapter, :index, :index=
+
     def_delegator :@adapter, :column_names
     def_delegator :@adapter, :data, :raw_data
-
-    def columns
-      @column_accessor ||= ColumnAccessor.new(@adapter)
-    end
 
     def [](*args)
       n_args = args.length
