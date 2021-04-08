@@ -68,6 +68,65 @@ class TableHashTest < Test::Unit::TestCase
         values = [@table.index.name]
         @table.index.name = "abc"
         values << @table.index.name
+        assert_equal([nil, "abc"], values)
+      end
+    end
+  end
+
+  sub_test_case("#columns") do
+    sub_test_case("default columns") do
+      def test_columns
+        assert_equal({
+                       class: Charty::Index,
+                       length: 3,
+                       values: [:foo, :bar, :baz],
+                     },
+                     {
+                       class: @table.columns.class,
+                       length: @table.columns.length,
+                       values: @table.columns.to_a
+                     })
+      end
+    end
+
+    sub_test_case("with range columns") do
+      def test_columns
+        @table.columns = 3...6
+        assert_equal({
+                       class: Charty::RangeIndex,
+                       length: 3,
+                       values: [3, 4 ,5],
+                     },
+                     {
+                       class: @table.columns.class,
+                       length: @table.columns.length,
+                       values: @table.columns.to_a
+                     })
+      end
+    end
+
+    sub_test_case("with string columns") do
+      def test_columns
+        @table.columns = ["a", "b", "c"]
+        assert_equal({
+                       class: Charty::Index,
+                       length: 3,
+                       values: ["a", "b", "c"],
+                     },
+                     {
+                       class: @table.columns.class,
+                       length: @table.columns.length,
+                       values: @table.columns.to_a
+                     })
+      end
+    end
+
+    sub_test_case(".name") do
+      def test_columns_name
+        values = [@table.columns.name]
+        @table.columns.name = "abc"
+        values << @table.columns.name
+        assert_equal([nil, "abc"], values)
       end
     end
   end
