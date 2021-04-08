@@ -8,6 +8,70 @@ class TableHashTest < Test::Unit::TestCase
     @table = Charty::Table.new(@data)
   end
 
+  test("new with explicit columns") do
+    omit("TODO")
+    table = Charty::Table.new(@data, columns: [:a, :b, :c])
+    assert_equal([:a, :b, :c],
+                 table.index.to_a)
+  end
+
+  sub_test_case("#index") do
+    sub_test_case("without explicit index") do
+      def test_index
+        assert_equal({
+                       class: Charty::RangeIndex,
+                       length: 5,
+                       values: [0, 1, 2, 3, 4],
+                     },
+                     {
+                       class: @table.index.class,
+                       length: @table.index.length,
+                       values: @table.index.to_a
+                     })
+      end
+    end
+
+    sub_test_case("with explicit range index") do
+      def test_index
+        @table.index = 10...15
+        assert_equal({
+                       class: Charty::RangeIndex,
+                       length: 5,
+                       values: [10, 11, 12, 13, 14],
+                     },
+                     {
+                       class: @table.index.class,
+                       length: @table.index.length,
+                       values: @table.index.to_a
+                     })
+      end
+    end
+
+    sub_test_case("with explicit string index") do
+      def test_index
+        @table.index = ["a", "b", "c", "d", "e"]
+        assert_equal({
+                       class: Charty::Index,
+                       length: 5,
+                       values: ["a", "b", "c", "d", "e"]
+                     },
+                     {
+                       class: @table.index.class,
+                       length: @table.index.length,
+                       values: @table.index.to_a
+                     })
+      end
+    end
+
+    sub_test_case(".name") do
+      def test_index_name
+        values = [@table.index.name]
+        @table.index.name = "abc"
+        values << @table.index.name
+      end
+    end
+  end
+
   test("#column_names") do
     assert_equal([:foo, :bar, :baz],
                  @table.column_names)

@@ -39,10 +39,13 @@ module Charty
         end
       end
 
-      def initialize(data, columns: nil)
+      def initialize(data, columns: nil, index: nil)
         case data
         when Hash
           @data = data
+          if columns
+            # TODO: replace columns
+          end
         when Array
           case data[0]
           when Numeric, String, Time, Date
@@ -59,11 +62,48 @@ module Charty
         else
           unsupported_data_format
         end
+
+        case index
+        when nil
+          self.index = RangeIndex.new(0 ... length)
+        when Array
+          self.index = index
+        else
+          raise ArgumentError, "invalid value for index: %p" % index
+        end
       end
 
       attr_reader :data
 
       def_delegator :@data, :keys, :column_names
+
+      def length
+        data[column_names[0]].length
+      end
+
+      attr_reader :index
+
+      def index=(values)
+        case values
+        when Index, Range
+        else
+          unless (ary = Array.try_convert(values))
+            raise ArgumentError, "invalid index object: %p" % values
+          end
+          values = ary
+        end
+        if length != values.size
+          raise ArgumentError, "invalid index length (%d for %d)" % [values.size, length]
+        end
+        case values
+        when Index
+          @index = values
+        when Range
+          @index = RangeIndex.new(values)
+        when Array
+          @index = Index.new(values)
+        end
+      end
 
       def [](row, column)
         if row
