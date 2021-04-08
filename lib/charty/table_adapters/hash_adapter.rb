@@ -63,14 +63,8 @@ module Charty
           unsupported_data_format
         end
 
-        case index
-        when nil
-          self.index = RangeIndex.new(0 ... length)
-        when Array
-          self.index = index
-        else
-          raise ArgumentError, "invalid value for index: %p" % index
-        end
+        self.columns = columns || Index.new(@data.keys)
+        self.index = index || RangeIndex.new(0 ... length)
       end
 
       attr_reader :data
@@ -81,27 +75,38 @@ module Charty
         data[column_names[0]].length
       end
 
+      attr_reader :columns
+
+      def columns=(values)
+        @columns = check_and_convert_index(values, :columns, data.length)
+      end
+
       attr_reader :index
 
       def index=(values)
+        @index = check_and_convert_index(values, :index, length)
+      end
+
+      private def check_and_convert_index(values, name, expected_length)
         case values
         when Index, Range
         else
           unless (ary = Array.try_convert(values))
-            raise ArgumentError, "invalid index object: %p" % values
+            raise ArgumentError, "invalid object for %s: %p" % [name, values]
           end
           values = ary
         end
-        if length != values.size
-          raise ArgumentError, "invalid index length (%d for %d)" % [values.size, length]
+        if expected_length != values.size
+          raise ArgumentError,
+                "invalid length for %s (%d for %d)" % [name, values.size, expected_length]
         end
         case values
         when Index
-          @index = values
+          values
         when Range
-          @index = RangeIndex.new(values)
+          RangeIndex.new(values)
         when Array
-          @index = Index.new(values)
+          Index.new(values)
         end
       end
 
