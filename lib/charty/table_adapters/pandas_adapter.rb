@@ -1,8 +1,11 @@
+require "forwardable"
+
 module Charty
   module TableAdapters
     class PandasDataFrameAdapter
       TableAdapters.register(:pandas_data_frame, self)
 
+      extend Forwardable
       include Enumerable
 
       def self.supported?(data)
@@ -14,6 +17,9 @@ module Charty
       end
 
       attr_reader :data
+
+      def_delegators :data, :columns, :columns=
+      def_delegators :data, :index, :index=
 
       def column_names
         @data.columns.to_a
