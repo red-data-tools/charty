@@ -23,6 +23,7 @@ module Charty
       def_delegators :data, :index, :index=
       def_delegators :data, :name, :name=
       def_delegators :data, :[], :[]=
+      def_delegators :data, :to_a
     end
   end
 end
