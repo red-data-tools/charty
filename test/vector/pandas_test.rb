@@ -77,4 +77,9 @@ class VectorPandasTest < Test::Unit::TestCase
       end
     end
   end
+
+  test("#to_a") do
+    assert_equal([1, 2, 3, 4, 5],
+                 @vector.to_a)
+  end
 end
