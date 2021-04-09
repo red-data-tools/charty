@@ -1,9 +1,7 @@
 module Charty
   module TableAdapters
-    class ActiveRecordAdapter
+    class ActiveRecordAdapter < BaseAdapter
       TableAdapters.register(:active_record, self)
-
-      include Enumerable
 
       def self.supported?(data)
         defined?(ActiveRecord::Relation) && data.is_a?(ActiveRecord::Relation)
@@ -12,17 +10,26 @@ module Charty
       def initialize(data)
         @data = check_type(ActiveRecord::Relation, data, :data)
         @column_names = @data.column_names.freeze
-        @columns = nil
+        self.columns = Index.new(@column_names)
+        self.index = RangeIndex.new(0 ... length)
       end
 
-      attr_reader :column_names, :data
+      attr_reader :data, :column_names
+
+      def_delegators :data, :size
+
+      alias length size
+
+      def column_length
+        column_names.length
+      end
 
       def [](row, column)
-        fetch_records unless @columns
+        fetch_records unless @columns_cache
         if row
-          @columns[resolve_column_index(column)][row]
+          @columns_cache[resolve_column_index(column)][row]
         else
-          @columns[resolve_column_index(column)]
+          @columns_cache[resolve_column_index(column)]
         end
       end
 
@@ -43,7 +50,7 @@ module Charty
       end
 
       private def fetch_records
-        @columns = @data.pluck(*column_names).transpose
+        @columns_cache = @data.pluck(*column_names).transpose
       end
 
       private def check_type(type, data, name)
