@@ -14,6 +14,8 @@ module Charty
 
     def_delegators :@values, :length, :size, :each, :to_a
 
+    private attr_reader :values
+
     def [](i)
       case i
       when 0 ... length
@@ -21,6 +23,10 @@ module Charty
       else
         raise IndexError, "index out of range"
       end
+    end
+
+    def loc(key)
+      values.index(key)
     end
   end
 
@@ -43,6 +49,15 @@ module Charty
         values.begin + i
       else
         raise IndexError, "index out of range"
+      end
+    end
+
+    def loc(key)
+      case key
+      when Integer
+        if values.cover?(key)
+          return key - values.begin
+        end
       end
     end
   end
