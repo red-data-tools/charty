@@ -11,6 +11,7 @@ module Charty
 
     attr_reader :adapter
 
+    def_delegators :adapter, :data
     def_delegators :adapter, :index, :index=
     def_delegators :adapter, :[], :[]=
 
