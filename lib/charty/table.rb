@@ -25,6 +25,8 @@ module Charty
 
     attr_reader :adapter
 
+    def_delegators :adapter, :length, :column_length
+
     def_delegators :adapter, :columns, :columns=
     def_delegators :adapter, :index, :index=
 

@@ -8,6 +8,11 @@ class TableArrayTest < Test::Unit::TestCase
       @table = Charty::Table.new(@data)
     end
 
+    def test_shape
+      assert_equal([2, 4],
+                   [@table.length, @table.column_length])
+    end
+
     sub_test_case("#index") do
       sub_test_case("without explicit index") do
         def test_index
