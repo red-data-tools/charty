@@ -15,6 +15,7 @@ module Charty
   end
 end
 
+require_relative 'table_adapters/base_adapter'
 require_relative 'table_adapters/hash_adapter'
 require_relative 'table_adapters/narray_adapter'
 require_relative 'table_adapters/datasets_adapter'
