@@ -1,8 +1,21 @@
+require "delegate"
+
 module Charty
   module TableAdapters
     class DaruAdapter
       TableAdapters.register(:daru, self)
 
+      class IndexAdapter < SimpleDelegator
+        def initialize(index)
+          super
+        end
+
+        def length
+          size
+        end
+      end
+
+      extend Forwardable
       include Enumerable
 
       def self.supported?(data)
@@ -14,6 +27,20 @@ module Charty
       end
 
       attr_reader :data
+
+      def index
+        IndexAdapter.new(data.index)
+      end
+
+      def_delegator :data, :index=
+
+      def columns
+        IndexAdapter.new(data.vectors)
+      end
+
+      def columns=(values)
+        data.vectors = Daru::Index.coerce(values)
+      end
 
       def column_names
         @data.vectors.to_a
