@@ -30,7 +30,7 @@ module Charty
 
       def_delegators :data, :length, :size
       def_delegators :data, :[], :[]=
-      def_delegators :data, :to_a
+      def_delegators :data, :each, :to_a
     end
 
     module NameSupport
@@ -107,5 +107,6 @@ module Charty
 end
 
 require_relative "vector_adapters/array_adapter"
+require_relative "vector_adapters/daru_adapter"
 require_relative "vector_adapters/narray_adapter"
 require_relative "vector_adapters/pandas_adapter"
