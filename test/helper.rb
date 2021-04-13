@@ -30,6 +30,7 @@ module Charty
     end
 
     module_function def nmatrix_available?
+      return false if RUBY_VERSION >= "3.0" # SEGV occurs in NMatrix on Ruby >= 3.0
       defined?(::NMatrix::VERSION::STRING)
     end
 
