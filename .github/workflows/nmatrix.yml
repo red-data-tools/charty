@@ -1,4 +1,4 @@
-name: CI
+name: CI with NMatrix
 
 on:
   push:
@@ -19,13 +19,9 @@ jobs:
       matrix:
         os:
         - ubuntu-20.04
-        - ubuntu-18.04
         ruby:
-        - "3.0"
         - 2.7
         - 2.6
-        include:
-        - { os: ubuntu-20.04 , ruby: head }
 
     steps:
     - uses: actions/checkout@v2
@@ -62,7 +58,7 @@ jobs:
 
     - run: sudo apt install build-essential libsqlite3-dev
 
-    - run: bundle install --jobs 4 --retry 3 --without "matplotlib nmatrix"
+    - run: bundle install --jobs 4 --retry 3 --without "matplotlib numo"
 
     - run: bundle exec rake
 
