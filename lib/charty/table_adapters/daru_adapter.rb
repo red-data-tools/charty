@@ -50,7 +50,7 @@ module Charty
         if row
           @data[column][row]
         else
-          @data[column]
+          Vector.new(@data[column])
         end
       end
 

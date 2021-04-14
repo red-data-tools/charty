@@ -37,7 +37,7 @@ module Charty
           return nil if record.nil?
           record[column]
         else
-          @table[column]
+          Vector.new(@table[column])
         end
       end
     end

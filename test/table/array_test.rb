@@ -136,21 +136,31 @@ class TableArrayTest < Test::Unit::TestCase
 
     sub_test_case("#[]") do
       test("row index and column name") do
-        assert_equal(1,
-                     @table[0, "X0"])
-        assert_equal(7,
-                     @table[1, "X2"])
+        assert_equal({
+                       [0, "X0"] => 1,
+                       [1, "X2"] => 7,
+                     },
+                     {
+                       [0, "X0"] => @table[0, "X0"],
+                       [1, "X2"] => @table[1, "X2"]
+                     })
       end
 
       test("column name only") do
-        assert_equal([1, 5],
-                     @table["X0"])
-        assert_equal([2, 6],
-                     @table["X1"])
-        assert_equal([3, 7],
-                     @table["X2"])
-        assert_equal([4, 8],
-                     @table["X3"])
+        assert_equal({
+                       class: Charty::Vector,
+                       X0: [1, 5],
+                       X1: [2, 6],
+                       X2: [3, 7],
+                       X3: [4, 8]
+                     },
+                     {
+                       class: @table["X0"].class,
+                       X0: @table["X0"].data,
+                       X1: @table["X1"].data,
+                       X2: @table["X2"].data,
+                       X3: @table["X3"].data
+                     })
       end
     end
   end
@@ -291,8 +301,10 @@ class TableArrayTest < Test::Unit::TestCase
       end
 
       test("column name only") do
+        assert_equal(Charty::Vector,
+                     @table["X0"].class)
         assert_equal([1, 2, 3, 4, 5],
-                     @table["X0"])
+                     @table["X0"].data)
       end
     end
   end

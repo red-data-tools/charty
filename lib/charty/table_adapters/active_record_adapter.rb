@@ -29,7 +29,7 @@ module Charty
         if row
           @columns_cache[resolve_column_index(column)][row]
         else
-          @columns_cache[resolve_column_index(column)]
+          Vector.new(@columns_cache[resolve_column_index(column)])
         end
       end
 
