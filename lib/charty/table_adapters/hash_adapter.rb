@@ -25,6 +25,8 @@ module Charty
 
       def self.array?(data)
         case data
+        when Charty::Vector
+          true
         when Array,
              ->(x) { defined?(Numo::NArray) && x.is_a?(Numo::NArray) },
              ->(x) { defined?(Daru::Vector) && x.is_a?(Daru::Vector) },
@@ -79,7 +81,7 @@ module Charty
         if row
           @data[column][row]
         else
-          @data[column]
+          Vector.new(@data[column])
         end
       end
 

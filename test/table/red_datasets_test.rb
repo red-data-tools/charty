@@ -25,8 +25,10 @@ class TableRedDatasetsTest < Test::Unit::TestCase
 
       test("column name only") do
         label_column = @data.map(&:label)
+        assert_equal(Charty::Vector,
+                     @table[:label].class)
         assert_equal(label_column,
-                     @table[:label])
+                     @table[:label].data)
       end
     end
   end
@@ -67,8 +69,10 @@ class TableRedDatasetsTest < Test::Unit::TestCase
 
       test("column name only") do
         race_column = @data.map(&:race)
+        assert_equal(Charty::Vector,
+                     @table[:race].class)
         assert_equal(race_column,
-                     @table[:race])
+                     @table[:race].data)
       end
     end
   end
@@ -99,8 +103,10 @@ class TableRedDatasetsTest < Test::Unit::TestCase
 
       test("column name only") do
         sepal_width_column = @data.map(&:sepal_width)
+        assert_equal(Charty::Vector,
+                     @table[:sepal_width].class)
         assert_equal(sepal_width_column,
-                     @table[:sepal_width])
+                     @table[:sepal_width].data)
       end
     end
   end
@@ -149,8 +155,10 @@ class TableRedDatasetsTest < Test::Unit::TestCase
 
       test("column name only") do
         odor_column = @data.map(&:odor)
+        assert_equal(Charty::Vector,
+                     @table[:odor].class)
         assert_equal(odor_column,
-                     @table[:odor])
+                     @table[:odor].data)
       end
     end
   end
@@ -191,8 +199,10 @@ class TableRedDatasetsTest < Test::Unit::TestCase
 
       test("column name only") do
         prefecture_column = @data.map(&:prefecture)
+        assert_equal(Charty::Vector,
+                     @table[:prefecture].class)
         assert_equal(prefecture_column,
-                     @table[:prefecture])
+                     @table[:prefecture].data)
       end
     end
   end
@@ -232,8 +242,10 @@ class TableRedDatasetsTest < Test::Unit::TestCase
 
       test("column name only") do
         hue_column = @data.map(&:hue)
+        assert_equal(Charty::Vector,
+                     @table[:hue].class)
         assert_equal(hue_column,
-                     @table[:hue])
+                     @table[:hue].data)
       end
     end
   end

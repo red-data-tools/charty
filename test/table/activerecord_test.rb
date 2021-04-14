@@ -167,12 +167,14 @@ class TableActiveRecordTest < Test::Unit::TestCase
       end
 
       test("column name only") do
+        assert_equal(Charty::Vector,
+                     @table["id"].class)
         assert_equal([1, 2, 3, 4, 5],
-                     @table["id"])
+                     @table["id"].data)
         assert_equal(["foo", "bar", "baz", "qux", "quux"],
-                     @table["name"])
+                     @table["name"].data)
         assert_equal([0.1, 0.2, 0.3, 0.4, 0.5],
-                     @table["rate"])
+                     @table["rate"].data)
       end
     end
 
@@ -185,12 +187,14 @@ class TableActiveRecordTest < Test::Unit::TestCase
       end
 
       test("column name only") do
+        assert_equal(Charty::Vector,
+                     @table[:id].class)
         assert_equal([1, 2, 3, 4, 5],
-                     @table[:id])
+                     @table[:id].data)
         assert_equal(["foo", "bar", "baz", "qux", "quux"],
-                     @table[:name])
+                     @table[:name].data)
         assert_equal([0.1, 0.2, 0.3, 0.4, 0.5],
-                     @table[:rate])
+                     @table[:rate].data)
       end
     end
   end

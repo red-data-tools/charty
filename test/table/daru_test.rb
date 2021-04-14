@@ -149,6 +149,8 @@ class TableDaruTest < Test::Unit::TestCase
     end
 
     test("column name only") do
+      assert_equal(Charty::Vector,
+                   @table["Beer"].class)
       assert_equal(Daru::Vector.new([
                      "Kingfisher",
                      "Snow",
@@ -156,7 +158,7 @@ class TableDaruTest < Test::Unit::TestCase
                      "Tiger Beer",
                      "Budweiser",
                    ]),
-                   @table["Beer"])
+                   @table["Beer"].data)
       assert_equal(Daru::Vector.new([
                      500,
                      400,
@@ -164,7 +166,7 @@ class TableDaruTest < Test::Unit::TestCase
                      200,
                      250,
                    ]),
-                   @table["Gallons sold"])
+                   @table["Gallons sold"].data)
     end
   end
 end

@@ -26,7 +26,7 @@ module Charty
         if row
           @data[row, resolve_column_index(column)]
         else
-          @data[true, resolve_column_index(column)]
+          Charty::Vector.new(@data[true, resolve_column_index(column)])
         end
       end
 

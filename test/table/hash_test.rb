@@ -143,12 +143,14 @@ class TableHashTest < Test::Unit::TestCase
     end
 
     test("column name only") do
+      assert_equal(Charty::Vector,
+                   @table[:foo].class)
       assert_equal([1, 2, 3, 4, 5],
-                   @table[:foo])
+                   @table[:foo].to_a)
       assert_equal([10, 20, 30, 40, 50],
-                   @table[:bar])
+                   @table[:bar].to_a)
       assert_equal([100, 200, 300, 400, 500],
-                   @table[:baz])
+                   @table[:baz].to_a)
     end
   end
 end

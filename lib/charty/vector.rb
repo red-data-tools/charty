@@ -3,6 +3,7 @@ require "forwardable"
 module Charty
   class Vector
     extend Forwardable
+    include Enumerable
 
     def initialize(data)
       adapter_class = VectorAdapters.find_adapter_class(data)
@@ -21,5 +22,6 @@ module Charty
     alias size length
 
     def_delegators :adapter, :to_a
+    def_delegators :adapter, :each
   end
 end

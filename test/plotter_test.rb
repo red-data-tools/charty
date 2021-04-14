@@ -11,11 +11,11 @@ class PlotterTest < Test::Unit::TestCase
   test("#table=") do
     @plotter.table = @data
     assert_equal(@data[:foo],
-                 @plotter.table[:foo])
+                 @plotter.table[:foo].data)
     assert_equal(@data[:square],
-                 @plotter.table[:square])
+                 @plotter.table[:square].data)
     assert_equal(@data[:cubic],
-                 @plotter.table[:cubic])
+                 @plotter.table[:cubic].data)
   end
 
   test("#to_bar") do
@@ -24,8 +24,8 @@ class PlotterTest < Test::Unit::TestCase
     assert_kind_of(Charty::RenderContext,
                    context)
     assert_equal(@data[:foo],
-                 context.series[0].xs)
+                 context.series[0].xs.to_a)
     assert_equal(@data[:cubic],
-                 context.series[0].ys)
+                 context.series[0].ys.to_a)
   end
 end
