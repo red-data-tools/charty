@@ -14,6 +14,45 @@ module Charty
         @order = Array(order).map(&method(:normalize_name))
       end
 
+      attr_reader :orient
+
+      def orient=(orient)
+        @orient = check_orient(orient)
+      end
+
+      private def check_orient(value)
+        case value
+        when nil, :v, :h
+          value
+        when "v", "h"
+          value.to_sym
+        else
+          raise ArgumentError,
+                "invalid value for orient (#{value.inspect} for nil, :v, or :h)"
+        end
+      end
+
+      attr_reader :saturation
+
+      def saturation=(saturation)
+        @saturation = check_saturation(saturation)
+      end
+
+      private def check_saturation(value)
+        case value
+        when 0..1
+          value
+        when Numeric
+          raise ArgumentError,
+                "saturation is out of range (%p for 0..1)" % value
+        else
+          raise ArgumentError,
+                "invalid value for saturation (%p for a value in 0..1)" % value
+        end
+      end
+
+      include EstimationSupport
+
       private def normalize_name(value)
         case value
         when String, Symbol
@@ -27,8 +66,10 @@ module Charty
 
       private def setup_variables
         if x.nil? && y.nil?
+          @input_format = :wide
           setup_variables_with_wide_form_dataset
         else
+          @input_format = :long
           setup_variables_with_long_form_dataset
         end
       end
@@ -72,7 +113,7 @@ module Charty
         [x, y].each do |input|
           next if array?(input)
           raise RuntimeError,
-                "Could not interpret interpret input `#{input.inspect}`"
+                "Could not interpret input `#{input.inspect}`"
         end
 
         if x.nil? || y.nil?
