@@ -5,6 +5,17 @@ module Charty
     extend Forwardable
     include Enumerable
 
+    def self.try_convert(obj)
+      case obj
+      when self
+        obj
+      else
+        if VectorAdapters.find_adapter_class(obj, exception: false)
+          new(obj)
+        end
+      end
+    end
+
     def initialize(data)
       adapter_class = VectorAdapters.find_adapter_class(data)
       @adapter = adapter_class.new(data)

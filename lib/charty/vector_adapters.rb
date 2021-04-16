@@ -10,11 +10,13 @@ module Charty
       @adapters[name] = adapter_class
     end
 
-    def self.find_adapter_class(data)
+    def self.find_adapter_class(data, exception: true)
       @adapters.each_value do |adapter_class|
         return adapter_class if adapter_class.supported?(data)
       end
-      raise UnsupportedVectorData, "Unsupported vector data (#{data.class})"
+      if exception
+        raise UnsupportedVectorData, "Unsupported vector data (#{data.class})"
+      end
     end
 
     class BaseAdapter
