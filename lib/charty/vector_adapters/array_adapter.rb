@@ -12,7 +12,7 @@ module Charty
         case data
         when Array
           case data[0]
-          when Numeric, String, Time, Date, DateTime, true, false
+          when Numeric, String, Time, Date, DateTime, true, false, nil
             true
           else
             false
@@ -29,6 +29,52 @@ module Charty
 
       include NameSupport
       include IndexSupport
+
+      def numeric?
+        data.each do |x|
+          case x
+          when nil
+            next
+          when Numeric
+            return true
+          else
+            return false
+          end
+        end
+      end
+
+      def categorical?
+        false
+      end
+
+      def categories
+        nil
+      end
+
+      def_delegator :data, :uniq, :unique_values
+
+      def group_by(grouper)
+        groups = data.each_index.group_by {|i| grouper[i] }
+        groups.map { |g, vals|
+          vals.collect! {|i| self[i] }
+          [g, Charty::Vector.new(vals)]
+        }.to_h
+      end
+
+      def drop_na
+        if numeric?
+          Charty::Vector.new(data.reject { |x|
+            case x
+            when Float
+              x.nan?
+            else
+              x.nil?
+            end
+          })
+        else
+          Charty::Vector.new(data.compact)
+        end
+      end
     end
   end
 end

@@ -23,5 +23,11 @@ module Charty
 
     def_delegators :adapter, :to_a
     def_delegators :adapter, :each
+
+    def_delegators :adapter, :categorical?, :numeric?
+    def_delegators :adapter, :categories
+    def_delegators :adapter, :unique_values
+    def_delegators :adapter, :group_by
+    def_delegators :adapter, :drop_na
   end
 end
