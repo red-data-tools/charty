@@ -165,15 +165,45 @@ module Charty
         # do nothing
       end
 
-      def bar(bar_pos, values, color: nil, width: 0.8r, align: :center, orient: :v)
+      def bar(bar_pos, values, colors, orient, width: 0.8r, align: :center,
+              conf_int: nil, error_colors: nil, error_width: nil, cap_size: nil)
         bar_pos = Array(bar_pos)
         values = Array(values)
-        color = Array(color).map(&:to_hex_string)
+        colors = Array(colors).map(&:to_hex_string)
         width = Float(width)
+        error_colors = Array(error_colors).map(&:to_hex_string)
+
+        ax = @pyplot.gca
         if orient == :v
-          @pyplot.bar(bar_pos, values, width: width, color: color, align: align)
+          ax.bar(bar_pos, values, width: width, color: colors, align: align)
         else
-          @pyplot.barh(bar_pos, values, width: width, color: color, align: align)
+          ax.barh(bar_pos, values, width: width, color: colors, align: align)
+        end
+
+        confidence_intervals(ax, bar_pos, conf_int, orient, error_colors, error_width, cap_size)
+      end
+
+      private def confidence_intervals(ax, at_group, conf_int, orient, colors, error_width=nil, cap_size=nil, **options)
+        options[:lw] = error_width || Matplotlib.rcParams["lines.linewidth"] * 1.8
+
+        at_group.each_index do |i|
+          at = at_group[i]
+          ci_low, ci_high = conf_int[i]
+          color = colors[i]
+
+          if orient == :v
+            ax.plot([at, at], [ci_low, ci_high], color: color, **options)
+            unless cap_size.nil?
+              ax.plot([at - cap_size / 2.0, at + cap_size / 2.0], [ci_low,  ci_low],  color: color, **options)
+              ax.plot([at - cap_size / 2.0, at + cap_size / 2.0], [ci_high, ci_high], color: color, **options)
+            end
+          else
+            ax.plot([ci_low, ci_high], [at, at], color: color, **options)
+            unless cap_size.nil?
+              ax.plot([ci_low,  ci_low],  [at - cap_size / 2.0, at + cap_size / 2.0], color: color, **options)
+              ax.plot([ci_high, ci_high], [at - cap_size / 2.0, at + cap_size / 2.0], color: color, **options)
+            end
+          end
         end
       end
 

@@ -26,8 +26,8 @@ module Charty
                  order: nil, color_order: nil,
                  estimator: :mean, ci: 95, n_boot: 1000, units: nil, random: nil,
                  orient: nil, key_color: nil, palette: nil, saturation: 0.75,
-                 error_color: 0.26, error_width: nil, cap_size: nil, dodge: true,
-                 **options, &block)
+                 error_color: [0.26, 0.26, 0.26], error_width: nil, cap_size: nil,
+                 dodge: true, **options, &block)
       Plotters::BarPlotter.new(
         data: data, variables: { x: x, y: y, color: color },
         order: order, orient: nil,

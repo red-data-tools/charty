@@ -21,7 +21,7 @@ class PlotMethodsBarPlotTest < Test::Unit::TestCase
                      data: fig.data,
                      palette: fig.palette,
                      group_names: fig.group_names.to_a,
-                     plot_data: fig.plot_data
+                     plot_data: fig.plot_data.map(&:to_a)
                    })
     end
 
@@ -48,7 +48,7 @@ class PlotMethodsBarPlotTest < Test::Unit::TestCase
                      data: fig.data.raw_data,
                      palette: fig.palette,
                      group_names: fig.group_names.to_a,
-                     plot_data: fig.plot_data
+                     plot_data: fig.plot_data.map(&:to_a)
                    })
     end
   end
@@ -78,7 +78,7 @@ class PlotMethodsBarPlotTest < Test::Unit::TestCase
                      data: fig.data,
                      palette: fig.palette,
                      group_names: fig.group_names.to_a,
-                     plot_data: fig.plot_data
+                     plot_data: fig.plot_data.map(&:to_a)
                    })
     end
 
@@ -109,7 +109,7 @@ class PlotMethodsBarPlotTest < Test::Unit::TestCase
                      data: fig.data.raw_data,
                      palette: fig.palette,
                      group_names: fig.group_names.to_a,
-                     plot_data: fig.plot_data
+                     plot_data: fig.plot_data.map(&:to_a)
                    })
     end
   end

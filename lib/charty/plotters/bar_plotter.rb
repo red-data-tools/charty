@@ -9,8 +9,22 @@ module Charty
       attr_reader :error_color
 
       def error_color=(error_color)
-        # TODO: check value
-        @error_color = error_color
+        @error_color = check_error_color(error_color)
+      end
+
+      private def check_error_color(value)
+        case value
+        when Colors::AbstractColor
+          value
+        when Array
+          Colors::RGB.new(*value)
+        when String
+          # TODO: Use Colors.parse when it'll be available
+          Colors::RGB.parse(value)
+        else
+          raise ArgumentError,
+                "invalid value for error_color (%p for a color, a RGB tripret, or a RGB hex string)" % value
+        end
       end
 
       attr_reader :error_width
@@ -43,9 +57,45 @@ module Charty
       end
 
       private def draw_bars(backend)
-        statistic = @plot_data.map {|xs| Statistics.mean(xs) }
-        bar_pos = (0 ... statistic.length).to_a
-        backend.bar(bar_pos, statistic, color: @colors)
+        setup_estimations
+
+        bar_pos = (0 ... @statistic.length).to_a
+        error_colors = bar_pos.map { error_color }
+        backend.bar(bar_pos, @statistic, @colors, orient,
+                    conf_int: @conf_int, error_colors: error_colors, error_width: error_width, cap_size: cap_size)
+      end
+
+      private def setup_estimations
+        statistic = []
+        conf_int = []
+
+        @plot_data.each do |group_data|
+          stat_data = group_data.drop_na
+
+          estimation = if stat_data.size == 0
+                         Float::NAN
+                       else
+                         Statistics.mean(stat_data)
+                       end
+          statistic << estimation
+
+          if ci
+            if stat_data.size < 2
+              conf_int << [Float::NAN, Float::NAN]
+              next
+            end
+
+            if ci == :sd
+              sd = Statistics.stdev(stat_data)
+              conf_int << [estimation - sd, estimation + sd]
+            else
+              conf_int << Statistics.bootstrap_ci(stat_data, ci: ci, func: estimator, n_boot: n_boot, units: nil, random: random)
+            end
+          end
+        end
+
+        @statistic = statistic
+        @conf_int = conf_int
       end
     end
   end

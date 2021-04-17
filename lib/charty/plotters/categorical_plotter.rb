@@ -11,7 +11,7 @@ module Charty
       attr_reader :order
 
       def order=(order)
-        @order = Array(order).map(&method(:normalize_name))
+        @order = order && Array(order).map(&method(:normalize_name))
       end
 
       attr_reader :orient
@@ -116,6 +116,12 @@ module Charty
                 "Could not interpret input `#{input.inspect}`"
         end
 
+        x = Charty::Vector.try_convert(x)
+        y = Charty::Vector.try_convert(y)
+
+        # TODO: infer orient here
+        self.orient = :v
+
         if x.nil? || y.nil?
           setup_single_data
         else
@@ -126,19 +132,42 @@ module Charty
             @group_label = groups.name
           end
 
-          if vals.respond_to?(:name)
-            @value_label = vals.name
-          end
-
           # FIXME: Assume groups has only unique values
-          @group_names = groups
-          @plot_data = vals.map {|v| [v] }
+          @group_names = categorical_order(groups, order)
+          @plot_data, @value_label = group_long_form(vals, groups, @group_names)
         end
       end
 
       private def setup_single_data
         raise NotImplementedError,
               "Single data plot is not supported yet"
+      end
+
+      # TODO: move to AbstractPlotter
+      private def categorical_order(vector, order=nil)
+        if order.nil?
+          case
+          when vector.categorical?
+            order = vector.categories
+          else
+            order = vector.unique_values
+            order.sort! if vector.numeric?
+          end
+          order.compact!
+        end
+        order
+      end
+
+      private def group_long_form(vals, groups, group_order)
+        grouped_vals = vals.group_by(groups)
+
+        plot_data = group_order.map {|g| grouped_vals[g] || [] }
+
+        if vals.respond_to?(:name)
+          value_label = vals.name
+        end
+
+        return plot_data, value_label
       end
 
       private def setup_colors
@@ -148,7 +177,7 @@ module Charty
           if n_colors <= current_palette.n_colors
             palette = Palette.new(current_palette.colors, n_colors)
           else
-            palette = Palette.husl(n_colors, l: 0.7r)
+            palette = Palette.new(:husl, n_colors, desaturate_factor: 0.7r)
           end
         else
           case @palette
