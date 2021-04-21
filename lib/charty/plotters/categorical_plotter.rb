@@ -375,14 +375,6 @@ module Charty
           backend.legend(loc: :best, title: @color_title)
         end
       end
-
-      private def remove_na!(ary)
-        ary.reject! do |x|
-          next true if x.nil?
-          x.respond_to?(:nan?) && x.nan?
-        end
-        ary
-      end
     end
   end
 end

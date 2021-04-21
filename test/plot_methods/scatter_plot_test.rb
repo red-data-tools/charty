@@ -76,7 +76,18 @@ class PlotMethodScatterPlotTest < Test::Unit::TestCase
       end
     end
 
-    def test_scatter_plot_with_color(data)
+    def test_scatter_plot_with_numeric_color(data)
+      omit("TODO: support numeric variable in color dimension")
+      adapter_name, backend_name = data.values_at(:adapter, :backend)
+      setup_data(adapter_name)
+      setup_backend(backend_name)
+      plot = Charty.scatter_plot(data: @data, x: :x, y: :y, color: :d)
+      assert_nothing_raised do
+        render_plot(backend_name, plot)
+      end
+    end
+
+    def test_scatter_plot_with_categorical_color(data)
       adapter_name, backend_name = data.values_at(:adapter, :backend)
       setup_data(adapter_name)
       setup_backend(backend_name)
@@ -86,8 +97,25 @@ class PlotMethodScatterPlotTest < Test::Unit::TestCase
       end
     end
 
-    def test_scatter_plot_with_size(data)
-      omit("TODO")
+    def test_scatter_plot_with_numeric_size(data)
+      adapter_name, backend_name = data.values_at(:adapter, :backend)
+      setup_data(adapter_name)
+      setup_backend(backend_name)
+      plot = Charty.scatter_plot(data: @data, x: :x, y: :y, size: :d)
+      assert_nothing_raised do
+        render_plot(backend_name, plot)
+      end
+    end
+
+    def test_scatter_plot_with_categorical_size(data)
+      omit("TODO: support categorical variable in size dimension")
+      adapter_name, backend_name = data.values_at(:adapter, :backend)
+      setup_data(adapter_name)
+      setup_backend(backend_name)
+      plot = Charty.scatter_plot(data: @data, x: :x, y: :y, size: :c)
+      assert_nothing_raised do
+        render_plot(backend_name, plot)
+      end
     end
 
     def test_scatter_plot_with_style(data)
@@ -98,7 +126,8 @@ class PlotMethodScatterPlotTest < Test::Unit::TestCase
       @data = {
         y: Array.new(100) {|i| rand },
         x: Array.new(100) {|i| rand(100) },
-        c: Array.new(100) {|i| ["red", "blue", "green"][rand(3)] }
+        c: Array.new(100) {|i| ["red", "blue", "green"][rand(3)] },
+        d: Array.new(100) {|i| rand(10..50) }
       }
     end
   end

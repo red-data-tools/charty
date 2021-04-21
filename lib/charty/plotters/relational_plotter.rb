@@ -122,18 +122,144 @@ module Charty
     end
 
     class SizeMapper < BaseMapper
+      # TODO: This should be replaced with red-colors's Normalize feature
+      class SimpleNormalizer
+        def initialize(vmin=nil, vmax=nil)
+          @vmin = vmin
+          @vmax = vmax
+        end
+
+        attr_accessor :vmin, :vmax
+
+        def call(value, clip=nil)
+          scalar_p = false
+          vector_p = false
+          case value
+          when Charty::Vector
+            vector_p = true
+            value = value.to_a
+          when Array
+            # do nothing
+          else
+            scalar_p = true
+            value = [value]
+          end
+
+          @vmin = value.min if vmin.nil?
+          @vmax = value.max if vmax.nil?
+
+          result = value.map {|x| (x - vmin) / (vmax - vmin).to_f }
+
+          case
+          when scalar_p
+            result[0]
+          when vector_p
+            Charty::Vector.new(result, index: value.index)
+          else
+            result
+          end
+        end
+      end
+
       private def initialize_mapping(sizes, order, norm)
         @sizes = sizes
         @order = order
         @norm = norm
 
-        # TODO
+        return unless plotter.variables.key?(:size)
+
+        data = plotter.plot_data[:size]
+        return unless data.notnull.any?
+
+        @map_type = infer_map_type(sizes, norm, @plotter.var_types[:size])
+        case @map_type
+        when :numeric
+          @levels, @lookup_table, @norm = numeric_mapping(data, sizes, norm)
+        when :categorical
+          @levels, @lookup_table = categorical_mapping(data, sizes, order)
+        else
+          raise NotImplementedError,
+                "datetime color mapping is not supported"
+        end
+      end
+
+      private def infer_map_type(sizes, norm, var_type)
+        case
+        when ! norm.nil?
+          :numeric
+        when sizes.is_a?(Hash),
+             sizes.is_a?(Array)
+          :categorical
+        else
+          var_type
+        end
+      end
+
+      private def numeric_mapping(data, sizes, norm)
+        case sizes
+        when Hash
+          # The presence of a norm object overrides a dictionary of sizes
+          # in specifying a numeric mapping, so we need to process the
+          # dictionary here
+          levels = sizes.keys.sort
+          size_values = sizes.values
+          size_range = [size_values.min, size_values.max]
+        else
+          levels = Charty::Vector.new(data.unique_values).drop_na.to_a
+          levels.sort!
+
+          case sizes
+          when Range
+            size_range = [sizes.begin, sizes.end]
+          when nil
+            # TODO: The following value is specialized for matplotlib
+            size_range = [0.5 , 2.0].map {|x| x * 6**2 }
+          else
+            raise ArgumentError,
+                  "Unable to recognize the value for `sizes`: %p" % sizes
+          end
+        end
+
+        # Now we have the minimum and the maximum values of sizes
+        case norm
+        when nil
+          norm = SimpleNormalizer.new
+          sizes_scaled = norm.(levels)
+        # when Colors::Normalize
+        # TODO: Must support red-color's Normalize feature
+        else
+          raise ArgumentError,
+                "Unable to recognize the value for `norm`: %p" % norm
+        end
+
+        case sizes
+        when Hash
+          # do nothing
+        else
+          lo, hi = size_range
+          sizes = sizes_scaled.map {|x| lo + x * (hi - lo) }
+          lookup_table = levels.zip(sizes).to_h
+        end
+
+        return levels, lookup_table, norm
+      end
+
+      private def categorical_mapping(data, sizes, order)
+        raise NotImplementedError,
+              "A categorical variable for size is not supported"
       end
 
       attr_reader :palette, :order, :norm
 
       def lookup_single_value(key)
-        # TODO
+        if @lookup_table.key?(key)
+          @lookup_table[key]
+        else
+          normed = @norm.(key) || Float::NAN
+          size_values = @lookup_table.values
+          min, max = size_values.min, size_values.max
+          min + normed * (max - min)
+        end
       end
 
       # TODO

@@ -316,6 +316,7 @@ module Charty
         end
 
         unless size.nil?
+          points.set_sizes(size)
         end
 
         sizes = points.get_sizes

@@ -139,6 +139,14 @@ module Charty
         TableAdapters::HashAdapter.array?(value)
       end
 
+      private def remove_na!(ary)
+        ary.reject! do |x|
+          next true if x.nil?
+          x.respond_to?(:nan?) && x.nan?
+        end
+        ary
+      end
+
       def to_iruby
         result = render
         ["text/html", result] if result

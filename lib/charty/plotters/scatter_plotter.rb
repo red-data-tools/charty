@@ -88,6 +88,10 @@ module Charty
           # TODO: style
         end
 
+        if @variables.key?(:size)
+          size = @size_mapper[data[:size]]
+        end
+
         backend.scatter(x, y, color, style, size) # TODO: key_color
       end
 
