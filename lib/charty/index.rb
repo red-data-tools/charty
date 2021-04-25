@@ -10,11 +10,10 @@ module Charty
       @name = name
     end
 
+    attr_reader :values
     attr_accessor :name
 
-    def_delegators :@values, :length, :size, :each, :to_a
-
-    private attr_reader :values
+    def_delegators :values, :length, :size, :each, :to_a
 
     def [](i)
       case i
