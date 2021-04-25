@@ -19,6 +19,11 @@ begin
 rescue LoadError
 end
 
+begin
+  require "pandas"
+rescue LoadError
+end
+
 module Charty
   module TestHelpers
     module_function def numo_available?
@@ -44,6 +49,14 @@ module Charty
 
     module_function def matplotlib_required
       omit("Matplotlib is required") unless matplotlib_available?
+    end
+
+    module_function def pandas_available?
+      defined?(::Pandas)
+    end
+
+    module_function def pandas_required
+      omit("Pandas is required") unless pandas_available?
     end
 
     def assert_near(c1, c2, eps=1e-8)

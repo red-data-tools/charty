@@ -1,10 +1,8 @@
 class TablePandasTest < Test::Unit::TestCase
+  include Charty::TestHelpers
+
   def setup
-    begin
-      require "pandas"
-    rescue LoadError
-      omit("pandas is unavailable")
-    end
+    pandas_required
 
     @data = Pandas::DataFrame.new(data: [[1, 2, 3], [4, 5, 6]], columns: ["a", "b", "c"])
     @table = Charty::Table.new(@data)
