@@ -39,11 +39,11 @@ module Charty
     end
 
     module_function def matplotlib_available?
-      @matplotlib_available
+      defined?(::Matplotlib)
     end
 
     module_function def matplotlib_required
-      defined?(::Matplotlib)
+      omit("Matplotlib is required") unless matplotlib_available?
     end
 
     def assert_near(c1, c2, eps=1e-8)
