@@ -1,5 +1,9 @@
 class VectorNArrayTest < Test::Unit::TestCase
+  include Charty::TestHelpers
+
   def setup
+    numo_required
+
     @data = Numo::DFloat[1, 2, 3, 4, 5]
     @vector = Charty::Vector.new(@data)
   end
