@@ -1,10 +1,8 @@
 class VectorPandasTest < Test::Unit::TestCase
+  include Charty::TestHelpers
+
   def setup
-    begin
-      require "pandas"
-    rescue LoadError
-      omit("pandas is unavailable")
-    end
+    pandas_required
 
     @series = Pandas::Series.new([1, 2, 3, 4, 5], dtype: :float64)
     @vector = Charty::Vector.new(@series)
