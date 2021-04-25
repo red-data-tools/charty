@@ -58,7 +58,7 @@ jobs:
 
     - run: sudo apt install build-essential libsqlite3-dev
 
-    - run: bundle install --jobs 4 --retry 3 --without "matplotlib numo"
+    - run: bundle install --jobs 4 --retry 3 --without "numo python"
 
     - run: bundle exec rake
 

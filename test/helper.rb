@@ -16,12 +16,12 @@ end
 
 begin
   require "matplotlib"
-rescue LoadError
+rescue LoadError, StandardError
 end
 
 begin
   require "pandas"
-rescue LoadError
+rescue LoadError, StandardError
 end
 
 module Charty
