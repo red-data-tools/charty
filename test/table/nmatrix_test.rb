@@ -30,13 +30,13 @@ class TableNMatrixTest < Test::Unit::TestCase
 
       test("column name only") do
         assert_equal([1, 5],
-                     @table["X0"])
+                     @table["X0"].to_a)
         assert_equal([2, 6],
-                     @table["X1"])
+                     @table["X1"].to_a)
         assert_equal([3, 7],
-                     @table["X2"])
+                     @table["X2"].to_a)
         assert_equal([4, 8],
-                     @table["X3"])
+                     @table["X3"].to_a)
       end
     end
   end

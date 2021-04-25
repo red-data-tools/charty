@@ -109,4 +109,5 @@ end
 require_relative "vector_adapters/array_adapter"
 require_relative "vector_adapters/daru_adapter"
 require_relative "vector_adapters/narray_adapter"
+require_relative "vector_adapters/nmatrix_adapter"
 require_relative "vector_adapters/pandas_adapter"
