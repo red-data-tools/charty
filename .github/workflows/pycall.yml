@@ -1,4 +1,4 @@
-name: CI with matplotlib
+name: CI with matplotlib and pandas
 
 on:
   push:
@@ -74,7 +74,7 @@ jobs:
 
     - run: sudo apt install build-essential libsqlite3-dev
 
-    - run: pip install --user matplotlib
+    - run: pip install --user matplotlib pandas
 
     - run: bundle install --jobs 4 --retry 3 --without "nmatrix numo"
 
