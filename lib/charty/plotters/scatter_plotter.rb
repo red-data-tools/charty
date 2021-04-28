@@ -85,14 +85,14 @@ module Charty
         end
 
         if @variables.key?(:style)
-          # TODO: style
+          marker = @style_mapper[data[:style], :marker]
         end
 
         if @variables.key?(:size)
           size = @size_mapper[data[:size]]
         end
 
-        backend.scatter(x, y, color, style, size) # TODO: key_color
+        backend.scatter(x, y, color, marker, size) # TODO: key_color
       end
 
       private def annotate_axes(backend)

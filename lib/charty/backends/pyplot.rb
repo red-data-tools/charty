@@ -300,7 +300,7 @@ module Charty
         end
       end
 
-      def scatter(x, y, color=nil, style=nil, size=nil)
+      def scatter(x, y, color=nil, marker=nil, size=nil)
         kwd = {}
         kwd[:edgecolor] = "w"
 
@@ -312,15 +312,45 @@ module Charty
           points.set_facecolors(color)
         end
 
-        unless style.nil?
-        end
-
         unless size.nil?
           points.set_sizes(size)
         end
 
+        unless marker.nil?
+          paths = marker.map(&method(:marker_to_path))
+          points.set_paths(paths)
+        end
+
         sizes = points.get_sizes
         points.set_linewidths(0.08 * Numpy.sqrt(Numpy.percentile(sizes, 10)))
+      end
+
+      PYPLOT_MARKERS = {
+               circle: "o",
+                    x: "X",
+                cross: "P",
+          triangle_up: "^",
+        triangle_down: "v",
+               square: [4, 0, 45].freeze,
+              diamond: [4, 0, 0].freeze,
+                 star: [5, 1, 0].freeze,
+         star_diamond: [4, 1, 0].freeze,
+          star_square: [4, 1, 45].freeze,
+             pentagon: [5, 0, 0].freeze,
+              hexagon: [6, 0, 0].freeze
+      }.freeze
+
+      private def marker_to_path(marker)
+        @path_cache ||= {}
+        if @path_cache.key?(marker)
+          @path_cache[marker]
+        elsif PYPLOT_MARKERS.key?(marker)
+          val = PYPLOT_MARKERS[marker]
+          ms = Matplotlib.markers.MarkerStyle.new(val)
+          @path_cache[marker] = ms.get_path().transformed(ms.get_transform())
+        else
+          raise ArgumentError, "Unknown marker name: %p" % marker
+        end
       end
 
       def set_xlabel(label)

@@ -119,7 +119,13 @@ class PlotMethodScatterPlotTest < Test::Unit::TestCase
     end
 
     def test_scatter_plot_with_style(data)
-      omit("TODO")
+      adapter_name, backend_name = data.values_at(:adapter, :backend)
+      setup_data(adapter_name)
+      setup_backend(backend_name)
+      plot = Charty.scatter_plot(data: @data, x: :x, y: :y, style: :c)
+      assert_nothing_raised do
+        render_plot(backend_name, plot)
+      end
     end
 
     def setup_array_data

@@ -8,12 +8,12 @@ module Charty
 
       attr_reader :plotter
 
-      def [](key)
+      def [](key, *args)
         case key
         when Array, Charty::Vector
-          key.map {|k| lookup_single_value(k) }
+          key.map {|k| lookup_single_value(k, *args) }
         else
-          lookup_single_value(key)
+          lookup_single_value(key, *args)
         end
       end
     end
@@ -270,12 +270,73 @@ module Charty
         @markers = markers
         @dashes = dashes
         @order = order
+
+        return unless plotter.variables.key?(:style)
+
+        data = plotter.plot_data[:style]
+        return unless data.notnull.any?
+
+        @levels = data.categorical_order(order)
+
+        markers = map_attributes(markers, @levels, unique_markers(@levels.length), :markers)
+
+        # TODO: dashes support
+
+        @lookup_table = @levels.map {|key|
+          record = {
+            marker: markers[key]
+          }
+          [key, record]
+        }.to_h
+      end
+
+      MARKER_NAMES = [
+        :circle,      :x,           :square,        :cross,   :diamond, :star_diamond,
+        :triangle_up, :star_square, :triangle_down, :hexagon, :star,    :pentagon,
+      ].freeze
+
+      private def unique_markers(n)
+        if n > MARKER_NAMES.length
+          raise ArgumentError,
+                "Too many markers are required (%p for %p)" % [n, MARKER_NAMES.length]
+        end
+        MARKER_NAMES[0, n]
+      end
+
+      private def map_attributes(vals, levels, defaults, attr)
+        case vals
+        when true
+          return levels.zip(defaults).to_h
+        when Hash
+          missing_keys = lavels - vals.keys
+          unless missing_keys.empty?
+            raise ArgumentError,
+                  "The `%s` levels are missing values: %p" % [attr, missing_keys]
+          end
+          return vals
+        when Array, Enumerable
+          if levels.length != vals.length
+            raise ArgumentError,
+                  "%he `%s` argument has the wrong number of values" % attr
+          end
+          return levels.zip(vals).to_h
+        when nil
+          return {}
+        else
+          raise ArgumentError,
+                "Unable to recognize the value for `%s`: %p" % [attr, vals]
+        end
       end
 
       attr_reader :palette, :order, :norm
 
-      def lookup_single_value(key)
-        # TODO
+      def lookup_single_value(key, attr=nil)
+        case attr
+        when nil
+          @lookup_table[key]
+        else
+          @lookup_table[key][attr]
+        end
       end
 
       # TODO
@@ -336,10 +397,12 @@ module Charty
       end
 
       def markers=(val)
-        unless val.nil?
-          raise NotImplementedError,
-                "Specifying markers is not supported yet"
-        end
+        @markers = check_markers(val)
+      end
+
+      private def check_markers(val)
+        # TODO
+        val
       end
 
       def marker_order=(val)

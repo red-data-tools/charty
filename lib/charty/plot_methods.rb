@@ -158,7 +158,7 @@ module Charty
     def scatter_plot(x: nil, y: nil, color: nil, marker: nil, size: nil,
                      data: nil, key_color: nil, palette: nil, color_order: nil,
                      color_norm: nil, sizes: nil, size_order: nil, size_norm: nil,
-                     markers: nil, marker_order: nil, alpha: nil, legend: :auto,
+                     markers: true, marker_order: nil, alpha: nil, legend: :auto,
                      **options, &block)
       Plotters::ScatterPlotter.new(
         data: data,
