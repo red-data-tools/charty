@@ -89,7 +89,7 @@ module Charty
               sd = Statistics.stdev(stat_data)
               conf_int << [estimation - sd, estimation + sd]
             else
-              conf_int << Statistics.bootstrap_ci(stat_data, ci: ci, func: estimator, n_boot: n_boot, units: nil, random: random)
+              conf_int << Statistics.bootstrap_ci(stat_data, ci, func: estimator, n_boot: n_boot, units: nil, random: random)
             end
           end
         end

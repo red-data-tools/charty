@@ -30,6 +30,8 @@ module Charty
       include NameSupport
       include IndexSupport
 
+      def_delegators :data, :values_at
+
       def numeric?
         data.each do |x|
           case x

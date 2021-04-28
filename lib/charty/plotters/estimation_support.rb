@@ -7,7 +7,7 @@ module Charty
         @estimator = check_estimator(estimator)
       end
 
-      private def check_estimator(value)
+      module_function def check_estimator(value)
         case value
         when :mean
           value

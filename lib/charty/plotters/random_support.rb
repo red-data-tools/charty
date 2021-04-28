@@ -7,7 +7,7 @@ module Charty
         @random = check_random(random)
       end
 
-      private def check_random(random)
+      module_function def check_random(random)
         case random
         when nil
           Random.new

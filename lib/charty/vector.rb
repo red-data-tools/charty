@@ -40,5 +40,6 @@ module Charty
     def_delegators :adapter, :unique_values
     def_delegators :adapter, :group_by
     def_delegators :adapter, :drop_na
+    def_delegators :adapter, :values_at
   end
 end
