@@ -16,9 +16,10 @@ module Charty
       end
     end
 
-    def initialize(data)
+    def initialize(data, name: nil)
       adapter_class = VectorAdapters.find_adapter_class(data)
       @adapter = adapter_class.new(data)
+      self.name = name unless name.nil?
     end
 
     attr_reader :adapter

@@ -62,11 +62,13 @@ class TablePandasTest < Test::Unit::TestCase
       assert_equal({
                      class: Charty::Vector,
                      length: 2,
+                     name: "b",
                      values: [2, 5]
                    },
                    {
                      class: value.class,
                      length: value.length,
+                     name: value.name,
                      values: value.to_a
                    })
     end

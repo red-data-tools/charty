@@ -142,31 +142,59 @@ class TableDaruTest < Test::Unit::TestCase
 
   sub_test_case("#[]") do
     test("row index and column name") do
-      assert_equal("Bud Light",
-                   @table[2, "Beer"])
-      assert_equal(400,
-                   @table[1, "Gallons sold"])
+      assert_equal({
+                     [2, "Beer"] => "Bud Light",
+                     [1, "Gallons sold"] => 400
+                   },
+                   {
+                     [2, "Beer"] => @table[2, "Beer"],
+                     [1, "Gallons sold"] => @table[1, "Gallons sold"]
+                   })
     end
 
-    test("column name only") do
-      assert_equal(Charty::Vector,
-                   @table["Beer"].class)
-      assert_equal(Daru::Vector.new([
-                     "Kingfisher",
-                     "Snow",
-                     "Bud Light",
-                     "Tiger Beer",
-                     "Budweiser",
-                   ]),
-                   @table["Beer"].data)
-      assert_equal(Daru::Vector.new([
-                     500,
-                     400,
-                     450,
-                     200,
-                     250,
-                   ]),
-                   @table["Gallons sold"].data)
+    sub_test_case("column name only") do
+      test("class") do
+        assert_equal(Charty::Vector,
+                     @table["Beer"].class)
+      end
+
+      test("names") do
+        assert_equal({
+                       "Beer" => "Beer",
+                       "Gallons sold" => "Gallons sold"
+                     },
+                     {
+                       "Beer" => @table["Beer"].name,
+                       "Gallons sold" => @table["Gallons sold"].name
+                     })
+      end
+
+      test("values") do
+        vectors = [
+          Daru::Vector.new([
+            "Kingfisher",
+            "Snow",
+            "Bud Light",
+            "Tiger Beer",
+            "Budweiser",
+          ]),
+          Daru::Vector.new([
+            500,
+            400,
+            450,
+            200,
+            250,
+          ]),
+        ]
+        assert_equal({
+                       "Beer" => vectors[0],
+                       "Gallons sold" => vectors[1]
+                     },
+                     {
+                       "Beer" => @table["Beer"].data,
+                       "Gallons sold" => @table["Gallons sold"].data
+                     })
+      end
     end
   end
 end

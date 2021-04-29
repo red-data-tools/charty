@@ -26,7 +26,8 @@ module Charty
         if row
           @data[row, resolve_column_index(column)]
         else
-          @data[:*, resolve_column_index(column)].reshape([@data.shape[0]])
+          Charty::Vector.new(@data[:*, resolve_column_index(column)].reshape([@data.shape[0]]),
+                             name: column)
         end
       end
 
