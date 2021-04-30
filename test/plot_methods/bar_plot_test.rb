@@ -113,4 +113,55 @@ class PlotMethodsBarPlotTest < Test::Unit::TestCase
                    })
     end
   end
+
+  sub_test_case("rendering") do
+    def setup_data(adapter_name)
+      case adapter_name
+      when :pandas
+        if defined?(Pandas::DataFrame)
+          setup_pandas_data
+        else
+          pandas_required
+        end
+      end
+    end
+
+    def setup_pandas_data
+      @data = Pandas::DataFrame.new(
+        data: {
+          y: Array.new(100) {|i| rand },
+          x: Array.new(100) {|i| ["foo", "bar"][rand(2)] }
+        }
+      )
+    end
+
+    def setup_backend(backend_name)
+      case backend_name
+      when :pyplot
+        if defined?(Matplotlib)
+          setup_pyplot_backend
+        else
+          matplotlib_required
+        end
+      end
+      Charty::Backends.use(backend_name)
+    end
+
+    def setup_pyplot_backend
+      require "matplotlib"
+      Matplotlib.use("agg")
+    end
+
+    data(:adapter, [:pandas])
+    data(:backend, [:pyplot])
+    def test_bar_plot(data)
+      adapter_name, backend_name = data.values_at(:adapter, :backend)
+      setup_data(adapter_name)
+      setup_backend(backend_name)
+      plot = Charty.bar_plot(data: @data, x: :x, y: :y)
+      assert_nothing_raised do
+        plot.render
+      end
+    end
+  end
 end
