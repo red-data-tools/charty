@@ -151,6 +151,7 @@ class VectorPandasTest < Test::Unit::TestCase
 
   sub_test_case("#unique_values") do
     def setup
+      super
       @data = [3, 1, 3, 2, 1]
       @series = Pandas::Series.new(@data)
       @vector = Charty::Vector.new(@series)
