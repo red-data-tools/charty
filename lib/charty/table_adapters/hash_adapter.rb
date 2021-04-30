@@ -70,7 +70,7 @@ module Charty
       def_delegator :@data, :keys, :column_names
 
       def length
-        data[column_names[0]].length
+        data[column_names[0]].size
       end
 
       def column_length

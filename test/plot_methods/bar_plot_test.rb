@@ -1,4 +1,6 @@
 class PlotMethodsBarPlotTest < Test::Unit::TestCase
+  include Charty::TestHelpers
+
   sub_test_case("function-call style") do
     test("given x and y") do
       x = [1, 2, 3, 4, 5]
@@ -118,11 +120,11 @@ class PlotMethodsBarPlotTest < Test::Unit::TestCase
     def setup_data(adapter_name)
       case adapter_name
       when :pandas
-        if defined?(Pandas::DataFrame)
-          setup_pandas_data
-        else
-          pandas_required
-        end
+        pandas_required
+        setup_pandas_data
+      when :numpy
+        pandas_required
+        setup_numpy_data
       end
     end
 
@@ -133,6 +135,13 @@ class PlotMethodsBarPlotTest < Test::Unit::TestCase
           x: Array.new(100) {|i| ["foo", "bar"][rand(2)] }
         }
       )
+    end
+
+    def setup_numpy_data
+      @data = {
+        y: Numpy.asarray(Array.new(100) {|i| rand }, dtype: Numpy.float64),
+        x: Numpy.asarray(Array.new(100) {|i| ["foo", "bar"][rand(2)] })
+      }
     end
 
     def setup_backend(backend_name)
@@ -152,13 +161,23 @@ class PlotMethodsBarPlotTest < Test::Unit::TestCase
       Matplotlib.use("agg")
     end
 
-    data(:adapter, [:pandas])
-    data(:backend, [:pyplot])
+    data(:adapter, [:pandas, :numpy], keep: true)
+    data(:backend, [:pyplot], keep: true)
     def test_bar_plot(data)
       adapter_name, backend_name = data.values_at(:adapter, :backend)
       setup_data(adapter_name)
       setup_backend(backend_name)
       plot = Charty.bar_plot(data: @data, x: :x, y: :y)
+      assert_nothing_raised do
+        plot.render
+      end
+    end
+
+    def test_bar_plot_sd(data)
+      adapter_name, backend_name = data.values_at(:adapter, :backend)
+      setup_data(adapter_name)
+      setup_backend(backend_name)
+      plot = Charty.bar_plot(data: @data, x: :x, y: :y, ci: :sd)
       assert_nothing_raised do
         plot.render
       end
