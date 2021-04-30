@@ -39,7 +39,7 @@ module Charty
       end
 
       def stdev(population: false)
-        Statistics.stdev(self, population: population)
+        Statistics.stdev(data, population: population)
       end
     end
 

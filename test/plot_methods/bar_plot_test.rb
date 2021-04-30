@@ -119,6 +119,8 @@ class PlotMethodsBarPlotTest < Test::Unit::TestCase
   sub_test_case("rendering") do
     def setup_data(adapter_name)
       case adapter_name
+      when :array
+        setup_array_data
       when :pandas
         pandas_required
         setup_pandas_data
@@ -128,13 +130,16 @@ class PlotMethodsBarPlotTest < Test::Unit::TestCase
       end
     end
 
+    def setup_array_data
+      @data = {
+        y: Array.new(100) {|i| rand },
+        x: Array.new(100) {|i| ["foo", "bar"][rand(2)] }
+      }
+    end
+
     def setup_pandas_data
-      @data = Pandas::DataFrame.new(
-        data: {
-          y: Array.new(100) {|i| rand },
-          x: Array.new(100) {|i| ["foo", "bar"][rand(2)] }
-        }
-      )
+      setup_array_data
+      @data = Pandas::DataFrame.new(data: @data)
     end
 
     def setup_numpy_data
@@ -161,7 +166,7 @@ class PlotMethodsBarPlotTest < Test::Unit::TestCase
       Matplotlib.use("agg")
     end
 
-    data(:adapter, [:pandas, :numpy], keep: true)
+    data(:adapter, [:array, :pandas, :numpy], keep: true)
     data(:backend, [:pyplot], keep: true)
     def test_bar_plot(data)
       adapter_name, backend_name = data.values_at(:adapter, :backend)
