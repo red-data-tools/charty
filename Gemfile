@@ -19,5 +19,6 @@ end
 
 group :python do
   gem "matplotlib"
+  gem "numpy"
   gem "pandas"
 end

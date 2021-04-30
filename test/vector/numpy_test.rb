@@ -104,7 +104,7 @@ class VectorNumpyTest < Test::Unit::TestCase
       "for string array with nil at head"  => [nil, "abc", "xyz"]
     )
     def test_categorical_with_noncategorical(data)
-      vector = Charty::Vector.new(Numo.asarray(data))
+      vector = Charty::Vector.new(Numpy.asarray(data))
       assert do
         not vector.categorical?
       end
@@ -119,13 +119,14 @@ class VectorNumpyTest < Test::Unit::TestCase
       "for string array with nil at head"  => [nil, "abc", "xyz"]
     )
     def test_categories_with_noncategorical(data)
-      vector = Charty::Vector.new(Numo.asarray(data))
+      vector = Charty::Vector.new(Numpy.asarray(data))
       assert_nil(vector.categories)
     end
   end
 
   sub_test_case("#unique_values") do
     def setup
+      super
       @data = Numpy.asarray([3, 1, 3, 2, 1])
       @vector = Charty::Vector.new(@data)
     end
