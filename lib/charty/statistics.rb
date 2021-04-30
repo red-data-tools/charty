@@ -7,8 +7,8 @@ module Charty
         enum.mean
       end
 
-      def self.stdev(enum)
-        enum.stdev
+      def self.stdev(enum, population: false)
+        enum.stdev(population: population)
       end
     rescue LoadError
       def self.mean(enum)
@@ -35,9 +35,16 @@ module Charty
         return structured_bootstrap(vector, n_boot, units, func, random)
       end
 
+      if defined?(Pandas::Series) || defined?(Numpy::NDArray)
+        boot_dist = bootstrap_optimized_for_pycall(vector, n_boot, random, func)
+        return boot_dist if boot_dist
+      end
+
       boot_dist = Array.new(n_boot) do |i|
         resampler = Array.new(n) { random.rand(n) }
-        w = vector.values_at(*resampler)
+
+        w ||= vector.values_at(*resampler)
+
         case func
         when :mean
           mean(w)
@@ -47,6 +54,30 @@ module Charty
       boot_dist
     end
 
+    private_class_method def self.bootstrap_optimized_for_pycall(vector, n_boot, random, func)
+      case
+      when vector.is_a?(Charty::Vector)
+        bootstrap_optimized_for_pycall(vector.data, n_boot, random, func)
+
+      when defined?(Pandas::Series) && vector.is_a?(Pandas::Series) || vector.is_a?(Numpy::NDArray)
+        # numpy is also available when pandas is available
+        n = vector.size
+        resampler = Numpy.empty(n, dtype: Numpy.intp)
+        Array.new(n_boot) do |i|
+          # TODO: Use Numo and MemoryView to reduce execution time
+          # resampler = Numo::Int64.new(n).rand(n)
+          # w = Numpy.take(vector, resampler)
+          n.times {|i| resampler[i] = random.rand(n) }
+          w = Numpy.take(vector, resampler)
+
+          case func
+          when :mean
+            w.mean
+          end
+        end
+      end
+    end
+
     private_class_method def self.structured_bootstrap(vector, n_boot, units, func, random)
       raise NotImplementedError,
         "structured bootstrapping has not been supported yet"
@@ -54,8 +85,8 @@ module Charty
 
     def self.bootstrap_ci(*vectors, which, n_boot: 2000, func: :mean, units: nil, random: nil)
       boot = bootstrap(*vectors, n_boot: n_boot, func: func, units: units, random: random)
-      p = [50 - which / 2, 50 + which / 2]
-      percentile(boot, p)
+      q = [50 - which / 2, 50 + which / 2]
+      boot.percentile(q)
     end
 
     # TODO: optimize with introselect algorithm

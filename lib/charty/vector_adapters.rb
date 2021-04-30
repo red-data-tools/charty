@@ -33,6 +33,14 @@ module Charty
       def_delegators :data, :length, :size
       def_delegators :data, :[], :[]=
       def_delegators :data, :each, :to_a
+
+      def mean
+        Statistics.mean(data)
+      end
+
+      def stdev(population: false)
+        Statistics.stdev(self, population: population)
+      end
     end
 
     module NameSupport

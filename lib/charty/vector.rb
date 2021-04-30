@@ -42,5 +42,7 @@ module Charty
     def_delegators :adapter, :group_by
     def_delegators :adapter, :drop_na
     def_delegators :adapter, :values_at
+
+    def_delegators :adapter, :mean, :stdev
   end
 end

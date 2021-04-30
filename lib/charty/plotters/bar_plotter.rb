@@ -75,7 +75,7 @@ module Charty
           estimation = if stat_data.size == 0
                          Float::NAN
                        else
-                         Statistics.mean(stat_data)
+                         stat_data.mean
                        end
           statistic << estimation
 
@@ -86,7 +86,7 @@ module Charty
             end
 
             if ci == :sd
-              sd = Statistics.stdev(stat_data)
+              sd = stat_data.stdev
               conf_int << [estimation - sd, estimation + sd]
             else
               conf_int << Statistics.bootstrap_ci(stat_data, ci, func: estimator, n_boot: n_boot, units: nil, random: random)

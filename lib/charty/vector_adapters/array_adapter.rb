@@ -30,6 +30,7 @@ module Charty
       include NameSupport
       include IndexSupport
 
+      # TODO: Reconsider the return value type of values_at
       def_delegators :data, :values_at
 
       def numeric?
