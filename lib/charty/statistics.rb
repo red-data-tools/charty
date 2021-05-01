@@ -68,7 +68,7 @@ module Charty
           # resampler = Numo::Int64.new(n).rand(n)
           # w = Numpy.take(vector, resampler)
           n.times {|i| resampler[i] = random.rand(n) }
-          w = Numpy.take(vector, resampler)
+          w = vector.take(resampler)
 
           case func
           when :mean
