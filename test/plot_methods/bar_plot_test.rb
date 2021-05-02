@@ -120,6 +120,8 @@ class PlotMethodsBarPlotTest < Test::Unit::TestCase
     def setup_data(adapter_name)
       setup_array_data
       case adapter_name
+      when :daru
+        setup_daru_data
       when :numo
         numo_required
         setup_numo_data
@@ -137,6 +139,11 @@ class PlotMethodsBarPlotTest < Test::Unit::TestCase
         y: Array.new(100) {|i| rand },
         x: Array.new(100) {|i| ["foo", "bar"][rand(2)] }
       }
+    end
+
+    def setup_daru_data
+      @data = Daru::DataFrame.new(@data)
+      @data[:x] = @data[:x].to_category
     end
 
     def setup_numo_data
@@ -171,10 +178,11 @@ class PlotMethodsBarPlotTest < Test::Unit::TestCase
       Matplotlib.use("agg")
     end
 
-    data(:adapter, [:array, :numo, :pandas, :numpy], keep: true)
+    data(:adapter, [:array, :daru, :numo, :numpy, :pandas], keep: true)
     data(:backend, [:pyplot], keep: true)
     def test_bar_plot(data)
       adapter_name, backend_name = data.values_at(:adapter, :backend)
+      $xxx = adapter_name
       setup_data(adapter_name)
       setup_backend(backend_name)
       plot = Charty.bar_plot(data: @data, x: :x, y: :y)

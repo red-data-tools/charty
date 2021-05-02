@@ -3,6 +3,7 @@ require "charty"
 require "test/unit"
 
 require "daru"
+require "set" # NOTE: daru needs set
 
 begin
   require "numo/narray"
