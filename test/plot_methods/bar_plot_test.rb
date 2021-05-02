@@ -118,9 +118,11 @@ class PlotMethodsBarPlotTest < Test::Unit::TestCase
 
   sub_test_case("rendering") do
     def setup_data(adapter_name)
+      setup_array_data
       case adapter_name
-      when :array
-        setup_array_data
+      when :numo
+        numo_required
+        setup_numo_data
       when :pandas
         pandas_required
         setup_pandas_data
@@ -137,8 +139,11 @@ class PlotMethodsBarPlotTest < Test::Unit::TestCase
       }
     end
 
+    def setup_numo_data
+      @data[:y] = Numo::DFloat[*@data[:y]]
+    end
+
     def setup_pandas_data
-      setup_array_data
       @data = Pandas::DataFrame.new(data: @data)
     end
 
@@ -166,7 +171,7 @@ class PlotMethodsBarPlotTest < Test::Unit::TestCase
       Matplotlib.use("agg")
     end
 
-    data(:adapter, [:array, :pandas, :numpy], keep: true)
+    data(:adapter, [:array, :numo, :pandas, :numpy], keep: true)
     data(:backend, [:pyplot], keep: true)
     def test_bar_plot(data)
       adapter_name, backend_name = data.values_at(:adapter, :backend)

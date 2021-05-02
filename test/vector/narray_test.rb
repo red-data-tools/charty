@@ -4,6 +4,10 @@ class VectorNArrayTest < Test::Unit::TestCase
   def setup
     numo_required
 
+    @classes = {
+      DFloat:  Numo::DFloat,
+      RObject: Numo::RObject
+    }
     @data = Numo::DFloat[1, 2, 3, 4, 5]
     @vector = Charty::Vector.new(@data)
   end
@@ -107,6 +111,107 @@ class VectorNArrayTest < Test::Unit::TestCase
                  {
                    class: @vector.data.class,
                    value: @vector.data
+                 })
+  end
+
+  sub_test_case("#numeric?") do
+    data(
+      "for numeric array"                  => { array: [1, 2, 3, 4, 5]       , dtype: :DFloat , result: true },
+      "for string array"                   => { array: ["abc", "def", "xyz"] , dtype: :RObject, result: false },
+      "for numeric array with nil at head" => { array: [Float::NAN, 1, 2, 3] , dtype: :DFloat , result: true },
+      "for string array with nil at head"  => { array: [nil, "abc", "xyz"]   , dtype: :RObject, result: false },
+    )
+    def test_numeric(data)
+      array, dtype, result = data.values_at(:array, :dtype, :result)
+      data = @classes[dtype][*array]
+      vector = Charty::Vector.new(data)
+      assert_equal(result, vector.numeric?)
+    end
+  end
+
+  sub_test_case("#categorical?") do
+    data(
+      "for numeric array"                  => { array: [1, 2, 3, 4, 5]      , dtype: :DFloat  },
+      "for string array"                   => { array: ["abc", "def", "xyz"], dtype: :RObject },
+      "for numeric array with nil at head" => { array: [Float::NAN, 1, 2, 3], dtype: :DFloat  },
+      "for string array with nil at head"  => { array: [nil, "abc", "xyz"]  , dtype: :RObject }
+    )
+    def test_categorical(data)
+      array, dtype = data.values_at(:array, :dtype)
+      data = @classes[dtype][*array]
+      vector = Charty::Vector.new(data)
+      assert do
+        not vector.categorical?
+      end
+    end
+  end
+
+  sub_test_case("#categories") do
+    data(
+      "for numeric array"                  => { array: [1, 2, 3, 4, 5]       , dtype: :DFloat },
+      "for string array"                   => { array: ["abc", "def", "xyz"] , dtype: :RObject },
+      "for numeric array with nil at head" => { array: [Float::NAN, 1, 2, 3] , dtype: :DFloat },
+      "for string array with nil at head"  => { array: [nil, "abc", "xyz"]   , dtype: :RObject },
+    )
+    def test_categories(data)
+      array, dtype = data.values_at(:array, :dtype)
+      data = @classes[dtype][*array]
+      vector = Charty::Vector.new(data)
+      assert_nil(vector.categories)
+    end
+  end
+
+  sub_test_case("#unique_values") do
+    def setup
+      super
+      @data = Numo::Int64[3, 1, 3, 2, 1]
+      @vector = Charty::Vector.new(@data)
+    end
+
+    def test_unique_values
+      result = @vector.unique_values
+      assert_equal({
+                     class: Array,
+                     values: @data.to_a.uniq
+                   },
+                   {
+                     class: result.class,
+                     values: result
+                   })
+    end
+  end
+
+  test("#group_by") do
+    vector = Charty::Vector.new(Numo::Int64[1, 2, 3, 4, 5])
+    grouper = Charty::Vector.new(Numo::RObject["a", "b", "a", "a", "b"])
+    result = vector.group_by(grouper)
+    assert_equal({
+                   classes: { "a" => Charty::Vector       , "b" => Charty::Vector },
+                   data:    { "a" => Numo::Int64[1, 3, 4] , "b" => Numo::Int64[2, 5] }
+                 },
+                 {
+                   classes: { "a" => result["a"].class, "b" => result["b"].class },
+                   data:    { "a" => result["a"].data , "b" => result["b"].data }
+                 })
+  end
+
+  data(
+    "for numeric array without NA"  => { array: [1, 2, 3, 4, 5]                  , dtype: :DFloat , expected: [1, 2, 3, 4, 5] },
+    "for string array without NA"   => { array: ["abc", "def", "xyz"]            , dtype: :RObject, expected: ["abc", "def", "xyz"] },
+    "for numeric array with NAs"    => { array: [Float::NAN, 1, 2, Float::NAN, 3], dtype: :DFloat , expected: [1, 2, 3] },
+    "for string array with NAs"     => { array: [nil, "abc", Float::NAN, "xyz"]  , dtype: :RObject, expected: ["abc", "xyz"] },
+  )
+  def test_drop_na(data)
+    array, dtype, expected = data.values_at(:array, :dtype, :expected)
+    vector = Charty::Vector.new(@classes[dtype][*array])
+    result = vector.drop_na
+    assert_equal({
+                   class: Charty::Vector,
+                   values: @classes[dtype][*expected]
+                 },
+                 {
+                   class: result.class,
+                   values: result.data
                  })
   end
 end

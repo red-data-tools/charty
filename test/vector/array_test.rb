@@ -116,7 +116,7 @@ class VectorArrayTest < Test::Unit::TestCase
       "for numeric array with nil at head" => { array: [nil, 1, 2, 3]        , result: false },
       "for string array with nil at head"  => { array: [nil, "abc", "xyz"]   , result: false },
     )
-    def test_numeric(data)
+    def test_categorical(data)
       array, result = data.values_at(:array, :result)
       vector = Charty::Vector.new(array)
       assert_equal(result, vector.categorical?)
@@ -130,7 +130,7 @@ class VectorArrayTest < Test::Unit::TestCase
       "for numeric array with nil at head" => { array: [nil, 1, 2, 3]        , result: nil },
       "for string array with nil at head"  => { array: [nil, "abc", "xyz"]   , result: nil },
     )
-    def test_numeric(data)
+    def test_categories(data)
       array, result = data.values_at(:array, :result)
       vector = Charty::Vector.new(array)
       assert_equal(result, vector.categories)
