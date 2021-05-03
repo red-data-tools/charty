@@ -120,13 +120,30 @@ module Charty
         @layout = {}
       end
 
-      def bar(bar_pos, values, color: nil, width: 0.8r, align: :center, orient: :v)
-        color = Array(color).map(&:to_hex_string)
+      def bar(bar_pos, values, colors, orient, width: 0.8r, align: :center,
+              conf_int: nil, error_colors: nil, error_width: nil, cap_size: nil)
+        bar_pos = Array(bar_pos)
+        values = Array(values)
+        colors = Array(colors).map(&:to_hex_string)
+        errors_low = conf_int.map.with_index {|(low, _), i| values[i] - low }
+        errors_high = conf_int.map.with_index {|(_, high), i| high - values[i] }
+        error_colors = Array(error_colors).map(&:to_hex_string)
         @traces << {
           type: :bar,
           x: bar_pos,
           y: values,
-          marker: {color: color}
+          width: width,
+          marker: {color: colors},
+          error_y: {
+            type: :data,
+            symmetric: false,
+            array: errors_high,
+            arrayminus: errors_low,
+            color: error_colors[0],
+            thickness: error_width || (2 * 1.8), # 1.8 comes from seaborn
+            width: 150 * (cap_size || 0), # I don't know 150 is appropriate for every case
+            visible: true
+          },
         }
         @layout[:showlegend] = false
       end
