@@ -1,4 +1,5 @@
-require 'json'
+require "json"
+require "securerandom"
 
 module Charty
   module Backends
@@ -191,6 +192,37 @@ module Charty
 
       def disable_xaxis_grid
         # do nothing
+      end
+
+      def save(filename, title: nil)
+        html = <<~HTML
+          <!DOCTYPE html>
+          <html>
+          <head>
+          <meta charset="utf-8">
+          <title>%{title}</title>
+          <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+          </head>
+          <body>
+          <div id="%{id}" style="width: 100%%; height:100%%;"></div>
+          <script type="text/javascript">
+          Plotly.newPlot("%{id}", %{data}, %{layout});
+          </script>
+          </body>
+          </html>
+        HTML
+        html %= {
+          title: title || default_html_title,
+          id: SecureRandom.uuid,
+          data: JSON.dump(@traces),
+          layout: JSON.dump(@layout)
+        }
+        File.write(filename, html)
+        nil
+      end
+
+      private def default_html_title
+        "Charty plot"
       end
 
       def show

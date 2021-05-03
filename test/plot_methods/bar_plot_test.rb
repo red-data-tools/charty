@@ -178,8 +178,19 @@ class PlotMethodsBarPlotTest < Test::Unit::TestCase
       Matplotlib.use("agg")
     end
 
+    def render_plot(backend_name, plot)
+      case backend_name
+      when :plotly
+        Dir.mktmpdir do |tmpdir|
+          plot.save(File.join(tmpdir, "test.html"))
+        end
+      else
+        plot.render
+      end
+    end
+
     data(:adapter, [:array, :daru, :numo, :numpy, :pandas], keep: true)
-    data(:backend, [:pyplot], keep: true)
+    data(:backend, [:plotly, :pyplot], keep: true)
     def test_bar_plot(data)
       adapter_name, backend_name = data.values_at(:adapter, :backend)
       $xxx = adapter_name
@@ -187,7 +198,7 @@ class PlotMethodsBarPlotTest < Test::Unit::TestCase
       setup_backend(backend_name)
       plot = Charty.bar_plot(data: @data, x: :x, y: :y)
       assert_nothing_raised do
-        plot.render
+        render_plot(backend_name, plot)
       end
     end
 
@@ -197,7 +208,7 @@ class PlotMethodsBarPlotTest < Test::Unit::TestCase
       setup_backend(backend_name)
       plot = Charty.bar_plot(data: @data, x: :x, y: :y, ci: :sd)
       assert_nothing_raised do
-        plot.render
+        render_plot(backend_name, plot)
       end
     end
   end
