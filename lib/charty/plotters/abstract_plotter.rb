@@ -11,7 +11,17 @@ module Charty
         yield self if block_given?
       end
 
-      attr_reader :x, :y, :color, :data, :palette
+      attr_reader :data, :x, :y, :color
+      attr_reader :color_order, :key_color, :palette
+
+      def data=(data)
+        @data = case data
+                when nil, Charty::Table
+                  data
+                else
+                  Charty::Table.new(data)
+                end
+      end
 
       def x=(x)
         @x = check_dimension(x, :x)
@@ -29,13 +39,20 @@ module Charty
         end
       end
 
-      def data=(data)
-        @data = case data
-                when nil, Charty::Table
-                  data
-                else
-                  Charty::Table.new(data)
-                end
+      def color_order=(color_order)
+        #@color_order = XXX
+        unless color_order.nil?
+          raise NotImplementedError,
+                "Specifying color_order is not supported yet"
+        end
+      end
+
+      def key_color=(key_color)
+        #@key_color = XXX
+        unless key_color.nil?
+          raise NotImplementedError,
+                "Specifying key_color is not supported yet"
+        end
       end
 
       def palette=(palette)

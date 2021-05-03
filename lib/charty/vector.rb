@@ -5,9 +5,21 @@ module Charty
     extend Forwardable
     include Enumerable
 
-    def initialize(data)
+    def self.try_convert(obj)
+      case obj
+      when self
+        obj
+      else
+        if VectorAdapters.find_adapter_class(obj, exception: false)
+          new(obj)
+        end
+      end
+    end
+
+    def initialize(data, name: nil)
       adapter_class = VectorAdapters.find_adapter_class(data)
       @adapter = adapter_class.new(data)
+      self.name = name unless name.nil?
     end
 
     attr_reader :adapter
@@ -23,5 +35,14 @@ module Charty
 
     def_delegators :adapter, :to_a
     def_delegators :adapter, :each
+
+    def_delegators :adapter, :categorical?, :numeric?
+    def_delegators :adapter, :categories
+    def_delegators :adapter, :unique_values
+    def_delegators :adapter, :group_by
+    def_delegators :adapter, :drop_na
+    def_delegators :adapter, :values_at
+
+    def_delegators :adapter, :mean, :stdev
   end
 end

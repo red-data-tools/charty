@@ -160,41 +160,111 @@ class TableActiveRecordTest < Test::Unit::TestCase
   sub_test_case("#[]") do
     sub_test_case("with string column name") do
       test("row index and column name") do
-        assert_equal("baz",
-                     @table[2, "name"])
-        assert_equal(0.4,
-                     @table[3, "rate"])
+        assert_equal({
+                       [2, "name"] => "baz",
+                       [3, "rate"] => 0.4
+                     },
+                     {
+                       [2, "name"] => @table[2, "name"],
+                       [3, "rate"] => @table[3, "rate"]
+                     })
       end
 
+      sub_test_case("column name only") do
+        test("class") do
+          assert_equal({
+                         "id"   => Charty::Vector,
+                         "name" => Charty::Vector,
+                         "rate" => Charty::Vector,
+                       },
+                       {
+                         "id"   => @table["id"].class,
+                         "name" => @table["name"].class,
+                         "rate" => @table["rate"].class
+                       })
+        end
+
+        test("name") do
+          assert_equal({
+                         "id"   => "id",
+                         "name" => "name",
+                         "rate" => "rate"
+                       },
+                       {
+                         "id"   => @table["id"].name,
+                         "name" => @table["name"].name,
+                         "rate" => @table["rate"].name
+                       })
+        end
+
+        test("values") do
+          assert_equal({
+                         "id"   => [1, 2, 3, 4, 5],
+                         "name" => ["foo", "bar", "baz", "qux", "quux"],
+                         "rate" => [0.1, 0.2, 0.3, 0.4, 0.5]
+                       },
+                       {
+                         "id"   => @table["id"].data,
+                         "name" => @table["name"].data,
+                         "rate" => @table["rate"].data
+                       })
+        end
+      end
       test("column name only") do
-        assert_equal(Charty::Vector,
-                     @table["id"].class)
-        assert_equal([1, 2, 3, 4, 5],
-                     @table["id"].data)
-        assert_equal(["foo", "bar", "baz", "qux", "quux"],
-                     @table["name"].data)
-        assert_equal([0.1, 0.2, 0.3, 0.4, 0.5],
-                     @table["rate"].data)
       end
     end
 
     sub_test_case("with symbol column name") do
       test("row index and column name") do
-        assert_equal("baz",
-                     @table[2, :name])
-        assert_equal(0.4,
-                     @table[3, :rate])
+        assert_equal({
+                       [2, :name] => "baz",
+                       [3, :rate] => 0.4
+                     },
+                     {
+                       [2, :name] => @table[2, :name],
+                       [3, :rate] => @table[3, :rate]
+                     })
       end
 
-      test("column name only") do
-        assert_equal(Charty::Vector,
-                     @table[:id].class)
-        assert_equal([1, 2, 3, 4, 5],
-                     @table[:id].data)
-        assert_equal(["foo", "bar", "baz", "qux", "quux"],
-                     @table[:name].data)
-        assert_equal([0.1, 0.2, 0.3, 0.4, 0.5],
-                     @table[:rate].data)
+      sub_test_case("column name only") do
+        test("class") do
+          assert_equal({
+                         id: Charty::Vector,
+                         name: Charty::Vector,
+                         rate: Charty::Vector
+                       },
+                       {
+                         id: @table[:id].class,
+                         name: @table[:name].class,
+                         rate: @table[:rate].class,
+                       })
+        end
+
+        test("name") do
+          assert_equal({
+                         id: :id,
+                         name: :name,
+                         rate: :rate
+                       },
+                       {
+                         id: @table[:id].name,
+                         name: @table[:name].name,
+                         rate: @table[:rate].name
+                       })
+        end
+
+        test("values") do
+          assert_equal({
+                         id: [1, 2, 3, 4, 5],
+                         name: ["foo", "bar", "baz", "qux", "quux"],
+                         rate: [0.1, 0.2, 0.3, 0.4, 0.5]
+                       },
+                       {
+                         id: @table[:id].data,
+                         name: @table[:name].data,
+                         rate: @table[:rate].data
+                       })
+        end
       end
     end
   end

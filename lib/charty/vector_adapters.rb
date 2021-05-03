@@ -10,11 +10,13 @@ module Charty
       @adapters[name] = adapter_class
     end
 
-    def self.find_adapter_class(data)
+    def self.find_adapter_class(data, exception: true)
       @adapters.each_value do |adapter_class|
         return adapter_class if adapter_class.supported?(data)
       end
-      raise UnsupportedVectorData, "Unsupported vector data (#{data.class})"
+      if exception
+        raise UnsupportedVectorData, "Unsupported vector data (#{data.class})"
+      end
     end
 
     class BaseAdapter
@@ -31,6 +33,14 @@ module Charty
       def_delegators :data, :length, :size
       def_delegators :data, :[], :[]=
       def_delegators :data, :each, :to_a
+
+      def mean
+        Statistics.mean(data)
+      end
+
+      def stdev(population: false)
+        Statistics.stdev(data, population: population)
+      end
     end
 
     module NameSupport
@@ -110,4 +120,5 @@ require_relative "vector_adapters/array_adapter"
 require_relative "vector_adapters/daru_adapter"
 require_relative "vector_adapters/narray_adapter"
 require_relative "vector_adapters/nmatrix_adapter"
+require_relative "vector_adapters/numpy_adapter"
 require_relative "vector_adapters/pandas_adapter"

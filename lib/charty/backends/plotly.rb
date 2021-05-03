@@ -1,4 +1,5 @@
-require 'json'
+require "json"
+require "securerandom"
 
 module Charty
   module Backends
@@ -120,13 +121,30 @@ module Charty
         @layout = {}
       end
 
-      def bar(bar_pos, values, color: nil, width: 0.8r, align: :center, orient: :v)
-        color = Array(color).map(&:to_hex_string)
+      def bar(bar_pos, values, colors, orient, width: 0.8r, align: :center,
+              conf_int: nil, error_colors: nil, error_width: nil, cap_size: nil)
+        bar_pos = Array(bar_pos)
+        values = Array(values)
+        colors = Array(colors).map(&:to_hex_string)
+        errors_low = conf_int.map.with_index {|(low, _), i| values[i] - low }
+        errors_high = conf_int.map.with_index {|(_, high), i| high - values[i] }
+        error_colors = Array(error_colors).map(&:to_hex_string)
         @traces << {
           type: :bar,
           x: bar_pos,
           y: values,
-          marker: {color: color}
+          width: width,
+          marker: {color: colors},
+          error_y: {
+            type: :data,
+            symmetric: false,
+            array: errors_high,
+            arrayminus: errors_low,
+            color: error_colors[0],
+            thickness: error_width || (2 * 1.8), # 1.8 comes from seaborn
+            width: 150 * (cap_size || 0), # I don't know 150 is appropriate for every case
+            visible: true
+          },
         }
         @layout[:showlegend] = false
       end
@@ -174,6 +192,37 @@ module Charty
 
       def disable_xaxis_grid
         # do nothing
+      end
+
+      def save(filename, title: nil)
+        html = <<~HTML
+          <!DOCTYPE html>
+          <html>
+          <head>
+          <meta charset="utf-8">
+          <title>%{title}</title>
+          <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+          </head>
+          <body>
+          <div id="%{id}" style="width: 100%%; height:100%%;"></div>
+          <script type="text/javascript">
+          Plotly.newPlot("%{id}", %{data}, %{layout});
+          </script>
+          </body>
+          </html>
+        HTML
+        html %= {
+          title: title || default_html_title,
+          id: SecureRandom.uuid,
+          data: JSON.dump(@traces),
+          layout: JSON.dump(@layout)
+        }
+        File.write(filename, html)
+        nil
+      end
+
+      private def default_html_title
+        "Charty plot"
       end
 
       def show

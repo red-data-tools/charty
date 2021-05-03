@@ -1,12 +1,10 @@
-class VectorDaruTest < Test::Unit::TestCase
-  def setup
-    begin
-      require "daru"
-    rescue LoadError
-      omit("daru is unavailable")
-    end
+class VectorNumpyTest < Test::Unit::TestCase
+  include Charty::TestHelpers
 
-    @data = Daru::Vector.new([1, 2, 3, 4, 5])
+  def setup
+    pandas_required
+
+    @data = Numpy.asarray([1, 2, 3, 4, 5], dtype: :float64)
     @vector = Charty::Vector.new(@data)
   end
 
@@ -24,32 +22,14 @@ class VectorDaruTest < Test::Unit::TestCase
   sub_test_case("#index") do
     sub_test_case("without explicit index") do
       def test_index
-        assert_equal({
-                       class: Daru::Index,
-                       length: 5,
-                       values: [0, 1, 2, 3, 4]
-                     },
-                     {
-                       class: @vector.index.class,
-                       length: @vector.index.size,
-                       values: @vector.index.to_a
-                     })
+        assert_equal([0, 1, 2, 3, 4], @vector.index.to_a)
       end
     end
 
     sub_test_case("with string index") do
       def test_index
         @vector.index = ["a", "b", "c", "d", "e"]
-        assert_equal({
-                       class: Daru::Index,
-                       length: 5,
-                       values: ["a", "b", "c", "d", "e"]
-                     },
-                     {
-                       class: @vector.index.class,
-                       length: @vector.index.size,
-                       values: @vector.index.to_a
-                     })
+        assert_equal(["a", "b", "c", "d", "e"], @vector.index.to_a)
       end
     end
 
@@ -103,14 +83,14 @@ class VectorDaruTest < Test::Unit::TestCase
 
   sub_test_case("#numeric?") do
     data(
-      "for numeric array"                  => { array: [1, 2, 3, 4, 5]       , dtype: :DFloat , result: true },
-      "for string array"                   => { array: ["abc", "def", "xyz"] , dtype: :RObject, result: false },
-      "for numeric array with nil at head" => { array: [Float::NAN, 1, 2, 3] , dtype: :DFloat , result: true },
-      "for string array with nil at head"  => { array: [nil, "abc", "xyz"]   , dtype: :RObject, result: false },
+      "for numeric array"                  => { array: [1, 2, 3, 4, 5]       , dtype: "float64", result: true },
+      "for string array"                   => { array: ["abc", "def", "xyz"] , dtype: "str"    , result: false },
+      "for numeric array with nil at head" => { array: [Float::NAN, 1, 2, 3] , dtype: "float64", result: true },
+      "for string array with nil at head"  => { array: [nil, "abc", "xyz"]   , dtype: "str"    , result: false },
     )
     def test_numeric(data)
       array, dtype, result = data.values_at(:array, :dtype, :result)
-      data = Daru::Vector.new(array)
+      data = Numpy.asarray(array, dtype: dtype)
       vector = Charty::Vector.new(data)
       assert_equal(result, vector.numeric?)
     end
@@ -120,26 +100,13 @@ class VectorDaruTest < Test::Unit::TestCase
     data(
       "for numeric array"                  => [1, 2, 3, 4, 5],
       "for string array"                   => ["abc", "def", "xyz"],
-      "for numeric array with nil at head" => [nil, 1, 2, 3],
+      "for numeric array with nil at head" => [Float::NAN, 1, 2, 3],
       "for string array with nil at head"  => [nil, "abc", "xyz"]
     )
     def test_categorical_with_noncategorical(data)
-      series = Daru::Vector.new(data)
-      vector = Charty::Vector.new(series)
+      vector = Charty::Vector.new(Numpy.asarray(data))
       assert do
         not vector.categorical?
-      end
-    end
-
-    data(
-      "for string array"                   => ["abc", "def", "xyz"],
-      "for string array with nil at head"  => [nil, "abc", "xyz"],
-    )
-    def test_categorical_with_categorical(data)
-      series = Daru::Vector.new(data).to_category
-      vector = Charty::Vector.new(series)
-      assert do
-        vector.categorical?
       end
     end
   end
@@ -152,36 +119,23 @@ class VectorDaruTest < Test::Unit::TestCase
       "for string array with nil at head"  => [nil, "abc", "xyz"]
     )
     def test_categories_with_noncategorical(data)
-      series = Daru::Vector.new(data)
-      vector = Charty::Vector.new(series)
+      vector = Charty::Vector.new(Numpy.asarray(data))
       assert_nil(vector.categories)
-    end
-
-    data(
-      "for string array"                   => ["abc", "def", "xyz"],
-      "for string array with nil at head"  => [nil, "abc", "xyz"]
-    )
-    def test_categories_with_categorical(data)
-      series = Daru::Vector.new(data).to_category
-      vector = Charty::Vector.new(series)
-      assert_equal(data.compact,
-                   vector.categories)
     end
   end
 
   sub_test_case("#unique_values") do
     def setup
       super
-      @data = [3, 1, 3, 2, 1]
-      @series = Daru::Vector.new(@data)
-      @vector = Charty::Vector.new(@series)
+      @data = Numpy.asarray([3, 1, 3, 2, 1])
+      @vector = Charty::Vector.new(@data)
     end
 
     def test_unique_values
       result = @vector.unique_values
       assert_equal({
                      class: Array,
-                     values: @data.uniq
+                     values: Numpy.unique(@data).to_a
                    },
                    {
                      class: result.class,
@@ -191,13 +145,13 @@ class VectorDaruTest < Test::Unit::TestCase
   end
 
   sub_test_case("#group_by") do
-    test("when grouper is also a Charty::Vector of a Daru::Vector") do
-      vector = Charty::Vector.new(Daru::Vector.new([1, 2, 3, 4, 5]))
-      grouper = Charty::Vector.new(Daru::Vector.new(["a", "b", "a", "a", "b"]))
+    test("when grouper is also a Charty::Vector of a Pandas::Series") do
+      vector = Charty::Vector.new(Numpy.asarray([1, 2, 3, 4, 5]))
+      grouper = Charty::Vector.new(Numpy.asarray(["a", "b", "a", "a", "b"]))
       result = vector.group_by(grouper)
       assert_equal({
                      classes:      { "a" => Charty::Vector, "b" => Charty::Vector },
-                     data_classes: { "a" => Daru::Vector  , "b" => Daru::Vector },
+                     data_classes: { "a" => Numpy::NDArray, "b" => Numpy::NDArray },
                      data:         { "a" => [1, 3, 4]     , "b" => [2, 5] }
                    },
                    {
@@ -207,29 +161,13 @@ class VectorDaruTest < Test::Unit::TestCase
                    })
     end
 
-    test("when grouper is also a Charty::Vector of a categorical Daru::Vector") do
-      vector = Charty::Vector.new(Daru::Vector.new([1, 2, 3, 4, 5]))
-      grouper = Charty::Vector.new(Daru::Vector.new(["a", "b", "a", "a", "b"]).to_category)
-      result = vector.group_by(grouper)
-      assert_equal({
-                     classes:      { "a" => Charty::Vector, "b" => Charty::Vector },
-                     data_classes: { "a" => Daru::Vector  , "b" => Daru::Vector },
-                     data:         { "a" => [1, 3, 4]     , "b" => [2, 5] }
-                   },
-                   {
-                     classes:      { "a" => result["a"].class     , "b" => result["b"].class },
-                     data_classes: { "a" => result["a"].data.class, "b" => result["b"].data.class },
-                     data:         { "a" => result["a"].data.to_a , "b" => result["b"].data.to_a }
-                   })
-    end
-
-    test("when grouper is a Charty::Vector but not of a daru::Vector") do
-      vector = Charty::Vector.new(Daru::Vector.new([1, 2, 3, 4, 5]))
+    test("when grouper is a Charty::Vector but not of a Pandas::Series") do
+      vector = Charty::Vector.new(Numpy.asarray([1, 2, 3, 4, 5]))
       grouper = Charty::Vector.new(["a", "b", "a", "a", "b"])
       result = vector.group_by(grouper)
       assert_equal({
                      classes:      { "a" => Charty::Vector, "b" => Charty::Vector },
-                     data_classes: { "a" => Daru::Vector  , "b" => Daru::Vector },
+                     data_classes: { "a" => Numpy::NDArray, "b" => Numpy::NDArray },
                      data:         { "a" => [1, 3, 4]     , "b" => [2, 5] }
                    },
                    {
@@ -239,13 +177,29 @@ class VectorDaruTest < Test::Unit::TestCase
                    })
     end
 
-    test("when grouper is a Daru::Vector") do
-      vector = Charty::Vector.new(Daru::Vector.new([1, 2, 3, 4, 5]))
-      grouper = Daru::Vector.new(["a", "b", "a", "a", "b"])
+    test("when grouper is a Numpy::NDArray") do
+      vector = Charty::Vector.new(Numpy.asarray([1, 2, 3, 4, 5]))
+      grouper = Numpy.asarray(["a", "b", "a", "a", "b"])
       result = vector.group_by(grouper)
       assert_equal({
                      classes:      { "a" => Charty::Vector, "b" => Charty::Vector },
-                     data_classes: { "a" => Daru::Vector  , "b" => Daru::Vector },
+                     data_classes: { "a" => Numpy::NDArray, "b" => Numpy::NDArray },
+                     data:         { "a" => [1, 3, 4]     , "b" => [2, 5] }
+                   },
+                   {
+                     classes:      { "a" => result["a"].class     , "b" => result["b"].class },
+                     data_classes: { "a" => result["a"].data.class, "b" => result["b"].data.class },
+                     data:         { "a" => result["a"].data.to_a , "b" => result["b"].data.to_a }
+                   })
+    end
+
+    test("when grouper is a Pandas::Series") do
+      vector = Charty::Vector.new(Numpy.asarray([1, 2, 3, 4, 5]))
+      grouper = Pandas::Series.new(["a", "b", "a", "a", "b"])
+      result = vector.group_by(grouper)
+      assert_equal({
+                     classes:      { "a" => Charty::Vector, "b" => Charty::Vector },
+                     data_classes: { "a" => Numpy::NDArray, "b" => Numpy::NDArray },
                      data:         { "a" => [1, 3, 4]     , "b" => [2, 5] }
                    },
                    {
@@ -256,12 +210,12 @@ class VectorDaruTest < Test::Unit::TestCase
     end
 
     test("when grouper is an Array") do
-      vector = Charty::Vector.new(Daru::Vector.new([1, 2, 3, 4, 5]))
+      vector = Charty::Vector.new(Numpy.asarray([1, 2, 3, 4, 5]))
       grouper = ["a", "b", "a", "a", "b"]
       result = vector.group_by(grouper)
       assert_equal({
                      classes:      { "a" => Charty::Vector, "b" => Charty::Vector },
-                     data_classes: { "a" => Daru::Vector  , "b" => Daru::Vector },
+                     data_classes: { "a" => Numpy::NDArray, "b" => Numpy::NDArray },
                      data:         { "a" => [1, 3, 4]     , "b" => [2, 5] }
                    },
                    {
@@ -273,19 +227,19 @@ class VectorDaruTest < Test::Unit::TestCase
   end
 
   data(
-    "for numeric array without NA"  => { array: [1, 2, 3, 4, 5]           , expected: [1, 2, 3, 4, 5] },
-    "for string array without NA"   => { array: ["abc", "def", "xyz"]     , expected: ["abc", "def", "xyz"] },
-    "for numeric array with NAs"    => { array: [nil, 1, 2, Float::NAN, 3], expected: [1, 2, 3] },
-    "for string array with NAs"     => { array: [nil, "abc", nil, "xyz"]  , expected: ["abc", "xyz"] },
+    "for numeric array without NA"  => { array: [1, 2, 3, 4, 5]                  , expected: [1, 2, 3, 4, 5] },
+    "for string array without NA"   => { array: ["abc", "def", "xyz"]            , expected: ["abc", "def", "xyz"] },
+    "for numeric array with NAs"    => { array: [Float::NAN, 1, 2, Float::NAN, 3], expected: [1, 2, 3] },
+    "for string array with NAs"     => { array: [nil, "abc", nil, "xyz"]         , expected: ["abc", "xyz"] },
   )
   def test_drop_na(data)
     array, expected = data.values_at(:array, :expected)
-    series = Daru::Vector.new(array)
-    vector = Charty::Vector.new(series)
+    data = Numpy.asarray(array)
+    vector = Charty::Vector.new(data)
     result = vector.drop_na
     assert_equal({
                    class: Charty::Vector,
-                   data_class: Daru::Vector,
+                   data_class: Numpy::NDArray,
                    values: expected
                  },
                  {

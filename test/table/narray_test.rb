@@ -32,21 +32,51 @@ class TableNArrayTest < Test::Unit::TestCase
                      })
       end
 
-      test("column name only") do
-        assert_equal({
-                       :class => Charty::Vector,
-                       "X0"   => [1, 5],
-                       "X1"   => [2, 6],
-                       "X2"   => [3, 7],
-                       "X3"   => [4, 8]
-                     },
-                     {
-                       :class => @table["X0"].class,
-                       "X0"   => @table["X0"].data,
-                       "X1"   => @table["X1"].data,
-                       "X2"   => @table["X2"].data,
-                       "X3"   => @table["X3"].data
-                     })
+      sub_test_case("column name only") do
+        test("class") do
+          assert_equal({
+                         "X0" => Charty::Vector,
+                         "X1" => Charty::Vector,
+                         "X2" => Charty::Vector,
+                         "X3" => Charty::Vector
+                       },
+                       {
+                         "X0" => @table["X0"].class,
+                         "X1" => @table["X1"].class,
+                         "X2" => @table["X2"].class,
+                         "X3" => @table["X3"].class
+                       })
+        end
+
+        test("name") do
+          assert_equal({
+                         "X0" => "X0",
+                         "X1" => "X1",
+                         "X2" => "X2",
+                         "X3" => "X3"
+                       },
+                       {
+                         "X0" => @table["X0"].name,
+                         "X1" => @table["X1"].name,
+                         "X2" => @table["X2"].name,
+                         "X3" => @table["X3"].name
+                       })
+        end
+
+        test("values") do
+          assert_equal({
+                         "X0" => [1, 5],
+                         "X1" => [2, 6],
+                         "X2" => [3, 7],
+                         "X3" => [4, 8]
+                       },
+                       {
+                         "X0" => @table["X0"].data,
+                         "X1" => @table["X1"].data,
+                         "X2" => @table["X2"].data,
+                         "X3" => @table["X3"].data
+                       })
+        end
       end
     end
   end
@@ -88,9 +118,21 @@ class TableNArrayTest < Test::Unit::TestCase
                        @table[3, :X0])
         end
 
-        test("column name only") do
-          assert_equal(Numo::DFloat[1, 2, 3, 4, 5],
-                       @table[:X0])
+        sub_test_case("column name only") do
+          test("class") do
+            assert_equal(Charty::Vector,
+                         @table[:X0].class)
+          end
+
+          test("name") do
+            assert_equal(:X0,
+                         @table[:X0].name)
+          end
+
+          test("values") do
+            assert_equal(Numo::DFloat[1, 2, 3, 4, 5],
+                         @table[:X0].data)
+          end
         end
       end
     end
@@ -126,19 +168,45 @@ class TableNArrayTest < Test::Unit::TestCase
                        })
         end
 
-        test("column name only") do
-          assert_equal({
-                         :class => Charty::Vector,
-                         "X0"   => Numo::DFloat[1, 2, 3, 4],
-                         "X1"   => Numo::DFloat[5, 6, 7, 8],
-                         "X2"   => Numo::DFloat[9, 10, 11, 12]
-                       },
-                       {
-                         :class => @table["X0"].class,
-                         "X0"   => @table["X0"].data,
-                         "X1"   => @table["X1"].data,
-                         "X2"   => @table["X2"].data
-                       })
+        sub_test_case("column name only") do
+          test("class") do
+            assert_equal({
+                           "X0" => Charty::Vector,
+                           "X1" => Charty::Vector,
+                           "X2" => Charty::Vector
+                         },
+                         {
+                           "X0" => @table["X0"].class,
+                           "X1" => @table["X1"].class,
+                           "X2" => @table["X2"].class
+                         })
+          end
+
+          test("name") do
+            assert_equal({
+                           "X0" => "X0",
+                           "X1" => "X1",
+                           "X2" => "X2"
+                         },
+                         {
+                           "X0" => @table["X0"].name,
+                           "X1" => @table["X1"].name,
+                           "X2" => @table["X2"].name
+                         })
+          end
+
+          test("values") do
+            assert_equal({
+                           "X0" => Numo::DFloat[1, 2, 3, 4],
+                           "X1" => Numo::DFloat[5, 6, 7, 8],
+                           "X2" => Numo::DFloat[9, 10, 11, 12]
+                         },
+                         {
+                           "X0" => @table["X0"].data,
+                           "X1" => @table["X1"].data,
+                           "X2" => @table["X2"].data
+                         })
+          end
         end
       end
     end
@@ -156,25 +224,45 @@ class TableNArrayTest < Test::Unit::TestCase
                        })
         end
 
-        test("column name only") do
-          assert_equal({
-                         :class => Charty::Vector,
-                         :X0    => Numo::DFloat[1, 2, 3, 4],
-                         :X1    => Numo::DFloat[5, 6, 7, 8],
-                         :X2    => Numo::DFloat[9, 10, 11, 12]
-                       },
-                       {
-                         :class => @table[:X0].class,
-                         :X0    => @table[:X0].data,
-                         :X1    => @table[:X1].data,
-                         :X2    => @table[:X2].data
-                       })
-          assert_equal(Numo::DFloat[1, 2, 3, 4],
-                       @table[:X0])
-          assert_equal(Numo::DFloat[5, 6, 7, 8],
-                       @table[:X1])
-          assert_equal(Numo::DFloat[9, 10, 11, 12],
-                       @table[:X2])
+        sub_test_case("column name only") do
+          test("class") do
+            assert_equal({
+                           :X0 => Charty::Vector,
+                           :X1 => Charty::Vector,
+                           :X2 => Charty::Vector
+                         },
+                         {
+                           :X0 => @table[:X0].class,
+                           :X1 => @table[:X1].class,
+                           :X2 => @table[:X2].class
+                         })
+          end
+
+          test("name") do
+            assert_equal({
+                           :X0 => :X0,
+                           :X1 => :X1,
+                           :X2 => :X2
+                         },
+                         {
+                           :X0 => @table[:X0].name,
+                           :X1 => @table[:X1].name,
+                           :X2 => @table[:X2].name
+                         })
+          end
+
+          test("values") do
+            assert_equal({
+                           :X0 => Numo::DFloat[1, 2, 3, 4],
+                           :X1 => Numo::DFloat[5, 6, 7, 8],
+                           :X2 => Numo::DFloat[9, 10, 11, 12]
+                         },
+                         {
+                           :X0 => @table[:X0].data,
+                           :X1 => @table[:X1].data,
+                           :X2 => @table[:X2].data
+                         })
+          end
         end
       end
     end

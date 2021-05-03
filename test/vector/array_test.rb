@@ -94,4 +94,99 @@ class VectorArrayTest < Test::Unit::TestCase
     assert_equal([1, 2, 3, 4, 5],
                  @vector.to_a)
   end
+
+  sub_test_case("#numeric?") do
+    data(
+      "for numeric array"                  => { array: [1, 2, 3, 4, 5]       , result: true },
+      "for string array"                   => { array: ["abc", "def", "xyz"] , result: false },
+      "for numeric array with nil at head" => { array: [nil, 1, 2, 3]        , result: true },
+      "for string array with nil at head"  => { array: [nil, "abc", "xyz"]   , result: false },
+    )
+    def test_numeric(data)
+      array, result = data.values_at(:array, :result)
+      vector = Charty::Vector.new(array)
+      assert_equal(result, vector.numeric?)
+    end
+  end
+
+  sub_test_case("#categorical?") do
+    data(
+      "for numeric array"                  => { array: [1, 2, 3, 4, 5]       , result: false },
+      "for string array"                   => { array: ["abc", "def", "xyz"] , result: false },
+      "for numeric array with nil at head" => { array: [nil, 1, 2, 3]        , result: false },
+      "for string array with nil at head"  => { array: [nil, "abc", "xyz"]   , result: false },
+    )
+    def test_categorical(data)
+      array, result = data.values_at(:array, :result)
+      vector = Charty::Vector.new(array)
+      assert_equal(result, vector.categorical?)
+    end
+  end
+
+  sub_test_case("#categories") do
+    data(
+      "for numeric array"                  => { array: [1, 2, 3, 4, 5]       , result: nil },
+      "for string array"                   => { array: ["abc", "def", "xyz"] , result: nil },
+      "for numeric array with nil at head" => { array: [nil, 1, 2, 3]        , result: nil },
+      "for string array with nil at head"  => { array: [nil, "abc", "xyz"]   , result: nil },
+    )
+    def test_categories(data)
+      array, result = data.values_at(:array, :result)
+      vector = Charty::Vector.new(array)
+      assert_equal(result, vector.categories)
+    end
+  end
+
+  sub_test_case("#unique_values") do
+    def setup
+      @data = [3, 1, 3, 2, 1]
+      @vector = Charty::Vector.new(@data)
+    end
+
+    def test_unique_values
+      result = @vector.unique_values
+      assert_equal({
+                     class: Array,
+                     values: @data.uniq
+                   },
+                   {
+                     class: result.class,
+                     values: result
+                   })
+    end
+  end
+
+  test("#group_by") do
+    vector = Charty::Vector.new([1, 2, 3, 4, 5])
+    grouper = Charty::Vector.new(["a", "b", "a", "a", "b"])
+    result = vector.group_by(grouper)
+    assert_equal({
+                   classes: { "a" => Charty::Vector, "b" => Charty::Vector },
+                   data:    { "a" => [1, 3, 4]     , "b" => [2, 5] }
+                 },
+                 {
+                   classes: { "a" => result["a"].class, "b" => result["b"].class },
+                   data:    { "a" => result["a"].data , "b" => result["b"].data }
+                 })
+  end
+
+  data(
+    "for numeric array without NA"  => { array: [1, 2, 3, 4, 5]           , expected: [1, 2, 3, 4, 5] },
+    "for string array without NA"   => { array: ["abc", "def", "xyz"]     , expected: ["abc", "def", "xyz"] },
+    "for numeric array with NAs"    => { array: [nil, 1, 2, Float::NAN, 3], expected: [1, 2, 3] },
+    "for string array with NAs"     => { array: [nil, "abc", nil, "xyz"]  , expected: ["abc", "xyz"] },
+  )
+  def test_drop_na(data)
+    array, expected = data.values_at(:array, :expected)
+    vector = Charty::Vector.new(array)
+    result = vector.drop_na
+    assert_equal({
+                   class: Charty::Vector,
+                   values: expected
+                 },
+                 {
+                   class: result.class,
+                   values: result.data
+                 })
+  end
 end

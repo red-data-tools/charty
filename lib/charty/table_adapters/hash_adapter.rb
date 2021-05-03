@@ -70,7 +70,7 @@ module Charty
       def_delegator :@data, :keys, :column_names
 
       def length
-        data[column_names[0]].length
+        data[column_names[0]].size
       end
 
       def column_length
@@ -81,7 +81,7 @@ module Charty
         if row
           @data[column][row]
         else
-          Vector.new(@data[column])
+          Vector.new(@data[column], name: column)
         end
       end
 
