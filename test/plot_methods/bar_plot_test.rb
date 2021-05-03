@@ -193,7 +193,6 @@ class PlotMethodsBarPlotTest < Test::Unit::TestCase
     data(:backend, [:plotly, :pyplot], keep: true)
     def test_bar_plot(data)
       adapter_name, backend_name = data.values_at(:adapter, :backend)
-      $xxx = adapter_name
       setup_data(adapter_name)
       setup_backend(backend_name)
       plot = Charty.bar_plot(data: @data, x: :x, y: :y)
