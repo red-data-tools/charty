@@ -86,7 +86,11 @@ module Charty
     def self.bootstrap_ci(*vectors, which, n_boot: 2000, func: :mean, units: nil, random: nil)
       boot = bootstrap(*vectors, n_boot: n_boot, func: func, units: units, random: random)
       q = [50 - which / 2, 50 + which / 2]
-      boot.percentile(q)
+      if boot.respond_to?(:percentile)
+        boot.percentile(q)
+      else
+        percentile(boot, q)
+      end
     end
 
     # TODO: optimize with introselect algorithm
