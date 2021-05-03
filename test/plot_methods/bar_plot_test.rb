@@ -122,6 +122,9 @@ class PlotMethodsBarPlotTest < Test::Unit::TestCase
       case adapter_name
       when :daru
         setup_daru_data
+      when :nmatrix
+        nmatrix_required
+        setup_nmatrix_data
       when :numo
         numo_required
         setup_numo_data
@@ -144,6 +147,11 @@ class PlotMethodsBarPlotTest < Test::Unit::TestCase
     def setup_daru_data
       @data = Daru::DataFrame.new(@data)
       @data[:x] = @data[:x].to_category
+    end
+
+    def setup_nmatrix_data
+      @data[:x] = NMatrix[@data[:x], dtype: :object]
+      @data[:y] = NMatrix[*@data[:y]]
     end
 
     def setup_numo_data
@@ -207,6 +215,19 @@ class PlotMethodsBarPlotTest < Test::Unit::TestCase
       setup_backend(backend_name)
       plot = Charty.bar_plot(data: @data, x: :x, y: :y, ci: :sd)
       assert_nothing_raised do
+        render_plot(backend_name, plot)
+      end
+    end
+
+    # TODO: Support the following cases
+    data(:adapter, [:nmatrix])
+    data(:backend, [:plotly, :pyplot])
+    def test_bar_plot_unsupported(data)
+      adapter_name, backend_name = data.values_at(:adapter, :backend)
+      setup_data(adapter_name)
+      setup_backend(backend_name)
+      assert_raise(NoMethodError) do
+        plot = Charty.bar_plot(data: @data, x: :x, y: :y)
         render_plot(backend_name, plot)
       end
     end
