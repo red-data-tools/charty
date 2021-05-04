@@ -1,6 +1,8 @@
 module Charty
   module Plotters
     class BoxPlotter < CategoricalPlotter
+      self.require_numeric = true
+
       def render
         backend = Backends.current
         backend.begin_figure
@@ -26,7 +28,7 @@ module Charty
           group_data.drop_na
         end
         backend.box_plot(plot_data, (0 ... @plot_data.length).to_a,
-                         color: @colors, gray: @gray)
+                         @colors, orient, gray: @gray)
       end
     end
   end
