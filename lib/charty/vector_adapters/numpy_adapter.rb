@@ -25,6 +25,10 @@ module Charty
       include NameSupport
       include IndexSupport
 
+      def empty?
+        data.size == 0
+      end
+
       def numeric?
         PyCall.builtins.issubclass(data.dtype.type, PyCall.tuple([Numpy.number, Numpy.bool_]))
       end

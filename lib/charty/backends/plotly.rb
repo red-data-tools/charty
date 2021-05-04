@@ -156,7 +156,7 @@ module Charty
           data = if group_data.empty?
                    {type: :box, y: [] }
                  else
-                   {type: :box, y: group_data, marker: {color: color[i]}}
+                   {type: :box, y: Array(group_data), marker: {color: color[i]}}
                  end
           @traces << data
         end
