@@ -207,7 +207,7 @@ module Charty
         end
       end
 
-      def box_plot(plot_data, positions, color:, gray:,
+      def box_plot(plot_data, positions, color, orient, gray:,
                    width: 0.8r, flier_size: 5, whisker: 1.5, notch: false)
         color = Array(color).map(&:to_hex_string)
         gray = gray.to_hex_string
@@ -220,11 +220,11 @@ module Charty
           # TODO: Do not convert to Array when group_data is Pandas::Series or Numpy::NDArray,
           # and use MemoryView if available when group_data is Numo::NArray
           artist_dict = @pyplot.boxplot(Array(group_data),
-                                        vert: :v,
+                                        vert: (orient == :v),
                                         patch_artist: true,
                                         positions: [i],
                                         widths: width,
-                                        whis: whisker, )
+                                        whis: whisker)
 
           artist_dict["boxes"].each do |box|
             box.update({facecolor: color[i], zorder: 0.9, edgecolor: gray}, {})

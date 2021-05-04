@@ -160,15 +160,17 @@ module Charty
         @layout[:showlegend] = false
       end
 
-      def box_plot(plot_data, positions, color:, gray:,
+      def box_plot(plot_data, positions, color, orient, gray:,
                    width: 0.8r, flier_size: 5, whisker: 1.5, notch: false)
         color = Array(color).map(&:to_hex_string)
         plot_data.each_with_index do |group_data, i|
+          var_name = orient == :v ? :y : :x
           data = if group_data.empty?
-                   {type: :box, y: [] }
+                   {type: :box, "#{var_name}": [] }
                  else
-                   {type: :box, y: Array(group_data), marker: {color: color[i]}}
+                   {type: :box, "#{var_name}": Array(group_data), marker: {color: color[i]}}
                  end
+          data[:orientation] = orient
           @traces << data
         end
         @layout[:showlegend] = false
