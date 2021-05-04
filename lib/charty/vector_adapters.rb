@@ -32,7 +32,7 @@ module Charty
 
       def_delegators :data, :length, :size
       def_delegators :data, :[], :[]=
-      def_delegators :data, :each, :to_a
+      def_delegators :data, :each, :to_a, :empty?
 
       def mean
         Statistics.mean(data)

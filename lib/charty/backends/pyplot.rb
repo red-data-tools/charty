@@ -217,7 +217,10 @@ module Charty
         plot_data.each_with_index do |group_data, i|
           next if group_data.nil? || group_data.empty?
 
-          artist_dict = @pyplot.boxplot(group_data, vert: :v,
+          # TODO: Do not convert to Array when group_data is Pandas::Series or Numpy::NDArray,
+          # and use MemoryView if available when group_data is Numo::NArray
+          artist_dict = @pyplot.boxplot(Array(group_data),
+                                        vert: :v,
                                         patch_artist: true,
                                         positions: [i],
                                         widths: width,
