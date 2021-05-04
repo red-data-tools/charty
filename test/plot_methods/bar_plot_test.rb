@@ -209,6 +209,25 @@ class PlotMethodsBarPlotTest < Test::Unit::TestCase
       end
     end
 
+    def test_bar_plot_infer_orient(data)
+      adapter_name, backend_name = data.values_at(:adapter, :backend)
+      setup_data(adapter_name)
+      setup_backend(backend_name)
+      plot = Charty.bar_plot(data: @data, x: :y, y: :x)
+      assert_nothing_raised do
+        render_plot(backend_name, plot)
+      end
+    end
+
+    def test_bar_plot_h(data)
+      adapter_name, backend_name = data.values_at(:adapter, :backend)
+      setup_data(adapter_name)
+      setup_backend(backend_name)
+      assert_raise(ArgumentError.new("Horizontal orientation requires numeric `x` variable")) do
+        Charty.bar_plot(data: @data, x: :x, y: :y, orient: :h)
+      end
+    end
+
     def test_bar_plot_sd(data)
       adapter_name, backend_name = data.values_at(:adapter, :backend)
       setup_data(adapter_name)

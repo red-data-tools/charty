@@ -175,9 +175,9 @@ module Charty
 
         ax = @pyplot.gca
         if orient == :v
-          ax.bar(bar_pos, values, width: width, color: colors, align: align)
+          ax.bar(bar_pos, values, width, color: colors, align: align)
         else
-          ax.barh(bar_pos, values, width: width, color: colors, align: align)
+          ax.barh(bar_pos, values, width, color: colors, align: align)
         end
 
         confidence_intervals(ax, bar_pos, conf_int, orient, error_colors, error_width, cap_size)
@@ -261,15 +261,31 @@ module Charty
         @pyplot.gca.set_xticks(Array(values))
       end
 
+      def set_yticks(values)
+        @pyplot.gca.set_yticks(Array(values))
+      end
+
       def set_xtick_labels(labels)
         @pyplot.gca.set_xticklabels(Array(labels).map(&method(:String)))
+      end
+
+      def set_ytick_labels(labels)
+        @pyplot.gca.set_yticklabels(Array(labels).map(&method(:String)))
       end
 
       def set_xlim(min, max)
         @pyplot.gca.set_xlim(Float(min), Float(max))
       end
 
+      def set_ylim(min, max)
+        @pyplot.gca.set_ylim(Float(min), Float(max))
+      end
+
       def disable_xaxis_grid
+        @pyplot.gca.xaxis.grid(false)
+      end
+
+      def disable_yaxis_grid
         @pyplot.gca.xaxis.grid(false)
       end
 

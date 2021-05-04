@@ -30,7 +30,7 @@ module Charty
                  dodge: true, **options, &block)
       Plotters::BarPlotter.new(
         data: data, variables: { x: x, y: y, color: color },
-        order: order, orient: nil,
+        order: order, orient: orient,
         estimator: estimator, ci: ci, n_boot: n_boot, units: units, random: random,
         color_order: color_order, key_color: key_color, palette: palette, saturation: saturation,
         error_color: error_color, error_width: error_width,

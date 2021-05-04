@@ -129,22 +129,33 @@ module Charty
         errors_low = conf_int.map.with_index {|(low, _), i| values[i] - low }
         errors_high = conf_int.map.with_index {|(_, high), i| high - values[i] }
         error_colors = Array(error_colors).map(&:to_hex_string)
+
+        if orient == :v
+          x, y = bar_pos, values
+        else
+          x, y = values, bar_pos
+        end
+
+        error_bar = {
+          type: :data,
+          visible: true,
+          symmetric: false,
+          array: errors_high,
+          arrayminus: errors_low,
+          color: error_colors[0]
+        }
+        error_bar[:thickness] = error_width unless error_width.nil?
+        error_bar[:width] = cap_size unless cap_size.nil?
+        error_bar_key = orient == :v ? :error_y : :error_x
+
         @traces << {
           type: :bar,
-          x: bar_pos,
-          y: values,
+          orientation: orient,
+          x: x,
+          y: y,
           width: width,
           marker: {color: colors},
-          error_y: {
-            type: :data,
-            symmetric: false,
-            array: errors_high,
-            arrayminus: errors_low,
-            color: error_colors[0],
-            thickness: error_width || (2 * 1.8), # 1.8 comes from seaborn
-            width: 150 * (cap_size || 0), # I don't know 150 is appropriate for every case
-            visible: true
-          },
+          "#{error_bar_key}": error_bar
         }
         @layout[:showlegend] = false
       end
@@ -179,10 +190,22 @@ module Charty
         @layout[:xaxis][:tickvals] = values
       end
 
+      def set_yticks(values)
+        @layout[:yaxis] ||= {}
+        @layout[:yaxis][:tickmode] = "array"
+        @layout[:yaxis][:tickvals] = values
+      end
+
       def set_xtick_labels(labels)
         @layout[:xaxis] ||= {}
         @layout[:xaxis][:tickmode] = "array"
         @layout[:xaxis][:ticktext] = labels
+      end
+
+      def set_ytick_labels(labels)
+        @layout[:yaxis] ||= {}
+        @layout[:yaxis][:tickmode] = "array"
+        @layout[:yaxis][:ticktext] = labels
       end
 
       def set_xlim(min, max)
@@ -190,7 +213,16 @@ module Charty
         @layout[:xaxis][:range] = [min, max]
       end
 
+      def set_ylim(min, max)
+        @layout[:yaxis] ||= {}
+        @layout[:yaxis][:range] = [min, max]
+      end
+
       def disable_xaxis_grid
+        # do nothing
+      end
+
+      def disable_yaxis_grid
         # do nothing
       end
 
