@@ -1,6 +1,19 @@
 module Charty
   module Plotters
     class CategoricalPlotter < AbstractPlotter
+      class << self
+        attr_reader :require_numeric
+
+        def require_numeric=(val)
+          case val
+          when true, false
+            @require_numeric = val
+          else
+            raise ArgumentError, "require_numeric must be ture or false"
+          end
+        end
+      end
+
       def initialize(x, y, color, **options, &block)
         super
 
@@ -119,14 +132,16 @@ module Charty
         x = Charty::Vector.try_convert(x)
         y = Charty::Vector.try_convert(y)
 
-        # TODO: infer orient here
-        self.orient = :v
+        self.orient = infer_orient(x, y, orient, self.class.require_numeric)
 
         if x.nil? || y.nil?
           setup_single_data
         else
-          # FIXME: Assume vertical plot
-          groups, vals = x, y
+          if orient == :v
+            groups, vals = x, y
+          else
+            groups, vals = y, x
+          end
 
           if groups.respond_to?(:name)
             @group_label = groups.name
@@ -141,6 +156,78 @@ module Charty
       private def setup_single_data
         raise NotImplementedError,
               "Single data plot is not supported yet"
+      end
+
+      private def infer_orient(x, y, orient, require_numeric)
+        x_type = x.nil? ? nil : variable_type(x)
+        y_type = y.nil? ? nil : variable_type(y)
+
+        nonnumeric_error = "%{orient} orientation requires numeric `%{dim}` variable"
+        single_variable_warning = "%{orient} orientation ignored with only `%{dim}` specified"
+
+        case
+        when x.nil?
+          case orient
+          when :h
+            warn single_variable_warning % {orient: "Horizontal", dim: "y"}
+          end
+          if require_numeric && y_type != :numeric
+            raise ArgumentError, nonnumeric_error % {orient: "Vertical", dim: "y"}
+          end
+          return :v
+        when y.nil?
+          case orient
+          when :v
+            warn single_variable_warning % {orient: "Vertical", dim: "x"}
+          end
+          if require_numeric && x_type != :numeric
+            raise ArgumentError, nonnumeric_error % {orient: "Horizontal", dim: "x"}
+          end
+          return :h
+        end
+        case orient
+        when :v
+          if require_numeric && y_type != :numeric
+            raise ArgumentError, nonnumeric_error % {orient: "Vertical", dim: "y"}
+          end
+          return :v
+        when :h
+          if require_numeric && x_type != :numeric
+            raise ArgumentError, nonnumeric_error % {orient: "Horizontal", dim: "x"}
+          end
+          return :h
+        when nil
+          case
+          when x_type != :categorical && y_type == :categorical
+            return :h
+          when x_type != :numeric     && y_type == :numeric
+            return :v
+          when x_type == :numeric     && y_type != :numeric
+            return :h
+          when require_numeric && x_type != :numeric && y_type != :numeric
+            raise ArgumentError, "Neither the `x` nor `y` variable appears to be numeric."
+          else
+            :v
+          end
+        else
+          # must be unreachable
+          raise RuntimeError, "BUG in Charty. Please report the issue."
+        end
+      end
+
+      private def variable_type(vector, boolean_type=:numeric)
+        if vector.numeric?
+          :numeric
+        elsif vector.categorical?
+          :categorical
+        else
+          case vector[0]
+          when true, false
+            boolean_type
+          else
+            :categorical
+          end
+        end
       end
 
       # TODO: move to AbstractPlotter
@@ -198,12 +285,29 @@ module Charty
       end
 
       private def annotate_axes(backend)
-        backend.set_xlabel(@group_label)
-        backend.set_ylabel(@value_label)
-        backend.set_xticks((0 ... @plot_data.length).to_a)
-        backend.set_xtick_labels(@group_names)
-        backend.disable_xaxis_grid
-        backend.set_xlim(-0.5, @plot_data.length - 0.5)
+        if orient == :v
+          xlabel, ylabel = @group_label, @value_label
+        else
+          xlabel, ylabel = @value_label, @group_label
+        end
+        backend.set_xlabel(xlabel) unless xlabel.nil?
+        backend.set_ylabel(ylabel) unless ylabel.nil?
+
+        if orient == :v
+          backend.set_xticks((0 ... @plot_data.length).to_a)
+          backend.set_xtick_labels(@group_names)
+        else
+          backend.set_yticks((0 ... @plot_data.length).to_a)
+          backend.set_ytick_labels(@group_names)
+        end
+
+        if orient == :v
+          backend.disable_xaxis_grid
+          backend.set_xlim(-0.5, @plot_data.length - 0.5)
+        else
+          backend.disable_yaxis_grid
+          backend.set_ylim(-0.5, @plot_data.length - 0.5)
+        end
       end
 
       private def remove_na!(ary)

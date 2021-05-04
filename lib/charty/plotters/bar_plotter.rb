@@ -1,6 +1,8 @@
 module Charty
   module Plotters
     class BarPlotter < CategoricalPlotter
+      self.require_numeric = true
+
       def initialize(data: nil, variables: {}, order: nil, orient: nil, **options, &block)
         x, y, color = variables.values_at(:x, :y, :color)
         super(x, y, color, data: data, order: order, orient: orient, **options, &block)
