@@ -1,6 +1,7 @@
 module Charty
   module Plotters
     class BoxPlotter < CategoricalPlotter
+      self.default_palette = :light
       self.require_numeric = true
 
       def render

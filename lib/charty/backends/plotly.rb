@@ -118,10 +118,10 @@ module Charty
 
       def begin_figure
         @traces = []
-        @layout = {}
+        @layout = {showlegend: false}
       end
 
-      def bar(bar_pos, values, colors, orient, width: 0.8r, align: :center,
+      def bar(bar_pos, values, colors, orient, label: nil, width: 0.8r, align: :center,
               conf_int: nil, error_colors: nil, error_width: nil, cap_size: nil)
         bar_pos = Array(bar_pos)
         values = Array(values)
@@ -148,7 +148,7 @@ module Charty
         error_bar[:width] = cap_size unless cap_size.nil?
         error_bar_key = orient == :v ? :error_y : :error_x
 
-        @traces << {
+        trace = {
           type: :bar,
           orientation: orient,
           x: x,
@@ -157,7 +157,9 @@ module Charty
           marker: {color: colors},
           "#{error_bar_key}": error_bar
         }
-        @layout[:showlegend] = false
+        trace[:name] = label unless label.nil?
+
+        @traces << trace
       end
 
       def box_plot(plot_data, positions, color, orient, gray:,
@@ -173,7 +175,6 @@ module Charty
           data[:orientation] = orient
           @traces << data
         end
-        @layout[:showlegend] = false
       end
 
       def set_xlabel(label)
@@ -226,6 +227,16 @@ module Charty
 
       def disable_yaxis_grid
         # do nothing
+      end
+
+      def legend(loc:, title:)
+        @layout[:showlegend] = true
+        @layout[:legend] = {
+          title: {
+            text: title
+          }
+        }
+        # TODO: Handle loc
       end
 
       def save(filename, title: nil)

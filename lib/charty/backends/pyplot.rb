@@ -165,7 +165,7 @@ module Charty
         # do nothing
       end
 
-      def bar(bar_pos, values, colors, orient, width: 0.8r, align: :center,
+      def bar(bar_pos, values, colors, orient, label: nil, width: 0.8r, align: :center,
               conf_int: nil, error_colors: nil, error_width: nil, cap_size: nil)
         bar_pos = Array(bar_pos)
         values = Array(values)
@@ -174,10 +174,13 @@ module Charty
         error_colors = Array(error_colors).map(&:to_hex_string)
 
         ax = @pyplot.gca
+        kw = {color: colors, align: align}
+        kw[:label] = label unless label.nil?
+
         if orient == :v
-          ax.bar(bar_pos, values, width, color: colors, align: align)
+          ax.bar(bar_pos, values, width, **kw)
         else
-          ax.barh(bar_pos, values, width, color: colors, align: align)
+          ax.barh(bar_pos, values, width, **kw)
         end
 
         confidence_intervals(ax, bar_pos, conf_int, orient, error_colors, error_width, cap_size)
@@ -287,6 +290,10 @@ module Charty
 
       def disable_yaxis_grid
         @pyplot.gca.xaxis.grid(false)
+      end
+
+      def legend(loc:, title:)
+        @pyplot.gca.legend(loc: loc, title: title)
       end
 
       def show

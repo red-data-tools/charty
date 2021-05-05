@@ -1,6 +1,7 @@
 module Charty
   module Plotters
     class BarPlotter < CategoricalPlotter
+      self.default_palette = :light
       self.require_numeric = true
 
       def initialize(data: nil, variables: {}, order: nil, orient: nil, **options, &block)
@@ -72,27 +73,63 @@ module Charty
       private def draw_bars(backend)
         setup_estimations
 
-        bar_pos = (0 ... @statistic.length).to_a
-        error_colors = bar_pos.map { error_color }
-        backend.bar(bar_pos, @statistic, @colors, orient,
-                    conf_int: @conf_int, error_colors: error_colors, error_width: error_width, cap_size: cap_size)
+
+        if @plot_colors.nil?
+          bar_pos = (0 ... @estimations.length).to_a
+          error_colors = bar_pos.map { error_color }
+          backend.bar(bar_pos, @estimations, @colors, orient,
+                      conf_int: @conf_int, error_colors: error_colors,
+                      error_width: error_width, cap_size: cap_size)
+        else
+          bar_pos = (0 ... @estimations[0].length).to_a
+          error_colors = bar_pos.map { error_color }
+          offsets = self.color_offsets
+          nested_width = if self.dodge
+                           @width / @color_names.length * 0.98r
+                         else
+                           @width
+                         end
+          @color_names.each_with_index do |color_name, i|
+            pos = bar_pos.map {|x| x + offsets[i] }
+            colors = Array.new(@estimations[i].length) { @colors[i] }
+            backend.bar(pos, @estimations[i], colors, orient,
+                        label: color_name, width: nested_width,
+                        conf_int: @conf_int[i], error_colors: error_colors,
+                        error_width: error_width, cap_size: cap_size)
+          end
+        end
       end
 
       private def setup_estimations
-        statistic = []
+        if @color_names.nil?
+          setup_estimations_with_single_color_group
+        else
+          setup_estimations_with_multiple_color_groups
+        end
+      end
+
+      private def setup_estimations_with_single_color_group
+        estimations = []
         conf_int = []
 
         @plot_data.each do |group_data|
-          stat_data = group_data.drop_na
+          # Single color group
+          if @plot_units.nil?
+            stat_data = group_data.drop_na
+            unit_data = nil
+          else
+            # TODO: Support units
+          end
 
           estimation = if stat_data.size == 0
                          Float::NAN
                        else
+                         # TODO: Support other estimations
                          stat_data.mean
                        end
-          statistic << estimation
+          estimations << estimation
 
-          if ci
+          unless ci.nil?
             if stat_data.size < 2
               conf_int << [Float::NAN, Float::NAN]
               next
@@ -102,12 +139,70 @@ module Charty
               sd = stat_data.stdev
               conf_int << [estimation - sd, estimation + sd]
             else
-              conf_int << Statistics.bootstrap_ci(stat_data, ci, func: estimator, n_boot: n_boot, units: nil, random: random)
+              conf_int << Statistics.bootstrap_ci(stat_data, ci, func: estimator, n_boot: n_boot,
+                                                  units: unit_data, random: random)
             end
           end
         end
 
-        @statistic = statistic
+        @estimations = estimations
+        @conf_int = conf_int
+      end
+
+      private def setup_estimations_with_multiple_color_groups
+        estimations = Array.new(@color_names.length) { [] }
+        conf_int = Array.new(@color_names.length) { [] }
+
+        @plot_data.each_with_index do |group_data, i|
+          @color_names.each_with_index do |color_name, j|
+            if @plot_colors[i].length == 0
+              estimations[j] << Float::NAN
+              unless ci.nil?
+                conf_int[j] << [Float::NAN, Float::NAN]
+              end
+              next
+            end
+
+            color_mask = @plot_colors[i].eq(color_name)
+            if @plot_units.nil?
+              begin
+              stat_data = group_data[color_mask].drop_na
+              rescue
+                @plot_data.each_with_index {|pd, k| p k => pd }
+                @plot_colors.each_with_index {|pc, k| p k => pc }
+                raise
+              end
+              unit_data = nil
+            else
+              # TODO: Support units
+            end
+
+            estimation = if stat_data.size == 0
+                           Float::NAN
+                         else
+                           # TODO: Support other estimations
+                           stat_data.mean
+                         end
+            estimations[j] << estimation
+
+            unless ci.nil?
+              if stat_data.size < 2
+                conf_int[j] << [Float::NAN, Float::NAN]
+                next
+              end
+
+              if ci == :sd
+                sd = stat_data.stdev
+                conf_int[j] << [estimation - sd, estimation + sd]
+              else
+                conf_int[j] << Statistics.bootstrap_ci(stat_data, ci, func: estimator, n_boot: n_boot,
+                                                       units: unit_data, random: random)
+              end
+            end
+          end
+        end
+
+        @estimations = estimations
         @conf_int = conf_int
       end
     end

@@ -2,6 +2,19 @@ module Charty
   module Plotters
     class CategoricalPlotter < AbstractPlotter
       class << self
+        attr_reader :default_palette
+
+        def default_palette=(val)
+          case val
+          when :light, :dark
+            @default_palette = val
+          when "light", "dark"
+            @default_palette = val.to_sym
+          else
+            raise ArgumentError, "default_palette must be :light or :dark"
+          end
+        end
+
         attr_reader :require_numeric
 
         def require_numeric=(val)
@@ -16,6 +29,8 @@ module Charty
 
       def initialize(x, y, color, **options, &block)
         super
+
+        @width = 0.8
 
         setup_variables
         setup_colors
@@ -116,21 +131,25 @@ module Charty
       end
 
       private def setup_variables_with_long_form_dataset
-        x, y = @x, @y
+        x = self.x
+        y = self.y
+        color = self.color
         if @data
-          x = @data[x] || x
-          y = @data[y] || y
+          x &&= @data[x] || x
+          y &&= @data[y] || y
+          color &&= @data[color] || color
         end
 
         # Validate inputs
-        [x, y].each do |input|
-          next if array?(input)
+        [x, y, color].each do |input|
+          next if input.nil? || array?(input)
           raise RuntimeError,
                 "Could not interpret input `#{input.inspect}`"
         end
 
         x = Charty::Vector.try_convert(x)
         y = Charty::Vector.try_convert(y)
+        color = Charty::Vector.try_convert(color)
 
         self.orient = infer_orient(x, y, orient, self.class.require_numeric)
 
@@ -147,9 +166,23 @@ module Charty
             @group_label = groups.name
           end
 
-          # FIXME: Assume groups has only unique values
           @group_names = categorical_order(groups, order)
           @plot_data, @value_label = group_long_form(vals, groups, @group_names)
+
+          # Handle color variable
+          if color.nil?
+            @plot_colors = nil
+            @color_title = nil
+            @color_names = nil
+          else
+            # Get the order of color levels
+            @color_names = categorical_order(color, color_order)
+
+            # Group the color data
+            @plot_colors, @color_title = group_long_form(color, groups, @group_names)
+          end
+
+          # TODO: Handle units
         end
       end
 
@@ -258,30 +291,69 @@ module Charty
       end
 
       private def setup_colors
-        n_colors = @plot_data.length
-        if @palette.nil?
-          current_palette = Palette.default
-          if n_colors <= current_palette.n_colors
-            palette = Palette.new(current_palette.colors, n_colors)
-          else
-            palette = Palette.new(:husl, n_colors, desaturate_factor: 0.7r)
-          end
+        if @color_names.nil?
+          n_colors = @plot_data.length
         else
-          case @palette
-          when Hash
-            # Assume @palette has a hash table that maps
-            # group_names to colors
-            palette = @group_names.map {|gn| @palette[gn] }
-          else
-            palette = @palette
-          end
-          palette = Palette.new(palette, n_colors)
+          n_colors = @color_names.length
         end
 
-        @colors = palette.colors.map {|c| c.to_rgb }
+        if key_color.nil? && self.palette.nil?
+          # Check the current palette has enough colors
+          current_palette = Palette.default
+          if n_colors <= current_palette.n_colors
+            colors = Palette.new(current_palette.colors, n_colors).colors
+          else
+            # Use huls palette as default when the default palette is not usable
+            colors = Palette.husl_colors(n_colors, l: 0.7r)
+          end
+        elsif self.palette.nil?
+          if @color_names.nil?
+            colors = Array.new(n_colors) { key_color }
+          else
+            raise NotImplementedError,
+                  "Default palette with key_color is not supported"
+            # TODO: Support light_palette and dark_palette in red-palette
+            # if default_palette is light
+            #   colors = Palette.light_palette(key_color, n_colors)
+            # elsif default_palette is dark
+            #   colors = Palette.dark_palette(key_color, n_colors)
+            # else
+            #   raise "No default palette specified"
+            # end
+          end
+        else
+          case self.palette
+          when Hash
+            if @color_names.nil?
+              levels = @group_names
+            else
+              levels = @color_names
+            end
+            colors = levels.map {|gn| self.palette[gn] }
+          end
+          colors = Palette.new(colors, n_colors).colors
+        end
+
+        if saturation < 1
+          colors = Palette.new(colors, n_colors, desaturate_factor: saturation).colors
+        end
+
+        @colors = colors.map {|c| c.to_rgb }
         lightness_values = @colors.map {|c| c.to_hsl.l }
         lum = lightness_values.min * 0.6r
         @gray = Colors::RGB.new(lum, lum, lum)  # TODO: Use Charty::Gray
+      end
+
+      private def color_offsets
+        n_names = @color_names.length
+        if self.dodge
+          each_width = @width / n_names
+          offsets = Charty::Linspace.new(0 .. (@width - each_width), n_names).to_a
+          offsets_mean = Statistics.mean(offsets)
+          offsets.map {|x| x - offsets_mean }
+        else
+          Array.new(n_names) { 0 }
+        end
       end
 
       private def annotate_axes(backend)
@@ -307,6 +379,10 @@ module Charty
         else
           backend.disable_yaxis_grid
           backend.set_ylim(-0.5, @plot_data.length - 0.5)
+        end
+
+        unless @color_names.nil?
+          backend.legend(loc: :best, title: @color_title)
         end
       end
 

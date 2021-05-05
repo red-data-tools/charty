@@ -140,17 +140,20 @@ class PlotMethodsBarPlotTest < Test::Unit::TestCase
     def setup_array_data
       @data = {
         y: Array.new(100) {|i| rand },
-        x: Array.new(100) {|i| ["foo", "bar"][rand(2)] }
+        x: Array.new(100) {|i| ["foo", "bar"][rand(2)] },
+        c: Array.new(100) {|i| ["red", "blue", "green"][rand(3)] }
       }
     end
 
     def setup_daru_data
       @data = Daru::DataFrame.new(@data)
       @data[:x] = @data[:x].to_category
+      @data[:c] = @data[:c].to_category
     end
 
     def setup_nmatrix_data
       @data[:x] = NMatrix[@data[:x], dtype: :object]
+      @data[:c] = NMatrix[@data[:c], dtype: :object]
       @data[:y] = NMatrix[*@data[:y]]
     end
 
@@ -163,10 +166,9 @@ class PlotMethodsBarPlotTest < Test::Unit::TestCase
     end
 
     def setup_numpy_data
-      @data = {
-        y: Numpy.asarray(Array.new(100) {|i| rand }, dtype: Numpy.float64),
-        x: Numpy.asarray(Array.new(100) {|i| ["foo", "bar"][rand(2)] })
-      }
+      @data[:x] = Numpy.asarray(@data[:x], dtype: :str)
+      @data[:c] = Numpy.asarray(@data[:c], dtype: :str)
+      @data[:y] = Numpy.asarray(@data[:y])
     end
 
     def setup_backend(backend_name)
@@ -204,6 +206,16 @@ class PlotMethodsBarPlotTest < Test::Unit::TestCase
       setup_data(adapter_name)
       setup_backend(backend_name)
       plot = Charty.bar_plot(data: @data, x: :x, y: :y)
+      assert_nothing_raised do
+        render_plot(backend_name, plot)
+      end
+    end
+
+    def test_bar_plot_with_color(data)
+      adapter_name, backend_name = data.values_at(:adapter, :backend)
+      setup_data(adapter_name)
+      setup_backend(backend_name)
+      plot = Charty.bar_plot(data: @data, x: :x, y: :y, color: :c)
       assert_nothing_raised do
         render_plot(backend_name, plot)
       end
