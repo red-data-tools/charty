@@ -29,7 +29,30 @@ module Charty
         data.size == 0
       end
 
+      def boolean?
+        builtins = PyCall.builtins
+        case
+        when builtins.issubclass(data.dtype.type, Numpy.bool_)
+          true
+        when builtins.issubclass(data.dtype.type, Numpy.object_)
+          i, n = 0, data.size
+          while i < n
+            case data[i]
+            when nil, true, false
+              # do nothing
+            else
+              return false
+            end
+            i += 1
+          end
+          true
+        else
+          false
+        end
+      end
+
       def numeric?
+        # TODO: Handle object array
         PyCall.builtins.issubclass(data.dtype.type, PyCall.tuple([Numpy.number, Numpy.bool_]))
       end
 

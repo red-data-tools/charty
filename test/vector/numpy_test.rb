@@ -81,6 +81,46 @@ class VectorNumpyTest < Test::Unit::TestCase
                  @vector.to_a)
   end
 
+  sub_test_case("#boolean?") do
+    data(
+      "for numeric array"                  => { array: [1, 2, 3, 4, 5]      , dtype: :float64  },
+      "for string array"                   => { array: ["abc", "def", "xyz"], dtype: :str },
+      "for numeric array with nan at head" => { array: [Float::NAN, 1, 2, 3], dtype: :float64  },
+      "for string array with nil at head"  => { array: [nil, "abc", "xyz"]  , dtype: :str }
+    )
+    def test_with_nonboolean_dtype_nonboolean(data)
+      array, dtype = data.values_at(:array, :dtype)
+      data = Numpy.asarray(array, dtype: dtype)
+      vector = Charty::Vector.new(data)
+      assert do
+        not vector.boolean?
+      end
+    end
+
+    data(
+      "for boolean object array"                  => [true, false, true],
+      "for boolean object array with nil at head" => [nil, true, false, true],
+    )
+    def test_with_nonboolean_dtype_boolean(data)
+      data = Numpy.asarray(data, dtype: :object)
+      vector = Charty::Vector.new(data)
+      assert do
+        vector.boolean?
+      end
+    end
+
+    data(
+      "for boolean array" => [true, false, true],
+    )
+    def test_with_boolean_dtype(data)
+      data = Numpy.asarray(data, dtype: :bool)
+      vector = Charty::Vector.new(data)
+      assert do
+        vector.boolean?
+      end
+    end
+  end
+
   sub_test_case("#numeric?") do
     data(
       "for numeric array"                  => { array: [1, 2, 3, 4, 5]       , dtype: "float64", result: true },

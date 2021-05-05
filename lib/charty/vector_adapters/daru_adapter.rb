@@ -21,6 +21,24 @@ module Charty
         indices.map {|i| data[i] }
       end
 
+      def first_nonnil
+        data.drop_while(&:nil?).first
+      end
+
+      def boolean?
+        case
+        when numeric?, categorical?
+          false
+        else
+          case first_nonnil
+          when true, false
+            true
+          else
+            false
+          end
+        end
+      end
+
       def_delegators :data, :numeric?
       def_delegator :data, :category?, :categorical?
 

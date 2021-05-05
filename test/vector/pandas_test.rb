@@ -81,6 +81,46 @@ class VectorPandasTest < Test::Unit::TestCase
                  @vector.to_a)
   end
 
+  sub_test_case("#boolean?") do
+    data(
+      "for numeric array"                  => [1, 2, 3, 4, 5],
+      "for string array"                   => ["abc", "def", "xyz"],
+      "for numeric array with nil at head" => [nil, 1, 2, 3],
+      "for string array with nil at head"  => [nil, "abc", "xyz"]
+    )
+    def test_categorical_with_autodetect_dtype_nonboolean(data)
+      series = Pandas::Series.new(data)
+      vector = Charty::Vector.new(series)
+      assert do
+        not vector.boolean?
+      end
+    end
+
+    data(
+      "for boolean array with nil at head" => [nil, true, false, true],
+    )
+    def test_categorical_with_autodetect_dtype_boolean(data)
+      series = Pandas::Series.new(data)
+      vector = Charty::Vector.new(series)
+      assert do
+        vector.boolean?
+      end
+    end
+
+    data(
+      "for boolean array"                    => [true, false, true],
+      "for boolean array with nil at middle" => [true, nil, false, true],
+      "for boolean array with nil at head"   => [nil, true, false, true],
+    )
+    def test_categorical_with_boolean_dtype(data)
+      series = Pandas::Series.new(data, dtype: :bool)
+      vector = Charty::Vector.new(series)
+      assert do
+        vector.boolean?
+      end
+    end
+  end
+
   sub_test_case("#numeric?") do
     data(
       "for numeric array"                  => { array: [1, 2, 3, 4, 5]       , result: true },

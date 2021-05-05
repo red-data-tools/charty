@@ -34,6 +34,17 @@ module Charty
         data.take(indices).to_a
       end
 
+      def boolean?
+        case
+        when Pandas.api.types.is_bool_dtype(data.dtype)
+          true
+        when Pandas.api.types.is_object_dtype(data.dtype)
+          data.isin([nil, false, true]).all()
+        else
+          false
+        end
+      end
+
       def numeric?
         Pandas.api.types.is_numeric_dtype(data.dtype)
       end

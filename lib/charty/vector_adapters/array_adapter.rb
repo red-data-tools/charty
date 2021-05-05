@@ -33,16 +33,25 @@ module Charty
       # TODO: Reconsider the return value type of values_at
       def_delegators :data, :values_at
 
+      def first_nonnil
+        data.drop_while(&:nil?).first
+      end
+
+      def boolean?
+        case first_nonnil
+        when true, false
+          true
+        else
+          false
+        end
+      end
+
       def numeric?
-        data.each do |x|
-          case x
-          when nil
-            next
-          when Numeric
-            return true
-          else
-            return false
-          end
+        case first_nonnil
+        when Numeric
+          true
+        else
+          false
         end
       end
 

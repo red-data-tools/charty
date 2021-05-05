@@ -5,6 +5,7 @@ class VectorNArrayTest < Test::Unit::TestCase
     numo_required
 
     @classes = {
+      Bit:     Numo::Bit,
       DFloat:  Numo::DFloat,
       RObject: Numo::RObject
     }
@@ -114,11 +115,54 @@ class VectorNArrayTest < Test::Unit::TestCase
                  })
   end
 
+  sub_test_case("#boolean?") do
+    data(
+      "for numeric array"                  => { array: [1, 2, 3, 4, 5]      , dtype: :DFloat  },
+      "for string array"                   => { array: ["abc", "def", "xyz"], dtype: :RObject },
+      "for numeric array with nan at head" => { array: [Float::NAN, 1, 2, 3], dtype: :DFloat  },
+      "for string array with nil at head"  => { array: [nil, "abc", "xyz"]  , dtype: :RObject }
+    )
+    def test_with_nonboolean_dtype_nonboolean(data)
+      array, dtype = data.values_at(:array, :dtype)
+      data = @classes[dtype][*array]
+      vector = Charty::Vector.new(data)
+      assert do
+        not vector.boolean?
+      end
+    end
+
+    data(
+      "for boolean object array"                  => [true, false, true],
+      "for boolean object array with nil at head" => [nil, true, false, true],
+    )
+    def test_with_nonboolean_dtype_boolean(data)
+      data = Numo::RObject[*data]
+      vector = Charty::Vector.new(data)
+      assert do
+        vector.boolean?
+      end
+    end
+
+    data(
+      "for bit array"                  => [true, false, true],
+      "for bit array with nil at head" => [nil, true, false, true],
+    )
+    def test_with_boolean_dtype(data)
+      data = Numo::Bit[*data]
+      vector = Charty::Vector.new(data)
+      assert do
+        vector.boolean?
+      end
+    end
+  end
+
   sub_test_case("#numeric?") do
     data(
+      "for bit array"                      => { array: [true, false]         , dtype: :Bit    , result: false },
       "for numeric array"                  => { array: [1, 2, 3, 4, 5]       , dtype: :DFloat , result: true },
       "for string array"                   => { array: ["abc", "def", "xyz"] , dtype: :RObject, result: false },
-      "for numeric array with nil at head" => { array: [Float::NAN, 1, 2, 3] , dtype: :DFloat , result: true },
+      "for bit array with nil at head"     => { array: [nil, true, false]    , dtype: :Bit    , result: false },
+      "for numeric array with nan at head" => { array: [Float::NAN, 1, 2, 3] , dtype: :DFloat , result: true },
       "for string array with nil at head"  => { array: [nil, "abc", "xyz"]   , dtype: :RObject, result: false },
     )
     def test_numeric(data)
@@ -131,10 +175,14 @@ class VectorNArrayTest < Test::Unit::TestCase
 
   sub_test_case("#categorical?") do
     data(
-      "for numeric array"                  => { array: [1, 2, 3, 4, 5]      , dtype: :DFloat  },
-      "for string array"                   => { array: ["abc", "def", "xyz"], dtype: :RObject },
-      "for numeric array with nil at head" => { array: [Float::NAN, 1, 2, 3], dtype: :DFloat  },
-      "for string array with nil at head"  => { array: [nil, "abc", "xyz"]  , dtype: :RObject }
+      "for bit array"                             => { array: [true, false]        , dtype: :Bit     },
+      "for boolean object array"                  => { array: [true, false]        , dtype: :RObject },
+      "for numeric array"                         => { array: [1, 2, 3, 4, 5]      , dtype: :DFloat  },
+      "for string array"                          => { array: ["abc", "def", "xyz"], dtype: :RObject },
+      "for bit array with nil at head"            => { array: [nil, true, false]   , dtype: :Bit     },
+      "for boolean object array with nil at head" => { array: [nil, true, false]   , dtype: :RObject },
+      "for numeric array with nan at head"        => { array: [Float::NAN, 1, 2, 3], dtype: :DFloat  },
+      "for string array with nil at head"         => { array: [nil, "abc", "xyz"]  , dtype: :RObject }
     )
     def test_categorical(data)
       array, dtype = data.values_at(:array, :dtype)

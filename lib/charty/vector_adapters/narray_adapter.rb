@@ -23,9 +23,31 @@ module Charty
         data[indices].to_a
       end
 
+      def boolean?
+        case data
+        when Numo::Bit
+          true
+        when Numo::RObject
+          i, n = 0, data.size
+          while i < n
+            case data[i]
+            when nil, true, false
+              # do nothing
+            else
+              return false
+            end
+            i += 1
+          end
+          true
+        else
+          false
+        end
+      end
+
       def numeric?
         case data
-        when Numo::RObject
+        when Numo::Bit,
+             Numo::RObject
           false
         else
           true

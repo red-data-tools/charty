@@ -95,6 +95,32 @@ class VectorArrayTest < Test::Unit::TestCase
                  @vector.to_a)
   end
 
+  sub_test_case("#boolean?") do
+    data(
+      "for numeric array"                  => [1, 2, 3, 4, 5],
+      "for string array"                   => ["abc", "def", "xyz"],
+      "for numeric array with nil at head" => [nil, 1, 2, 3],
+      "for string array with nil at head"  => [nil, "abc", "xyz"]
+    )
+    def test_with_nonboolean_array(data)
+      vector = Charty::Vector.new(data)
+      assert do
+        not vector.boolean?
+      end
+    end
+
+    data(
+      "for boolean array"                  => [true, false, true],
+      "for boolean array with nil at head" => [nil, true, false, true],
+    )
+    def test_with_boolean_array(data)
+      vector = Charty::Vector.new(data)
+      assert do
+        vector.boolean?
+      end
+    end
+  end
+
   sub_test_case("#numeric?") do
     data(
       "for numeric array"                  => { array: [1, 2, 3, 4, 5]       , result: true },
