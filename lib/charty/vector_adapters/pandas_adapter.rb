@@ -22,8 +22,27 @@ module Charty
       def_delegator :data, :size, :length
       def_delegators :data, :index, :index=
       def_delegators :data, :name, :name=
-      def_delegators :data, :[], :[]=
-      def_delegators :data, :to_a
+
+      def [](key)
+        case key
+        when Charty::Vector
+          where(key)
+        else
+          data[key]
+        end
+      end
+
+      def_delegators :data, :[]=, :to_a
+
+      def each
+        return enum_for(__method__) unless block_given?
+
+        i, n = 0, data.size
+        while i < n
+          yield data.iloc[i]
+          i += 1
+        end
+      end
 
       def empty?
         data.size == 0
@@ -32,6 +51,35 @@ module Charty
       # TODO: Reconsider the return value type of values_at
       def values_at(*indices)
         data.take(indices).to_a
+      end
+
+      def where(mask)
+        mask = check_mask_vector(mask)
+        case mask.data
+        when Numpy::NDArray,
+             ->(x) { defined?(Pandas::Series) && x.is_a?(Pandas::Series) }
+          mask_data = Numpy.asarray(mask.data, dtype: :bool)
+          masked_data = data[mask_data]
+          masked_index = mask_data.nonzero()[0].to_a.map {|i| index[i] }
+        else
+          masked_data, masked_index = where_in_array(mask)
+          masked_data = Pandas::Series.new(masked_data, dtype: data.dtype)
+        end
+        Charty::Vector.new(masked_data, index: masked_index, name: name)
+      end
+
+      def where_in_array(mask)
+        mask = check_mask_vector(mask)
+        masked_data = []
+        masked_index = []
+        mask.each_with_index do |f, i|
+          case f
+          when true, 1
+            masked_data << data.iloc[i]
+            masked_index << index[i]
+          end
+        end
+        return masked_data, masked_index
       end
 
       def boolean?

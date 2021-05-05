@@ -33,6 +33,11 @@ module Charty
       # TODO: Reconsider the return value type of values_at
       def_delegators :data, :values_at
 
+      def where(mask)
+        masked_data, masked_index = where_in_array(mask)
+        Charty::Vector.new(masked_data, index: masked_index, name: name)
+      end
+
       def first_nonnil
         data.drop_while(&:nil?).first
       end

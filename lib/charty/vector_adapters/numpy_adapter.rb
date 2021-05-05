@@ -25,6 +25,31 @@ module Charty
       include NameSupport
       include IndexSupport
 
+      def where(mask)
+        mask = check_mask_vector(mask)
+        case mask.data
+        when Numpy::NDArray,
+             ->(x) { defined?(Pandas::Series) && x.is_a?(Pandas::Series) }
+          mask_data = Numpy.asarray(mask.data, dtype: :bool)
+          masked_data = data[mask_data]
+          masked_index = mask_data.nonzero()[0].to_a.map {|i| index[i] }
+        else
+          masked_data, masked_index = where_in_array(mask)
+          masked_data = Numpy.asarray(masked_data, dtype: data.dtype)
+        end
+        Charty::Vector.new(masked_data, index: masked_index, name: name)
+      end
+
+      def each
+        return enum_for(__method__) unless block_given?
+
+        i, n = 0, data.size
+        while i < n
+          yield data[i]
+          i += 1
+        end
+      end
+
       def empty?
         data.size == 0
       end

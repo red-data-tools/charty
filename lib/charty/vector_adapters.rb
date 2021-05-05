@@ -34,6 +34,33 @@ module Charty
       def_delegators :data, :[], :[]=
       def_delegators :data, :each, :to_a, :empty?
 
+      def where_in_array(mask)
+        mask = check_mask_vector(mask)
+        masked_data = []
+        masked_index = []
+        mask.each_with_index do |f, i|
+          case f
+          when true, 1
+            masked_data << data[i]
+            masked_index << index[i]
+          end
+        end
+        return masked_data, masked_index
+      end
+
+      private def check_mask_vector(mask)
+        # ensure mask is boolean vector
+        case mask
+        when Charty::Vector
+          unless mask.boolean?
+            raise ArgumentError, "Unable to lookup items by a nonboolean vector"
+          end
+          mask
+        else
+          Charty::Vector.new(mask)
+        end
+      end
+
       def mean
         Statistics.mean(data)
       end
@@ -66,7 +93,12 @@ module Charty
       attr_reader :index
 
       def [](key)
-        super(key_to_loc(key))
+        case key
+        when Charty::Vector
+          where(key)
+        else
+          super(key_to_loc(key))
+        end
       end
 
       def []=(key, val)

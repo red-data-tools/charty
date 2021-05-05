@@ -23,6 +23,20 @@ module Charty
         data[indices].to_a
       end
 
+      def where(mask)
+        mask = check_mask_vector(mask)
+        case mask.data
+        when Numo::Bit
+          bits = mask.data
+          masked_data = data[bits]
+          masked_index = bits.where.map {|i| index[i] }.to_a
+        else
+          masked_data, masked_index = where_in_array(mask)
+          masked_data = data.class[*masked_data]
+        end
+        Charty::Vector.new(masked_data, index: masked_index, name: name)
+      end
+
       def boolean?
         case data
         when Numo::Bit
