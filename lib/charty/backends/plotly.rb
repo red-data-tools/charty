@@ -172,8 +172,14 @@ module Charty
                                   label, width, flier_size, whisker, notch)
         end
 
+        if orient == :v
+          var_name = :y
+        else
+          var_name = :x
+          plot_data = plot_data.reverse
+          color.reverse!
+        end
         plot_data.each_with_index do |group_data, i|
-          var_name = orient == :v ? :y : :x
           data = if group_data.empty?
                    {type: :box, "#{var_name}": [] }
                  else
@@ -186,6 +192,12 @@ module Charty
 
       private def grouped_box_plot(plot_data, group_names, color, orient, gray, label,
                                    width, flier_size, whisker, notch)
+        if orient == :h
+          plot_data = plot_data.reverse
+          group_names = group_names.reverse
+          color = color.reverse
+        end
+
         box_data = plot_data.map {|group_data| Array(group_data) }.flatten
         group_data = plot_data.map.with_index { |group_data, i|
           Array.new(group_data.length, group_names[i])
@@ -257,6 +269,23 @@ module Charty
 
       def disable_yaxis_grid
         # do nothing
+      end
+
+      def invert_yaxis
+        @traces.each do |trace|
+          case trace[:type]
+          when :bar
+            trace[:y].reverse!
+          end
+        end
+
+        if @layout[:boxmode] == :group
+          @traces.reverse!
+        end
+
+        if @layout[:yaxis] && @layout[:yaxis][:ticktext]
+          @layout[:yaxis][:ticktext].reverse!
+        end
       end
 
       def legend(loc:, title:)

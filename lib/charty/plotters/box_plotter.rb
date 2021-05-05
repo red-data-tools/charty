@@ -9,6 +9,7 @@ module Charty
         backend.begin_figure
         draw_box_plot(backend)
         annotate_axes(backend)
+        backend.invert_yaxis if orient == :h
         backend.show
       end
 
@@ -20,6 +21,7 @@ module Charty
         backend.begin_figure
         draw_box_plot(backend)
         annotate_axes(backend)
+        backend.invert_yaxis if orient == :h
         backend.save(filename, **opts)
       end
 

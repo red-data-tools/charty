@@ -299,6 +299,10 @@ module Charty
         @pyplot.gca.xaxis.grid(false)
       end
 
+      def invert_yaxis
+        @pyplot.gca.invert_yaxis
+      end
+
       def legend(loc:, title:)
         @pyplot.gca.legend(loc: loc, title: title)
       end
