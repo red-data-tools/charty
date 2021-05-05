@@ -27,7 +27,7 @@ module Charty
         end
       end
 
-      def initialize(x, y, color, **options, &block)
+      def initialize(x, y, color, dodge: false, **options, &block)
         super
 
         @width = 0.8
@@ -58,6 +58,13 @@ module Charty
           raise ArgumentError,
                 "invalid value for orient (#{value.inspect} for nil, :v, or :h)"
         end
+      end
+
+      attr_reader :dodge
+
+      def dodge=(dodge)
+        # TODO: check value
+        @dodge = dodge
       end
 
       attr_reader :saturation

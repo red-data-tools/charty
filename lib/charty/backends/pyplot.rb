@@ -162,7 +162,8 @@ module Charty
       # ==== NEW PLOTTING API ====
 
       def begin_figure
-        # do nothing
+        @legend_keys = []
+        @legend_labels = []
       end
 
       def bar(bar_pos, values, colors, orient, label: nil, width: 0.8r, align: :center,
@@ -210,8 +211,9 @@ module Charty
         end
       end
 
-      def box_plot(plot_data, positions, color, orient, gray:,
-                   width: 0.8r, flier_size: 5, whisker: 1.5, notch: false)
+      def box_plot(plot_data, _group_names, positions, color, orient, gray:,
+                   label: nil, width: 0.8r, flier_size: 5, whisker: 1.5,
+                   notch: false)
         color = Array(color).map(&:to_hex_string)
         gray = gray.to_hex_string
         width = Float(width)
@@ -225,7 +227,7 @@ module Charty
           artist_dict = @pyplot.boxplot(Array(group_data),
                                         vert: (orient == :v),
                                         patch_artist: true,
-                                        positions: [i],
+                                        positions: [positions[i]],
                                         widths: width,
                                         whis: whisker)
 
@@ -248,6 +250,11 @@ module Charty
               markeredgecolor: gray,
               markersize: flier_size
             }, {})
+          end
+
+          if i == 0 && label
+            patch = @pyplot.Rectangle.new([0, 0], 0, 0, edgecolor: gray, facecolor: color[0], label: label)
+            @pyplot.gca.add_patch(patch)
           end
         end
       end

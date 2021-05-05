@@ -25,22 +25,27 @@ class PlotMethodsBoxPlotTest < Test::Unit::TestCase
     def setup_array_data
       @data = {
         y: Array.new(100) {|i| rand },
-        x: Array.new(100) {|i| ["foo", "bar"][rand(2)] }
+        x: Array.new(100) {|i| ["foo", "bar"][rand(2)] },
+        c: Array.new(100) {|i| ["red", "green", "blue"][rand(3)] }
       }
     end
 
     def setup_daru_data
       @data = Daru::DataFrame.new(@data)
       @data[:x] = @data[:x].to_category
+      @data[:c] = @data[:c].to_category
     end
 
     def setup_nmatrix_data
       @data[:x] = NMatrix[@data[:x], dtype: :object]
+      @data[:c] = NMatrix[@data[:c], dtype: :object]
       @data[:y] = NMatrix[*@data[:y]]
     end
 
     def setup_numo_data
       @data[:y] = Numo::DFloat[*@data[:y]]
+      @data[:x] = Numo::RObject[*@data[:x]]
+      @data[:c] = Numo::RObject[*@data[:c]]
     end
 
     def setup_pandas_data
@@ -49,8 +54,9 @@ class PlotMethodsBoxPlotTest < Test::Unit::TestCase
 
     def setup_numpy_data
       @data = {
-        y: Numpy.asarray(Array.new(100) {|i| rand }, dtype: Numpy.float64),
-        x: Numpy.asarray(Array.new(100) {|i| ["foo", "bar"][rand(2)] })
+        y: Numpy.asarray(@data[:y], dtype: Numpy.float64),
+        x: Numpy.asarray(@data[:x], dtype: :str),
+        c: Numpy.asarray(@data[:c], dtype: :str)
       }
     end
 
@@ -89,6 +95,16 @@ class PlotMethodsBoxPlotTest < Test::Unit::TestCase
       setup_data(adapter_name)
       setup_backend(backend_name)
       plot = Charty.box_plot(data: @data, x: :x, y: :y)
+      assert_nothing_raised do
+        render_plot(backend_name, plot)
+      end
+    end
+
+    def test_box_plot_with_color(data)
+      adapter_name, backend_name = data.values_at(:adapter, :backend)
+      setup_data(adapter_name)
+      setup_backend(backend_name)
+      plot = Charty.box_plot(data: @data, x: :x, y: :y, color: :c)
       assert_nothing_raised do
         render_plot(backend_name, plot)
       end

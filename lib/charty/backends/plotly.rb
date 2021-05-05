@@ -162,9 +162,16 @@ module Charty
         @traces << trace
       end
 
-      def box_plot(plot_data, positions, color, orient, gray:,
-                   width: 0.8r, flier_size: 5, whisker: 1.5, notch: false)
+      def box_plot(plot_data, group_names, positions, color, orient, gray:,
+                   label: nil, width: 0.8r, flier_size: 5, whisker: 1.5,
+                   notch: false)
         color = Array(color).map(&:to_hex_string)
+
+        unless group_names.nil?
+          return grouped_box_plot(plot_data, group_names, color, orient, gray,
+                                  label, width, flier_size, whisker, notch)
+        end
+
         plot_data.each_with_index do |group_data, i|
           var_name = orient == :v ? :y : :x
           data = if group_data.empty?
@@ -174,6 +181,29 @@ module Charty
                  end
           data[:orientation] = orient
           @traces << data
+        end
+      end
+
+      private def grouped_box_plot(plot_data, group_names, color, orient, gray, label,
+                                   width, flier_size, whisker, notch)
+        box_data = plot_data.map {|group_data| Array(group_data) }.flatten
+        group_data = plot_data.map.with_index { |group_data, i|
+          Array.new(group_data.length, group_names[i])
+        }.flatten
+        trace = {type: :box, orientation: orient, name: label, marker: {color: color[0]}}
+        if orient == :v
+          trace.update(y: box_data, x: group_data)
+        else
+          trace.update(x: box_data, y: group_data)
+        end
+        @traces << trace
+
+        @layout[:boxmode] = :group
+        @layout[:boxgroupgap]  = 0.1
+
+        if orient == :h
+          @layout[:xaxis] ||= {}
+          @layout[:xaxis][:zeroline] = false
         end
       end
 

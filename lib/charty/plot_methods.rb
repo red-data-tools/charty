@@ -39,8 +39,12 @@ module Charty
       )
     end
 
-    def box_plot(x: nil, y: nil, color: nil, saturation: 1r, **options, &block)
-      Plotters::BoxPlotter.new(x, y, color, saturation: saturation, **options, &block)
+    def box_plot(x: nil, y: nil, color: nil, saturation: 1r, dodge: true, **options, &block)
+      Plotters::BoxPlotter.new(
+        x, y, color,
+        saturation: saturation, dodge: dodge,
+        **options, &block
+      )
     end
   end
 

@@ -44,13 +44,6 @@ module Charty
         @cap_size = cap_size
       end
 
-      attr_reader :dodge
-
-      def dodge=(dodge)
-        # TODO: check value
-        @dodge = dodge
-      end
-
       def render
         backend = Backends.current
         backend.begin_figure
@@ -84,6 +77,7 @@ module Charty
           bar_pos = (0 ... @estimations[0].length).to_a
           error_colors = bar_pos.map { error_color }
           offsets = self.color_offsets
+          # TODO: move to categorical plotter
           nested_width = if self.dodge
                            @width / @color_names.length * 0.98r
                          else
