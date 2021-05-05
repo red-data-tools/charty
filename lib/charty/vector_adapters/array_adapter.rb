@@ -78,6 +78,12 @@ module Charty
           Charty::Vector.new(data.compact)
         end
       end
+
+      def eq(val)
+        Charty::Vector.new(data.map {|x| x == val },
+                           index: index,
+                           name: name)
+      end
     end
   end
 end

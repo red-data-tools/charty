@@ -98,6 +98,12 @@ module Charty
         end
       end
 
+      def eq(val)
+        Charty::Vector.new(data.eq(val),
+                           index: index,
+                           name: name)
+      end
+
       def mean
         data.mean(nan: true)
       end

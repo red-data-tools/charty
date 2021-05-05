@@ -71,10 +71,15 @@ module Charty
         where_is_na = if numeric?
                         Numpy.isnan(data)
                       else
-                        p data.dtype
                         (data == nil)
                       end
         Charty::Vector.new(data[Numpy.logical_not(where_is_na)])
+      end
+
+      def eq(val)
+        Charty::Vector.new((data == val),
+                           index: index,
+                           name: name)
       end
 
       def mean

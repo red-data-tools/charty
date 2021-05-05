@@ -68,6 +68,12 @@ module Charty
         Charty::Vector.new(Daru::Vector.new(values))
       end
 
+      def eq(val)
+        Charty::Vector.new(data.eq(val).to_a,
+                           index: index.to_a,
+                           name: name)
+      end
+
       def_delegator :data, :mean
 
       def stdev(population: false)

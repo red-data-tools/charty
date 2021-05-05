@@ -189,4 +189,23 @@ class VectorArrayTest < Test::Unit::TestCase
                    values: result.data
                  })
   end
+
+  def test_eq
+    vector = Charty::Vector.new(["a", "b", "c", "b", "d"],
+                                index: [10, 20, 30, 40, 50],
+                                name: "foo")
+    result = vector.eq("b")
+    assert_equal({
+                   class: Charty::Vector,
+                   data: [false, true, false, true, false],
+                   index: [10, 20, 30, 40, 50],
+                   name: "foo"
+                 },
+                 {
+                   class: result.class,
+                   data: result.data,
+                   index: result.index.to_a,
+                   name: result.name
+                 })
+  end
 end

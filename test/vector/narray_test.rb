@@ -214,4 +214,25 @@ class VectorNArrayTest < Test::Unit::TestCase
                    values: result.data
                  })
   end
+
+  def test_eq
+    vector = Charty::Vector.new(Numo::RObject["a", "b", "c", "b", "d"],
+                                index: [10, 20, 30, 40, 50],
+                                name: "foo")
+    result = vector.eq("b")
+    assert_equal({
+                   class: Charty::Vector,
+                   data_class: Numo::Bit,
+                   data: [0, 1, 0, 1, 0],
+                   index: [10, 20, 30, 40, 50],
+                   name: "foo"
+                 },
+                 {
+                   class: result.class,
+                   data_class: result.data.class,
+                   data: result.data.to_a,
+                   index: result.index.to_a,
+                   name: result.name
+                 })
+  end
 end

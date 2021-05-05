@@ -248,4 +248,25 @@ class VectorNumpyTest < Test::Unit::TestCase
                    values: result.data.to_a
                  })
   end
+
+  def test_eq
+    vector = Charty::Vector.new(Numpy.asarray(["a", "b", "c", "b", "d"], dtype: :str),
+                                index: [10, 20, 30, 40, 50],
+                                name: "foo")
+    result = vector.eq("b")
+    assert_equal({
+                   class: Charty::Vector,
+                   data_class: Numpy::NDArray,
+                   data: [false, true, false, true, false],
+                   index: [10, 20, 30, 40, 50],
+                   name: "foo"
+                 },
+                 {
+                   class: result.class,
+                   data_class: result.data.class,
+                   data: result.data.to_a,
+                   index: result.index.to_a,
+                   name: result.name
+                 })
+  end
 end

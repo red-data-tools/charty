@@ -76,6 +76,12 @@ module Charty
         Charty::Vector.new(data.dropna)
       end
 
+      def eq(val)
+        Charty::Vector.new((data == val),
+                           index: index,
+                           name: name)
+      end
+
       def mean
         data.mean()
       end
