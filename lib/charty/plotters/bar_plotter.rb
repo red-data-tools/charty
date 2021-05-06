@@ -4,9 +4,9 @@ module Charty
       self.default_palette = :light
       self.require_numeric = true
 
-      def initialize(data: nil, variables: {}, order: nil, orient: nil, **options, &block)
+      def initialize(data: nil, variables: {}, **options, &block)
         x, y, color = variables.values_at(:x, :y, :color)
-        super(x, y, color, data: data, order: order, orient: orient, **options, &block)
+        super(x, y, color, data: data, **options, &block)
       end
 
       attr_reader :error_color
@@ -33,15 +33,13 @@ module Charty
       attr_reader :error_width
 
       def error_width=(error_width)
-        # TODO: check value
-        @error_width = error_width
+        @error_width = check_number(error_width, :error_width, allow_nil: true)
       end
 
       attr_reader :cap_size
 
       def cap_size=(cap_size)
-        # TODO: check value
-        @cap_size = cap_size
+        @cap_size = check_number(cap_size, :cap_size, allow_nil: true)
       end
 
       def render

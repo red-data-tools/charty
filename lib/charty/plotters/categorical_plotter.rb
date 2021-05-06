@@ -27,10 +27,8 @@ module Charty
         end
       end
 
-      def initialize(x, y, color, dodge: false, **options, &block)
+      def initialize(x, y, color, order: nil, orient: nil, width: 0.8r, dodge: false, **options, &block)
         super
-
-        @width = 0.8
 
         setup_variables
         setup_colors
@@ -60,11 +58,16 @@ module Charty
         end
       end
 
+      attr_reader :width
+
+      def width=(val)
+        @width = check_number(val, :width)
+      end
+
       attr_reader :dodge
 
       def dodge=(dodge)
-        # TODO: check value
-        @dodge = dodge
+        @dodge = check_boolean(dodge, :dodge)
       end
 
       attr_reader :saturation

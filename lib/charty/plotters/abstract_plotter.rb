@@ -81,6 +81,42 @@ module Charty
         end
       end
 
+      private def check_number(value, name, allow_nil: false)
+        case value
+        when Numeric
+          value
+        else
+          if allow_nil && value.nil?
+            nil
+          else
+            expected = if allow_nil
+                         "number or nil"
+                       else
+                         "number"
+                       end
+            raise ArgumentError,
+                  "invalid value for #{name} (%p for #{expected})" % value,
+                  caller
+          end
+        end
+      end
+
+      private def check_boolean(value, name, allow_nil: false)
+        case value
+        when true, false
+          value
+        else
+          expected = if allow_nil
+                       "true, false, or nil"
+                     else
+                       "true or false"
+                     end
+          raise ArgumentError,
+                "invalid value for #{name} (%p for #{expected})" % value,
+                caller
+        end
+      end
+
       private def array?(value)
         TableAdapters::HashAdapter.array?(value)
       end

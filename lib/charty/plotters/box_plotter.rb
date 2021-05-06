@@ -4,6 +4,29 @@ module Charty
       self.default_palette = :light
       self.require_numeric = true
 
+      def initialize(data: nil, variables: {}, **options, &block)
+        x, y, color = variables.values_at(:x, :y, :color)
+        super(x, y, color, data: data, **options, &block)
+      end
+
+      attr_reader :flier_size
+
+      def flier_size=(val)
+        @flier_size = check_number(val, :flier_size, allow_nil: true)
+      end
+
+      attr_reader :line_width
+
+      def line_width=(val)
+        @line_width = check_number(val, :line_width, allow_nil: true)
+      end
+
+      attr_reader :whisker
+
+      def whisker=(val)
+        @whisker = check_number(val, :whisker, allow_nil: true)
+      end
+
       def render
         backend = Backends.current
         backend.begin_figure
