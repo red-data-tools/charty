@@ -79,17 +79,12 @@ module Charty
           bar_pos = (0 ... @estimations[0].length).to_a
           error_colors = bar_pos.map { error_color }
           offsets = color_offsets
-          # TODO: move to categorical plotter
-          nested_width = if self.dodge
-                           @width / @color_names.length * 0.98r
-                         else
-                           @width
-                         end
+          width = nested_width
           @color_names.each_with_index do |color_name, i|
             pos = bar_pos.map {|x| x + offsets[i] }
             colors = Array.new(@estimations[i].length) { @colors[i] }
             backend.bar(pos, @estimations[i], colors, orient,
-                        label: color_name, width: nested_width,
+                        label: color_name, width: width,
                         conf_int: @conf_int[i], error_colors: error_colors,
                         error_width: error_width, cap_size: cap_size)
           end

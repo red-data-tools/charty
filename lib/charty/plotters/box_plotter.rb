@@ -35,12 +35,7 @@ module Charty
                            @colors, orient, gray: @gray)
         else
           offsets = color_offsets
-          # TODO: move to categorical plotter
-          nested_width = if self.dodge
-                           @width / @color_names.length * 0.98r
-                         else
-                           @width
-                         end
+          width = nested_width
           @color_names.each_with_index do |color_name, i|
             # TODO: Add legend data
 
@@ -60,7 +55,7 @@ module Charty
             centers = (0 ... @plot_data.length).map {|x| x + offsets[i] }
             colors = Array.new(plot_data.length) { @colors[i] }
             backend.box_plot(plot_data, @group_names, centers, colors, orient,
-                             label: color_name, gray: @gray, width: nested_width)
+                             label: color_name, gray: @gray, width: width)
           end
         end
       end

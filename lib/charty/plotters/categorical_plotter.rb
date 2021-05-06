@@ -363,6 +363,14 @@ module Charty
         end
       end
 
+      private def nested_width
+        if self.dodge
+          @width / @color_names.length * 0.98r
+        else
+          @width
+        end
+      end
+
       private def annotate_axes(backend)
         if orient == :v
           xlabel, ylabel = @group_label, @value_label
