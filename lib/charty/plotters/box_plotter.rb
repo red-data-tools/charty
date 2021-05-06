@@ -34,7 +34,7 @@ module Charty
           backend.box_plot(plot_data, nil, (0 ... @plot_data.length).to_a,
                            @colors, orient, gray: @gray)
         else
-          offsets = self.color_offsets
+          offsets = color_offsets
           # TODO: move to categorical plotter
           nested_width = if self.dodge
                            @width / @color_names.length * 0.98r

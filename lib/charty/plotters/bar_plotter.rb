@@ -78,7 +78,7 @@ module Charty
         else
           bar_pos = (0 ... @estimations[0].length).to_a
           error_colors = bar_pos.map { error_color }
-          offsets = self.color_offsets
+          offsets = color_offsets
           # TODO: move to categorical plotter
           nested_width = if self.dodge
                            @width / @color_names.length * 0.98r
