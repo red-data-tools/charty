@@ -57,6 +57,91 @@ $ docker run --rm -it -v $(pwd):/charty -p 8888:8888 charty-dev:latest
 
 ## Usage
 
+### Statistical plotting interface
+
+Charty supports statistical plotting as Python's seaborn.
+
+In the following examplles, we use the `penguins` dataset provided in red-datasets.
+
+```ruby
+require "datasets"
+
+penguins = Datasets::Penguins.new
+```
+
+#### Bar plot
+
+Charty's statistical bar plot shows the relationship between a categorical variable and estimated means of a numeric variable.
+This plot automatically calculates mean estimation and its 95% confidence interval of the numeric variable.
+
+When we specify the categorical varaible as x-axis, the plot draws a vertical bar chart.
+Instead, when we specify the categorical variable as y-axis, the plot draws a horizontal bar chart.
+
+The following code shows the relationship between species and the mean body masses of penguins in a vertical bar chart.
+
+```ruby
+Charty::Backends.use(:pyplot)
+Charty.bar_plot(data: penguins, x: :species, y: :body_mass_g).render
+```
+
+![](images/penguins_species_body_mass_g_bar_plot_v.png)
+
+Exchanging x and y axes alternates the orientation of the resulting chart.
+
+```ruby
+Charty::Backends.use(:pyplot)
+Charty.bar_plot(data: penguins, x: :body_mass_g, y: :species).render
+```
+
+![](images/penguins_species_body_mass_g_bar_plot_h.png)
+
+Adding color axis introduces color grouping in the bar plot.
+
+```ruby
+Charty::Backends.use(:pyplot)
+Charty.bar_plot(data: penguins, x: :species, y: :body_mass_g, color: :sex).render
+```
+
+![](images/penguins_species_body_mass_g_sex_bar_plot_v.png)
+
+#### Box plot
+
+Charty's statistical box plot shows distributions of a numeric variable per categories.
+The distributions are showed by boxes with whiskers that characterized by five-number summary.
+This plot automatically calculates five-number summary the numeric variable per categories.
+
+When we specify the categorical varaible as x-axis, the plot draws a vertical box plot chart.
+Instead, when we specify the categorical variable as y-axis, the plot draws a horizontal box plot chart.
+
+The following code draws a vertical box plot to show distributions of penguins' body mass per species.
+
+```ruby
+Charty::Backends.use(:pyplot)
+Charty.box_plot(data: penguins, x: :species, y: :body_mass_g).render
+```
+
+![](images/penguins_species_body_mass_g_box_plot_v.png)
+
+As `bar_plot` above, exchanging x and y axes alternates the orientation of the resulting chart.
+
+```ruby
+Charty::Backends.use(:pyplot)
+Charty.box_plot(data: penguins, x: :body_mass_g, y: :species).render
+```
+
+![](images/penguins_species_body_mass_g_box_plot_h.png)
+
+Adding color axis introduces color grouping in the box plot.
+
+```ruby
+Charty::Backends.use(:pyplot)
+Charty.box_plot(data: penguins, x: :species, y: :body_mass_g, color: :sex).render
+```
+
+![](images/penguins_species_body_mass_g_sex_box_plot_v.png)
+
+### Old-style plotting interface
+
 ```ruby
 require 'charty'
 charty = Charty::Plotter.new(:pyplot)
