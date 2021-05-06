@@ -37,8 +37,6 @@ module Charty
           offsets = color_offsets
           width = nested_width
           @color_names.each_with_index do |color_name, i|
-            # TODO: Add legend data
-
             plot_data = @plot_data.map.with_index do |group_data, j|
               next nil if group_data.empty?
 
