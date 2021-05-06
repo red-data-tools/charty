@@ -166,13 +166,12 @@ module Charty
         @legend_labels = []
       end
 
-      def bar(bar_pos, values, colors, orient, label: nil, width: 0.8r, align: :center,
-              conf_int: nil, error_colors: nil, error_width: nil, cap_size: nil)
+      def bar(bar_pos, _group_names, values, colors, orient, label: nil, width: 0.8r,
+              align: :center, conf_int: nil, error_colors: nil, error_width: nil, cap_size: nil)
         bar_pos = Array(bar_pos)
         values = Array(values)
         colors = Array(colors).map(&:to_hex_string)
         width = Float(width)
-        error_colors = Array(error_colors).map(&:to_hex_string)
 
         ax = @pyplot.gca
         kw = {color: colors, align: align}
@@ -184,7 +183,10 @@ module Charty
           ax.barh(bar_pos, values, width, **kw)
         end
 
-        confidence_intervals(ax, bar_pos, conf_int, orient, error_colors, error_width, cap_size)
+        if conf_int
+          error_colors = Array(error_colors).map(&:to_hex_string)
+          confidence_intervals(ax, bar_pos, conf_int, orient, error_colors, error_width, cap_size)
+        end
       end
 
       private def confidence_intervals(ax, at_group, conf_int, orient, colors, error_width=nil, cap_size=nil, **options)

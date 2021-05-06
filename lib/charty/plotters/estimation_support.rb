@@ -9,8 +9,10 @@ module Charty
 
       module_function def check_estimator(value)
         case value
-        when :mean
-          value
+        when :count, "count"
+          :count
+        when :mean, "mean"
+          :mean
         when :median
           raise NotImplementedError,
                 "median estimator has not been supported yet"
