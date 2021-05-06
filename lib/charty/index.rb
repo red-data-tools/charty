@@ -47,7 +47,7 @@ module Charty
       when 0 ... length
         values.begin + i
       else
-        raise IndexError, "index out of range"
+        raise IndexError, "index out of range (#{i} for 0 ... #{length})"
       end
     end
 

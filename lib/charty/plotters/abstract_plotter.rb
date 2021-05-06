@@ -32,11 +32,7 @@ module Charty
       end
 
       def color=(color)
-        # @color = check_dimension(color, :color)
-        unless color.nil?
-          raise NotImplementedError,
-                "Specifying color variable is not supported yet"
-        end
+        @color = check_dimension(color, :color)
       end
 
       def color_order=(color_order)

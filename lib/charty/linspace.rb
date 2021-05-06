@@ -8,7 +8,7 @@ module Charty
     end
 
     def each(&block)
-      step = (@range.end - @range.begin).to_f / @num_step
+      step = (@range.end - @range.begin).to_r / (@num_step - 1)
       (@num_step - 1).times do |i|
         block.call(@range.begin + i * step)
       end

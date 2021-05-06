@@ -25,7 +25,7 @@ module Charty
     def bar_plot(x: nil, y: nil, color: nil, data: nil,
                  order: nil, color_order: nil,
                  estimator: :mean, ci: 95, n_boot: 1000, units: nil, random: nil,
-                 orient: nil, key_color: nil, palette: nil, saturation: 0.75,
+                 orient: nil, key_color: nil, palette: nil, saturation: 1r,
                  error_color: [0.26, 0.26, 0.26], error_width: nil, cap_size: nil,
                  dodge: true, **options, &block)
       Plotters::BarPlotter.new(
@@ -39,8 +39,12 @@ module Charty
       )
     end
 
-    def box_plot(x: nil, y: nil, color: nil, **options, &block)
-      Plotters::BoxPlotter.new(x, y, color, **options, &block)
+    def box_plot(x: nil, y: nil, color: nil, saturation: 1r, dodge: true, **options, &block)
+      Plotters::BoxPlotter.new(
+        x, y, color,
+        saturation: saturation, dodge: dodge,
+        **options, &block
+      )
     end
   end
 

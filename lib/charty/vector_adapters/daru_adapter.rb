@@ -14,11 +14,57 @@ module Charty
       def_delegator :data, :size, :length
       def_delegators :data, :index, :index=
       def_delegators :data, :name, :name=
-      def_delegators :data, :[], :[]=
-      def_delegators :data, :to_a
+
+      def [](key)
+        case key
+        when Charty::Vector
+          where(key)
+        else
+          data[key]
+        end
+      end
+
+      def_delegators :data, :[]=, :to_a
 
       def values_at(*indices)
         indices.map {|i| data[i] }
+      end
+
+      def where(mask)
+        masked_data, masked_index = where_in_array(mask)
+        Charty::Vector.new(Daru::Vector.new(masked_data, index: masked_index), name: name)
+      end
+
+      def where_in_array(mask)
+        mask = check_mask_vector(mask)
+        masked_data = []
+        masked_index = []
+        mask.each_with_index do |f, i|
+          case f
+          when true, 1
+            masked_data << data[i]
+            masked_index << index.key(i)
+          end
+        end
+        return masked_data, masked_index
+      end
+
+      def first_nonnil
+        data.drop_while(&:nil?).first
+      end
+
+      def boolean?
+        case
+        when numeric?, categorical?
+          false
+        else
+          case first_nonnil
+          when true, false
+            true
+          else
+            false
+          end
+        end
       end
 
       def_delegators :data, :numeric?
@@ -66,6 +112,12 @@ module Charty
           end
         end
         Charty::Vector.new(Daru::Vector.new(values))
+      end
+
+      def eq(val)
+        Charty::Vector.new(data.eq(val).to_a,
+                           index: index.to_a,
+                           name: name)
       end
 
       def_delegator :data, :mean

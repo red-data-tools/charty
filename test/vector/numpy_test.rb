@@ -74,11 +74,125 @@ class VectorNumpyTest < Test::Unit::TestCase
                      ])
       end
     end
+
+    sub_test_case("with boolean vector mask") do
+      def setup_array_mask
+        @mask_array = [false, true, false, true, false]
+        @mask = Charty::Vector.new(@mask_array)
+      end
+
+      def setup_daru_mask
+        setup_array_mask
+        @mask = Charty::Vector.new(Daru::Vector.new(@mask_array))
+      end
+
+      def setup_narray_mask
+        numo_required
+        setup_array_mask
+        @mask = Charty::Vector.new(Numo::Bit[*@mask_array])
+      end
+
+      def setup_narray_bool_obj_mask
+        numo_required
+        setup_array_mask
+        @mask = Charty::Vector.new(Numo::RObject[*@mask_array])
+      end
+
+      def setup_numpy_mask
+        pandas_required
+        setup_array_mask
+        @mask = Charty::Vector.new(Numpy.asarray(@mask_array, dtype: :bool))
+      end
+
+      def setup_numpy_bool_obj_mask
+        pandas_required
+        setup_array_mask
+        @mask = Charty::Vector.new(Numpy.asarray(@mask_array, dtype: :object))
+      end
+
+      def setup_pandas_mask
+        pandas_required
+        setup_array_mask
+        @mask = Charty::Vector.new(Pandas::Series.new(@mask_array, dtype: :bool))
+      end
+
+      def setup_pandas_bool_obj_mask
+        pandas_required
+        setup_array_mask
+        @mask = Charty::Vector.new(Pandas::Series.new(@mask_array, dtype: :object))
+      end
+
+      data(:mask_adapter, [:array, :daru, :narray, :narray_bool_obj,
+                           :numpy, :numpy_bool_obj, :pandas, :pandas_bool_obj])
+      def test_aref_with_mask(data)
+        mask_adapter = data[:mask_adapter]
+        send("setup_#{mask_adapter}_mask")
+        @vector.index = [10, 20, 30, 40, 50]
+        @vector.name = "foo"
+        result = @vector[@mask]
+        assert_equal({
+                       class: Charty::Vector,
+                       data_class: Numpy::NDArray,
+                       dtype: Numpy.float64,
+                       values: [2.0, 4.0],
+                       index: [20, 40],
+                       name: "foo"
+                     },
+                     {
+                       class: result.class,
+                       data_class: result.data.class,
+                       dtype: result.data.dtype,
+                       values: result.data.to_a,
+                       index: result.index.to_a,
+                       name: "foo"
+                     })
+      end
+    end
   end
 
   test("#to_a") do
     assert_equal([1, 2, 3, 4, 5],
                  @vector.to_a)
+  end
+
+  sub_test_case("#boolean?") do
+    data(
+      "for numeric array"                  => { array: [1, 2, 3, 4, 5]      , dtype: :float64  },
+      "for string array"                   => { array: ["abc", "def", "xyz"], dtype: :str },
+      "for numeric array with nan at head" => { array: [Float::NAN, 1, 2, 3], dtype: :float64  },
+      "for string array with nil at head"  => { array: [nil, "abc", "xyz"]  , dtype: :str }
+    )
+    def test_with_nonboolean_dtype_nonboolean(data)
+      array, dtype = data.values_at(:array, :dtype)
+      data = Numpy.asarray(array, dtype: dtype)
+      vector = Charty::Vector.new(data)
+      assert do
+        not vector.boolean?
+      end
+    end
+
+    data(
+      "for boolean object array"                  => [true, false, true],
+      "for boolean object array with nil at head" => [nil, true, false, true],
+    )
+    def test_with_nonboolean_dtype_boolean(data)
+      data = Numpy.asarray(data, dtype: :object)
+      vector = Charty::Vector.new(data)
+      assert do
+        vector.boolean?
+      end
+    end
+
+    data(
+      "for boolean array" => [true, false, true],
+    )
+    def test_with_boolean_dtype(data)
+      data = Numpy.asarray(data, dtype: :bool)
+      vector = Charty::Vector.new(data)
+      assert do
+        vector.boolean?
+      end
+    end
   end
 
   sub_test_case("#numeric?") do
@@ -246,6 +360,27 @@ class VectorNumpyTest < Test::Unit::TestCase
                    class: result.class,
                    data_class: result.data.class,
                    values: result.data.to_a
+                 })
+  end
+
+  def test_eq
+    vector = Charty::Vector.new(Numpy.asarray(["a", "b", "c", "b", "d"], dtype: :str),
+                                index: [10, 20, 30, 40, 50],
+                                name: "foo")
+    result = vector.eq("b")
+    assert_equal({
+                   class: Charty::Vector,
+                   data_class: Numpy::NDArray,
+                   data: [false, true, false, true, false],
+                   index: [10, 20, 30, 40, 50],
+                   name: "foo"
+                 },
+                 {
+                   class: result.class,
+                   data_class: result.data.class,
+                   data: result.data.to_a,
+                   index: result.index.to_a,
+                   name: result.name
                  })
   end
 end

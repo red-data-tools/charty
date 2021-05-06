@@ -162,10 +162,11 @@ module Charty
       # ==== NEW PLOTTING API ====
 
       def begin_figure
-        # do nothing
+        @legend_keys = []
+        @legend_labels = []
       end
 
-      def bar(bar_pos, values, colors, orient, width: 0.8r, align: :center,
+      def bar(bar_pos, values, colors, orient, label: nil, width: 0.8r, align: :center,
               conf_int: nil, error_colors: nil, error_width: nil, cap_size: nil)
         bar_pos = Array(bar_pos)
         values = Array(values)
@@ -174,10 +175,13 @@ module Charty
         error_colors = Array(error_colors).map(&:to_hex_string)
 
         ax = @pyplot.gca
+        kw = {color: colors, align: align}
+        kw[:label] = label unless label.nil?
+
         if orient == :v
-          ax.bar(bar_pos, values, width, color: colors, align: align)
+          ax.bar(bar_pos, values, width, **kw)
         else
-          ax.barh(bar_pos, values, width, color: colors, align: align)
+          ax.barh(bar_pos, values, width, **kw)
         end
 
         confidence_intervals(ax, bar_pos, conf_int, orient, error_colors, error_width, cap_size)
@@ -207,8 +211,9 @@ module Charty
         end
       end
 
-      def box_plot(plot_data, positions, color, orient, gray:,
-                   width: 0.8r, flier_size: 5, whisker: 1.5, notch: false)
+      def box_plot(plot_data, _group_names, positions, color, orient, gray:,
+                   label: nil, width: 0.8r, flier_size: 5, whisker: 1.5,
+                   notch: false)
         color = Array(color).map(&:to_hex_string)
         gray = gray.to_hex_string
         width = Float(width)
@@ -222,7 +227,7 @@ module Charty
           artist_dict = @pyplot.boxplot(Array(group_data),
                                         vert: (orient == :v),
                                         patch_artist: true,
-                                        positions: [i],
+                                        positions: [positions[i]],
                                         widths: width,
                                         whis: whisker)
 
@@ -245,6 +250,11 @@ module Charty
               markeredgecolor: gray,
               markersize: flier_size
             }, {})
+          end
+
+          if i == 0 && label
+            patch = @pyplot.Rectangle.new([0, 0], 0, 0, edgecolor: gray, facecolor: color[0], label: label)
+            @pyplot.gca.add_patch(patch)
           end
         end
       end
@@ -287,6 +297,14 @@ module Charty
 
       def disable_yaxis_grid
         @pyplot.gca.xaxis.grid(false)
+      end
+
+      def invert_yaxis
+        @pyplot.gca.invert_yaxis
+      end
+
+      def legend(loc:, title:)
+        @pyplot.gca.legend(loc: loc, title: title)
       end
 
       def show

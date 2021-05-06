@@ -16,9 +16,10 @@ module Charty
       end
     end
 
-    def initialize(data, name: nil)
+    def initialize(data, index: nil, name: nil)
       adapter_class = VectorAdapters.find_adapter_class(data)
       @adapter = adapter_class.new(data)
+      self.index = index unless index.nil?
       self.name = name unless name.nil?
     end
 
@@ -37,12 +38,14 @@ module Charty
     def_delegators :adapter, :each
     def_delegators :adapter, :empty?
 
-    def_delegators :adapter, :categorical?, :numeric?
+    def_delegators :adapter, :boolean?, :numeric?, :categorical?
     def_delegators :adapter, :categories
     def_delegators :adapter, :unique_values
     def_delegators :adapter, :group_by
     def_delegators :adapter, :drop_na
     def_delegators :adapter, :values_at
+
+    def_delegators :adapter, :eq
 
     def_delegators :adapter, :mean, :stdev
   end

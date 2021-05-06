@@ -118,10 +118,10 @@ module Charty
 
       def begin_figure
         @traces = []
-        @layout = {}
+        @layout = {showlegend: false}
       end
 
-      def bar(bar_pos, values, colors, orient, width: 0.8r, align: :center,
+      def bar(bar_pos, values, colors, orient, label: nil, width: 0.8r, align: :center,
               conf_int: nil, error_colors: nil, error_width: nil, cap_size: nil)
         bar_pos = Array(bar_pos)
         values = Array(values)
@@ -148,7 +148,7 @@ module Charty
         error_bar[:width] = cap_size unless cap_size.nil?
         error_bar_key = orient == :v ? :error_y : :error_x
 
-        @traces << {
+        trace = {
           type: :bar,
           orientation: orient,
           x: x,
@@ -157,14 +157,29 @@ module Charty
           marker: {color: colors},
           "#{error_bar_key}": error_bar
         }
-        @layout[:showlegend] = false
+        trace[:name] = label unless label.nil?
+
+        @traces << trace
       end
 
-      def box_plot(plot_data, positions, color, orient, gray:,
-                   width: 0.8r, flier_size: 5, whisker: 1.5, notch: false)
+      def box_plot(plot_data, group_names, positions, color, orient, gray:,
+                   label: nil, width: 0.8r, flier_size: 5, whisker: 1.5,
+                   notch: false)
         color = Array(color).map(&:to_hex_string)
+
+        unless group_names.nil?
+          return grouped_box_plot(plot_data, group_names, color, orient, gray,
+                                  label, width, flier_size, whisker, notch)
+        end
+
+        if orient == :v
+          var_name = :y
+        else
+          var_name = :x
+          plot_data = plot_data.reverse
+          color.reverse!
+        end
         plot_data.each_with_index do |group_data, i|
-          var_name = orient == :v ? :y : :x
           data = if group_data.empty?
                    {type: :box, "#{var_name}": [] }
                  else
@@ -173,7 +188,35 @@ module Charty
           data[:orientation] = orient
           @traces << data
         end
-        @layout[:showlegend] = false
+      end
+
+      private def grouped_box_plot(plot_data, group_names, color, orient, gray, label,
+                                   width, flier_size, whisker, notch)
+        if orient == :h
+          plot_data = plot_data.reverse
+          group_names = group_names.reverse
+          color = color.reverse
+        end
+
+        box_data = plot_data.map {|group_data| Array(group_data) }.flatten
+        group_data = plot_data.map.with_index { |group_data, i|
+          Array.new(group_data.length, group_names[i])
+        }.flatten
+        trace = {type: :box, orientation: orient, name: label, marker: {color: color[0]}}
+        if orient == :v
+          trace.update(y: box_data, x: group_data)
+        else
+          trace.update(x: box_data, y: group_data)
+        end
+        @traces << trace
+
+        @layout[:boxmode] = :group
+        @layout[:boxgroupgap]  = 0.1
+
+        if orient == :h
+          @layout[:xaxis] ||= {}
+          @layout[:xaxis][:zeroline] = false
+        end
       end
 
       def set_xlabel(label)
@@ -226,6 +269,33 @@ module Charty
 
       def disable_yaxis_grid
         # do nothing
+      end
+
+      def invert_yaxis
+        @traces.each do |trace|
+          case trace[:type]
+          when :bar
+            trace[:y].reverse!
+          end
+        end
+
+        if @layout[:boxmode] == :group
+          @traces.reverse!
+        end
+
+        if @layout[:yaxis] && @layout[:yaxis][:ticktext]
+          @layout[:yaxis][:ticktext].reverse!
+        end
+      end
+
+      def legend(loc:, title:)
+        @layout[:showlegend] = true
+        @layout[:legend] = {
+          title: {
+            text: title
+          }
+        }
+        # TODO: Handle loc
       end
 
       def save(filename, title: nil)
