@@ -100,7 +100,9 @@ module Charty
         end
       end
 
-      attr_reader :group_names, :plot_data, :group_label, :value_label
+      attr_reader :group_names, :plot_data, :group_label
+
+      attr_accessor :value_label
 
       private def setup_variables
         if x.nil? && y.nil?
@@ -280,7 +282,7 @@ module Charty
           when vector.categorical?
             order = vector.categories
           else
-            order = vector.unique_values
+            order = vector.unique_values.compact
             order.sort! if vector.numeric?
           end
           order.compact!

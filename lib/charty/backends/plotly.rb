@@ -121,32 +121,19 @@ module Charty
         @layout = {showlegend: false}
       end
 
-      def bar(bar_pos, values, colors, orient, label: nil, width: 0.8r, align: :center,
-              conf_int: nil, error_colors: nil, error_width: nil, cap_size: nil)
+      def bar(bar_pos, group_names, values, colors, orient, label: nil, width: 0.8r,
+              align: :center, conf_int: nil, error_colors: nil, error_width: nil, cap_size: nil)
         bar_pos = Array(bar_pos)
         values = Array(values)
         colors = Array(colors).map(&:to_hex_string)
-        errors_low = conf_int.map.with_index {|(low, _), i| values[i] - low }
-        errors_high = conf_int.map.with_index {|(_, high), i| high - values[i] }
-        error_colors = Array(error_colors).map(&:to_hex_string)
 
         if orient == :v
           x, y = bar_pos, values
+          x = group_names unless group_names.nil?
         else
           x, y = values, bar_pos
+          y = group_names unless group_names.nil?
         end
-
-        error_bar = {
-          type: :data,
-          visible: true,
-          symmetric: false,
-          array: errors_high,
-          arrayminus: errors_low,
-          color: error_colors[0]
-        }
-        error_bar[:thickness] = error_width unless error_width.nil?
-        error_bar[:width] = cap_size unless cap_size.nil?
-        error_bar_key = orient == :v ? :error_y : :error_x
 
         trace = {
           type: :bar,
@@ -154,12 +141,34 @@ module Charty
           x: x,
           y: y,
           width: width,
-          marker: {color: colors},
-          "#{error_bar_key}": error_bar
+          marker: {color: colors}
         }
         trace[:name] = label unless label.nil?
 
+        unless conf_int.nil?
+          errors_low = conf_int.map.with_index {|(low, _), i| values[i] - low }
+          errors_high = conf_int.map.with_index {|(_, high), i| high - values[i] }
+
+          error_bar = {
+            type: :data,
+            visible: true,
+            symmetric: false,
+            array: errors_high,
+            arrayminus: errors_low,
+            color: error_colors[0].to_hex_string
+          }
+          error_bar[:thickness] = error_width unless error_width.nil?
+          error_bar[:width] = cap_size unless cap_size.nil?
+
+          error_bar_key = orient == :v ? :error_y : :error_x
+          trace[error_bar_key] = error_bar
+        end
+
         @traces << trace
+
+        if group_names
+          @layout[:barmode] = :group
+        end
       end
 
       def box_plot(plot_data, group_names, positions, color, orient, gray:,
@@ -211,7 +220,7 @@ module Charty
         @traces << trace
 
         @layout[:boxmode] = :group
-        @layout[:boxgroupgap]  = 0.1
+        #@layout[:boxgroupgap] = 0.1
 
         if orient == :h
           @layout[:xaxis] ||= {}

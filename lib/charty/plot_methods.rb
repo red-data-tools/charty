@@ -34,10 +34,47 @@ module Charty
         order: order, orient: orient,
         estimator: estimator, ci: ci, n_boot: n_boot, units: units, random: random,
         color_order: color_order, key_color: key_color, palette: palette, saturation: saturation,
-        error_color: error_color, error_width: error_width,
-        cap_size: cap_size, dodge: dodge,
+        error_color: error_color, error_width: error_width, cap_size: cap_size,
+        dodge: dodge,
         **options, &block
       )
+    end
+
+    def count_plot(x: nil, y: nil, color: nil, data: nil,
+                   order: nil, color_order: nil,
+                   orient: nil, key_color: nil, palette: nil, saturation: 1r,
+                   dodge: true, **options, &block)
+      case
+      when x.nil? && !y.nil?
+        x = y
+        orient = :h
+      when y.nil? && !x.nil?
+        y = x
+        orient = :v
+      when !x.nil? && !y.nil?
+        raise ArgumentError,
+              "Unable to pass both x and y to count_plot"
+      end
+
+      Plotters::CountPlotter.new(
+        data: data,
+        variables: { x: x, y: y, color: color },
+        order: order,
+        orient: orient,
+        estimator: :count,
+        ci: nil,
+        units: nil,
+        random: nil,
+        color_order: color_order,
+        key_color: key_color,
+        palette: palette,
+        saturation: saturation,
+        dodge: dodge,
+        **options
+      ) do |plotter|
+        plotter.value_label = "count"
+        block.(plotter) unless block.nil?
+      end
     end
 
     # Show the distributions of the given data by boxes and whiskers.

@@ -66,13 +66,16 @@ module Charty
       private def draw_bars(backend)
         setup_estimations
 
-
         if @plot_colors.nil?
           bar_pos = (0 ... @estimations.length).to_a
           error_colors = bar_pos.map { error_color }
-          backend.bar(bar_pos, @estimations, @colors, orient,
-                      conf_int: @conf_int, error_colors: error_colors,
-                      error_width: error_width, cap_size: cap_size)
+          if @conf_int.empty?
+            ci_params = {}
+          else
+            ci_params = {conf_int: @conf_int, error_colors: error_colors,
+                         error_width: error_width, cap_size: cap_size}
+          end
+          backend.bar(bar_pos, nil, @estimations, @colors, orient, **ci_params)
         else
           bar_pos = (0 ... @estimations[0].length).to_a
           error_colors = bar_pos.map { error_color }
@@ -81,10 +84,14 @@ module Charty
           @color_names.each_with_index do |color_name, i|
             pos = bar_pos.map {|x| x + offsets[i] }
             colors = Array.new(@estimations[i].length) { @colors[i] }
-            backend.bar(pos, @estimations[i], colors, orient,
-                        label: color_name, width: width,
-                        conf_int: @conf_int[i], error_colors: error_colors,
-                        error_width: error_width, cap_size: cap_size)
+            if @conf_int[i].empty?
+              ci_params = {}
+            else
+              ci_params = {conf_int: @conf_int[i], error_colors: error_colors,
+                           error_width: error_width, cap_size: cap_size}
+            end
+            backend.bar(pos, @group_names, @estimations[i], colors, orient,
+                        label: color_name, width: width, **ci_params)
           end
         end
       end
@@ -113,8 +120,7 @@ module Charty
           estimation = if stat_data.size == 0
                          Float::NAN
                        else
-                         # TODO: Support other estimations
-                         stat_data.mean
+                         estimate(estimator, stat_data)
                        end
           estimations << estimation
 
@@ -169,8 +175,7 @@ module Charty
             estimation = if stat_data.size == 0
                            Float::NAN
                          else
-                           # TODO: Support other estimations
-                           stat_data.mean
+                           estimate(estimator, stat_data)
                          end
             estimations[j] << estimation
 
@@ -193,6 +198,18 @@ module Charty
 
         @estimations = estimations
         @conf_int = conf_int
+      end
+
+      private def estimate(estimator, data)
+        case estimator
+        when :count
+          data.length
+        when :mean
+          data.mean
+        else
+          # TODO: Support other estimations
+          raise NotImplementedError, "#{estimator} estimator is not supported yet"
+        end
       end
     end
   end
