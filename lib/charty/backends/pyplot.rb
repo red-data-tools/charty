@@ -90,7 +90,16 @@ module Charty
           min_l = palette.colors.map {|c| c.to_rgb.to_hsl.l }.min
           lum = min_l*0.6
           gray = Colors::RGB.new(lum, lum, lum).to_hex_string
-          draw_box_plot(context, subplot, colors, gray)
+          Array(context.data).each_with_index do |group_data, i|
+            next if group_data.empty?
+
+            box_data = group_data.compact
+            next if box_data.empty?
+
+            color = colors.next
+            draw_box_plot(box_data, vert: "v", position: i, color: color,
+                          gray: gray, width: 0.8, whisker: 1.5, flier_size: 5)
+          end
         when :bubble
           context.series.each do |data|
             ax.scatter(data.xs.to_a, data.ys.to_a, s: data.zs.to_a, alpha: 0.5,
@@ -122,40 +131,6 @@ module Charty
         when :hist
           data = Array(context.data)
           ax.hist(data, color: colors.take(data.length), alpha: 0.4)
-        end
-      end
-
-      private def draw_box_plot(context, subplot, colors, gray)
-        Array(context.data).each_with_index do |group_data, i|
-          next if group_data.empty?
-
-          box_data = group_data.compact
-          next if box_data.empty?
-
-          artist_dict = @pyplot.boxplot(box_data, vert: "v", patch_artist: true,
-                                        positions: [i], widths: 0.8)
-
-          color = colors.next
-          artist_dict["boxes"].each do |box|
-            box.update({facecolor: color, zorder: 0.9, edgecolor: gray}, {})
-          end
-          artist_dict["whiskers"].each do |whisker|
-            whisker.update({color: gray, linestyle: "-"}, {})
-          end
-          artist_dict["caps"].each do |cap|
-            cap.update({color: gray}, {})
-          end
-          artist_dict["medians"].each do |median|
-            median.update({color: gray}, {})
-          end
-          artist_dict["fliers"].each do |flier|
-            flier.update({
-              markerfacecolor: gray,
-              marker: "d",
-              markeredgecolor: gray,
-              markersize: 5
-            }, {})
-          end
         end
       end
 
