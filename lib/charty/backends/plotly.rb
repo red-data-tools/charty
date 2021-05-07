@@ -171,61 +171,80 @@ module Charty
         end
       end
 
-      def box_plot(plot_data, group_names, positions, color, orient, gray:,
-                   label: nil, width: 0.8r, flier_size: 5, whisker: 1.5,
-                   notch: false)
-        color = Array(color).map(&:to_hex_string)
+      def box_plot(plot_data, group_names,
+                   orient:, colors:, gray:, dodge:, width: 0.8r,
+                   flier_size: 5, whisker: 1.5, notch: false)
+        colors = Array(colors).map(&:to_hex_string)
+        gray = gray.to_hex_string
+        width = Float(width)
+        flier_size = Float(width)
+        whisker = Float(whisker)
 
-        unless group_names.nil?
-          return grouped_box_plot(plot_data, group_names, color, orient, gray,
-                                  label, width, flier_size, whisker, notch)
+        traces = plot_data.map.with_index do |group_data, i|
+          group_data = Array(group_data)
+          trace = {
+            type: :box,
+            orientation: orient,
+            name: group_names[i],
+            marker: {color: colors[i]}
+          }
+          if orient == :v
+            trace.update(y: group_data)
+          else
+            trace.update(x: group_data)
+          end
+
+          trace
         end
 
-        if orient == :v
-          var_name = :y
-        else
-          var_name = :x
-          plot_data = plot_data.reverse
-          color.reverse!
-        end
-        plot_data.each_with_index do |group_data, i|
-          data = if group_data.empty?
-                   {type: :box, "#{var_name}": [] }
-                 else
-                   {type: :box, "#{var_name}": Array(group_data), marker: {color: color[i]}}
-                 end
-          data[:orientation] = orient
-          @traces << data
-        end
+        traces.reverse! if orient == :h
+
+        @traces.concat(traces)
       end
 
-      private def grouped_box_plot(plot_data, group_names, color, orient, gray, label,
-                                   width, flier_size, whisker, notch)
-        if orient == :h
-          plot_data = plot_data.reverse
-          group_names = group_names.reverse
-          color = color.reverse
-        end
-
-        box_data = plot_data.map {|group_data| Array(group_data) }.flatten
-        group_data = plot_data.map.with_index { |group_data, i|
-          Array.new(group_data.length, group_names[i])
-        }.flatten
-        trace = {type: :box, orientation: orient, name: label, marker: {color: color[0]}}
-        if orient == :v
-          trace.update(y: box_data, x: group_data)
-        else
-          trace.update(x: box_data, y: group_data)
-        end
-        @traces << trace
+      def grouped_box_plot(plot_data, group_names, color_names,
+                           orient:, colors:, gray:, dodge:, width: 0.8r,
+                           flier_size: 5, whisker: 1.5, notch: false)
+        colors = Array(colors).map(&:to_hex_string)
+        gray = gray.to_hex_string
+        width = Float(width)
+        flier_size = Float(width)
+        whisker = Float(whisker)
 
         @layout[:boxmode] = :group
-        #@layout[:boxgroupgap] = 0.1
 
         if orient == :h
           @layout[:xaxis] ||= {}
           @layout[:xaxis][:zeroline] = false
+
+          plot_data = plot_data.map {|d| d.reverse }
+          group_names = group_names.reverse
         end
+
+        traces = color_names.map.with_index do |color_name, i|
+          group_keys = group_names.flat_map.with_index { |name, j|
+            Array.new(plot_data[i][j].length, name)
+          }.flatten
+
+          values = plot_data[i].flat_map {|d| Array(d) }
+
+          trace = {
+            type: :box,
+            orientation: orient,
+            name: color_name,
+            marker: {color: colors[i]}
+          }
+
+          if orient == :v
+            trace.update(y: values, x: group_keys)
+          else
+            trace.update(x: values, y: group_keys)
+          end
+
+          trace
+        end
+
+        @traces.concat(traces)
       end
 
       def set_xlabel(label)

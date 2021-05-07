@@ -213,51 +213,115 @@ module Charty
         end
       end
 
-      def box_plot(plot_data, _group_names, positions, color, orient, gray:,
-                   label: nil, width: 0.8r, flier_size: 5, whisker: 1.5,
-                   notch: false)
-        color = Array(color).map(&:to_hex_string)
+      def box_plot(plot_data, group_names,
+                   orient:, colors:, gray:, dodge:, width: 0.8r,
+                   flier_size: 5, whisker: 1.5, notch: false)
+        colors = Array(colors).map(&:to_hex_string)
         gray = gray.to_hex_string
         width = Float(width)
         flier_size = Float(flier_size)
         whisker = Float(whisker)
+
         plot_data.each_with_index do |group_data, i|
-          next if group_data.nil? || group_data.empty?
+          unless group_data.nil?
+            draw_box_plot(group_data,
+                          vert: (orient == :v),
+                          position: i,
+                          color: colors[i],
+                          gray: gray,
+                          width: width,
+                          whisker: whisker,
+                          flier_size: flier_size)
+          end
+        end
+      end
 
-          # TODO: Do not convert to Array when group_data is Pandas::Series or Numpy::NDArray,
-          # and use MemoryView if available when group_data is Numo::NArray
-          artist_dict = @pyplot.boxplot(Array(group_data),
-                                        vert: (orient == :v),
-                                        patch_artist: true,
-                                        positions: [positions[i]],
-                                        widths: width,
-                                        whis: whisker)
+      def grouped_box_plot(plot_data, group_names, color_names,
+                           orient:, colors:, gray:, dodge:, width: 0.8r,
+                           flier_size: 5, whisker: 1.5, notch: false)
+        colors = Array(colors).map(&:to_hex_string)
+        gray = gray.to_hex_string
+        width = Float(width)
+        flier_size = Float(flier_size)
+        whisker = Float(whisker)
 
-          artist_dict["boxes"].each do |box|
-            box.update({facecolor: color[i], zorder: 0.9, edgecolor: gray}, {})
-          end
-          artist_dict["whiskers"].each do |whisker|
-            whisker.update({color: gray, linestyle: "-"}, {})
-          end
-          artist_dict["caps"].each do |cap|
-            cap.update({color: gray}, {})
-          end
-          artist_dict["medians"].each do |median|
-            median.update({color: gray}, {})
-          end
-          artist_dict["fliers"].each do |flier|
-            flier.update({
-              markerfacecolor: gray,
-              marker: "d",
-              markeredgecolor: gray,
-              markersize: flier_size
-            }, {})
-          end
+        offsets = color_offsets(color_names, dodge, width)
+        orig_width = width
+        width = Float(nested_width(color_names, dodge, width))
 
-          if i == 0 && label
-            patch = @pyplot.Rectangle.new([0, 0], 0, 0, edgecolor: gray, facecolor: color[0], label: label)
-            @pyplot.gca.add_patch(patch)
+        color_names.each_with_index do |color_name, i|
+          add_box_plot_legend(gray, colors[i], color_names[i])
+
+          plot_data[i].each_with_index do |group_data, j|
+            next if group_data.empty?
+
+            position = j + offsets[i]
+            draw_box_plot(group_data,
+                          vert: (orient == :v),
+                          position: position,
+                          color: colors[i],
+                          gray: gray,
+                          width: width,
+                          whisker: whisker,
+                          flier_size: flier_size)
           end
+        end
+      end
+
+      private def add_box_plot_legend(gray, color, name)
+        patch = @pyplot.Rectangle.new([0, 0], 0, 0, edgecolor: gray, facecolor: color, label: name)
+        @pyplot.gca.add_patch(patch)
+      end
+
+      private def draw_box_plot(group_data, vert:, position:, color:, gray:, width:, whisker:, flier_size:)
+        # TODO: Do not convert to Array when group_data is Pandas::Series or Numpy::NDArray,
+        # and use MemoryView if available when group_data is Numo::NArray
+        artist_dict = @pyplot.boxplot(Array(group_data),
+                                      vert: vert,
+                                      patch_artist: true,
+                                      positions: [position],
+                                      widths: width,
+                                      whis: whisker)
+
+        artist_dict["boxes"].each do |box|
+          box.update({facecolor: color, zorder: 0.9, edgecolor: gray}, {})
+        end
+        artist_dict["whiskers"].each do |whisker|
+          whisker.update({color: gray, linestyle: "-"}, {})
+        end
+        artist_dict["caps"].each do |cap|
+          cap.update({color: gray}, {})
+        end
+        artist_dict["medians"].each do |median|
+          median.update({color: gray}, {})
+        end
+        artist_dict["fliers"].each do |flier|
+          flier.update({
+            markerfacecolor: gray,
+            marker: "d",
+            markeredgecolor: gray,
+            markersize: flier_size
+          }, {})
+        end
+      end
+
+      private def color_offsets(color_names, dodge, width)
+        n_names = color_names.length
+        if dodge
+          each_width = width / n_names
+          offsets = Charty::Linspace.new(0 .. (width - each_width), n_names).to_a
+          mean = Statistics.mean(offsets)
+          offsets.map {|x| x - mean }
+        else
+          Array.new(n_names, 0)
+        end
+      end
+
+      private def nested_width(color_names, dodge, width)
+        if dodge
+          width.to_r / color_names.length * 0.98r
+        else
+          width
         end
       end
 
