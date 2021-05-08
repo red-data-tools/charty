@@ -8,11 +8,27 @@ module Charty
         self.data = data
         self.palette = palette
         substitute_options(options)
+
+        @var_levels = {}
+        @var_ordered = {x: false, y: false}
+
         yield self if block_given?
       end
 
       attr_reader :data, :x, :y, :color
       attr_reader :color_order, :key_color, :palette
+
+      def var_levels
+        variables.each_key do |var|
+          # TODO: Move mappers from RelationalPlotter to here,
+          #       and remove the use of instance_variable_get
+          if instance_variable_defined?(:"@#{var}_mapper")
+            mapper = instance_variable_get(:"@#{var}_mapper")
+            @var_levels[var] = mapper.levels
+          end
+        end
+        @var_levels
+      end
 
       def inspect
         "#<#{self.class}:0x%016x>" % self.object_id
@@ -146,6 +162,55 @@ module Charty
       private def remove_na!(ary)
         ary.reject! {|x| Util.missing?(x) }
         ary
+      end
+
+      private def each_subset(grouping_vars, reverse: false, processed: false, by_facet: true, allow_empty: false, drop_na: true)
+        case grouping_vars
+        when nil
+          grouping_vars = []
+        when String, Symbol
+          grouping_vars = [grouping_vars.to_sym]
+        end
+
+        if by_facet
+          [:col, :row].each do |facet_var|
+            grouping_vars << facet_var if variables.key?(facet_var)
+          end
+        end
+
+        grouping_vars = grouping_vars.select {|var| variables.key?(var) }
+
+        data = processed ? processed_data : plot_data
+        data = data.drop_na if drop_na
+
+        levels = var_levels.dup
+
+        [:x, :y].each do |axis|
+          levels[axis] = plot_data[axis].categorical_order()
+          if processed
+            # TODO: perform inverse conversion of axis scaling here
+          end
+        end
+
+        if not grouping_vars.empty?
+          grouped = data.group_by(grouping_vars, sort: false)
+          grouped.each_group do |group_key, group_data|
+            next if group_data.empty? && !allow_empty
+
+            yield(grouping_vars.zip(group_key).to_h, group_data)
+          end
+        else
+          yield({}, data.dup)
+        end
+      end
+
+      def processed_data
+        @processed_data ||= calculate_processed_data
+      end
+
+      private def calculate_processed_data
+        # TODO: axis scaling support
+        plot_data
       end
 
       def save(filename, **kwargs)

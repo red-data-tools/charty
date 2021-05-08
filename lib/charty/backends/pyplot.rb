@@ -367,6 +367,15 @@ module Charty
         end
       end
 
+      PYPLOT_DASHES = {
+              solid: "",
+               dash: [4, 1.5].freeze,
+                dot: [1, 1].freeze,
+            dashdot: [3, 1.25, 1.5, 1.25].freeze,
+        longdashdot: [5, 1, 1, 1].freeze,
+           longdash: [6, 1.5].freeze
+      }.freeze
+
       RELATIONAL_PLOT_LEGEND_BRIEF_TICKS = 6
 
       private def add_relational_plot_legend(ax, verbosity, variables, color_mapper, size_mapper, style_mapper,
@@ -501,6 +510,76 @@ module Charty
       private def scale_scatter_point_size(x)
         min = 0.5 * @default_marker_size**2
         max = 2.0 * @default_marker_size**2
+
+        min + x * (max - min)
+      end
+
+      def line(x, y, color:, color_mapper:, size:, size_mapper:, style:, style_mapper:, ci_params:)
+        kws = {
+          markeredgewidth: 0.75,
+          markeredgecolor: "w",
+        }
+        ax = @pyplot.gca
+
+        x = x.to_a
+        y = y.to_a
+        lines = ax.plot(x, y, **kws)
+
+        lines.each do |line|
+          unless color.nil?
+            line.set_color(color_mapper[color].to_rgb.to_hex_string)
+          end
+
+          unless size.nil?
+            scaled_size = scale_line_width(size_mapper[size])
+            line.set_linewidth(scaled_size.to_f)
+          end
+
+          unless style.nil?
+            attributes = style_mapper[style]
+            if attributes.key?(:dashes)
+              line.set_dashes(PYPLOT_DASHES[attributes[:dashes]])
+            end
+            if attributes.key?(:marker)
+              line.set_marker(PYPLOT_MARKERS[attributes[:marker]])
+            end
+          end
+        end
+
+        # TODO: support color, size, and style
+
+        line = lines[0]
+        line_color = line.get_color
+        line_alpha = line.get_alpha
+        line_capstyle = line.get_solid_capstyle
+
+        unless ci_params.nil?
+          y_min = ci_params[:y_min].to_a
+          y_max = ci_params[:y_max].to_a
+          case ci_params[:style]
+          when :band
+            # TODO: support to supply `alpha` via `err_kws`
+            ax.fill_between(x, y_min, y_max, color: line_color, alpha: 0.2)
+          when :bars
+            error_deltas = [
+              y.zip(y_min).map {|v, v_min| v - v_min },
+              y.zip(y_max).map {|v, v_max| v_max - v }
+            ]
+            ebars = ax.errorbar(x, y, error_deltas,
+                                linestyle: "", color: line_color, alpha: line_alpha)
+            ebars.get_children.each do |bar|
+              case bar
+              when Matplotlib.collections.LineCollection
+                bar.set_capstyle(line_capstyle)
+              end
+            end
+          end
+        end
+      end
+
+      private def scale_line_width(x)
+        min = 0.5 * @default_line_width
+        max = 2.0 * @default_line_width
 
         min + x * (max - min)
       end

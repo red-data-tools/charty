@@ -371,6 +371,9 @@ module Charty
         min + x * (max - min)
       end
 
+      def line(x, y, color:, color_mapper:, size:, size_mapper:, style:, style_mapper:, ci_params:)
+      end
+
       def set_xlabel(label)
         @layout[:xaxis] ||= {}
         @layout[:xaxis][:title] = label

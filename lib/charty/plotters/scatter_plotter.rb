@@ -6,7 +6,7 @@ module Charty
         super(x, y, color, style, size, data: data, **options, &block)
       end
 
-      attr_reader :alpha, :legend
+      attr_reader :alpha
 
       def alpha=(val)
         case val
@@ -22,18 +22,6 @@ module Charty
           raise ArgumentError,
                 "invalid value of alpha " +
                 "(%p for nil, :auto, or number in 0..1)" % val
-        end
-      end
-
-      def legend=(val)
-        case val
-        when :auto, :brief, :full, false
-          @legend = val
-        when "auto", "brief", "full"
-          @legend = val.to_sym
-        else
-          raise ArgumentError,
-                "invalid value of legend (%p for :auto, :brief, :full, or false)" % val
         end
       end
 

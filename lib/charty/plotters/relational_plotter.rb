@@ -308,12 +308,12 @@ module Charty
         @levels = data.categorical_order(order)
 
         markers = map_attributes(markers, @levels, unique_markers(@levels.length), :markers)
-
-        # TODO: dashes support
+        dashes = map_attributes(dashes, @levels, unique_dashes(@levels.length), :dashes)
 
         @lookup_table = @levels.map {|key|
           record = {
-            marker: markers[key]
+            marker: markers[key],
+            dashes: dashes[key]
           }
           [key, record]
         }.to_h
@@ -330,6 +330,19 @@ module Charty
                 "Too many markers are required (%p for %p)" % [n, MARKER_NAMES.length]
         end
         MARKER_NAMES[0, n]
+      end
+
+      DASH_NAMES = [
+        :solid, :dash, :dot, :dashdot, :longdashdot, :longdash,
+      ].freeze
+
+      private def unique_dashes(n)
+        if n > DASH_NAMES.length
+          raise ArgumentError,
+                "Too many dash patterns are required " +
+                "(%p for %p)" % [n, DASH_NAMES.length]
+        end
+        DASH_NAMES[0, n]
       end
 
       private def map_attributes(vals, levels, defaults, attr)
@@ -389,7 +402,9 @@ module Charty
 
       attr_reader :sizes, :size_order, :size_norm
 
-      attr_reader :markers, :style_order
+      attr_reader :markers, :dashes, :style_order
+
+      attr_reader :legend
 
       def style=(val)
         @style = check_dimension(val, :style)
@@ -434,10 +449,31 @@ module Charty
         val
       end
 
+      def dashes=(val)
+        @dashes = check_dashes(val)
+      end
+
+      private def check_dashes(val)
+        # TODO
+        val
+      end
+
       def style_order=(val)
         unless val.nil?
           raise NotImplementedError,
                 "Specifying style_order is not supported yet"
+        end
+      end
+
+      def legend=(val)
+        case val
+        when :auto, :brief, :full, false
+          @legend = val
+        when "auto", "brief", "full"
+          @legend = val.to_sym
+        else
+          raise ArgumentError,
+                "invalid value of legend (%p for :auto, :brief, :full, or false)" % val
         end
       end
 
@@ -486,11 +522,7 @@ module Charty
       end
 
       private def setup_variables_with_long_form_dataset
-        if data.nil? || data.empty?
-          @plot_data = Charty::Table.new({})
-          @variables = {}
-          return
-        end
+        self.data = {} if data.nil?
 
         plot_data = {}
         variables = {}
@@ -504,7 +536,7 @@ module Charty
         }.each do |key, val|
           next if val.nil?
 
-          if data.column_names.include?(val)
+          if data.column?(val)
             plot_data[key] = data[val]
             variables[key] = val
           else
