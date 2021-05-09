@@ -70,7 +70,12 @@ module Charty
       def_delegator :@data, :keys, :column_names
 
       def length
-        data[column_names[0]].size
+        case
+        when column_names.empty?
+          0
+        else
+          data[column_names[0]].size
+        end
       end
 
       def column_length

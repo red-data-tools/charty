@@ -136,6 +136,19 @@ class TableHashTest < Test::Unit::TestCase
                  @table.column_names)
   end
 
+  sub_test_case("#length") do
+    data(
+      "normal case"            => { input: {a: [1, 2, 3], b: [4, 5, 6]}, expected: 3 },
+      "empty hash"             => { input: {}                          , expected: 0 },
+      "hash with empty arrays" => { input: {a: [], b: []}              , expected: 0 }
+    )
+    def test_length(data)
+      table = Charty::Table.new(data[:input])
+      assert_equal(data[:expected],
+                   table.length)
+    end
+  end
+
   sub_test_case("#[]") do
     test("row index and column name") do
       assert_equal(20,
