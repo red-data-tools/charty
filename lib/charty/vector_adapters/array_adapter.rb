@@ -98,6 +98,12 @@ module Charty
                            index: index,
                            name: name)
       end
+
+      def notnull
+        Charty::Vector.new(data.map {|x| ! missing_value?(x) },
+                           index: index,
+                           name: name)
+      end
     end
   end
 end

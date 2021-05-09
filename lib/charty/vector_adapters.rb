@@ -68,6 +68,17 @@ module Charty
       def stdev(population: false)
         Statistics.stdev(data, population: population)
       end
+
+      def missing_value?(val)
+        case
+        when val.nil?
+          true
+        when val.respond_to?(:nan?) && val.nan?
+          true
+        else
+          false
+        end
+      end
     end
 
     module NameSupport

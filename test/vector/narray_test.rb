@@ -6,6 +6,7 @@ class VectorNArrayTest < Test::Unit::TestCase
 
     @classes = {
       Bit:     Numo::Bit,
+      Int64:   Numo::Int64,
       DFloat:  Numo::DFloat,
       RObject: Numo::RObject
     }
@@ -354,5 +355,49 @@ class VectorNArrayTest < Test::Unit::TestCase
                    index: result.index.to_a,
                    name: result.name
                  })
+  end
+
+  sub_test_case("#notnull") do
+    data(
+      "bits without null values"     => { dtype: :Bit    , input: [true, false, true] },
+      "integers without null values" => { dtype: :Int64  , input: [1, 2, 3] },
+      "floats without null values"   => { dtype: :DFloat , input: [1, 2, 3] },
+      "with NANs"                    => { dtype: :DFloat , input: [1, Float::NAN, 2, Float::NAN, 3, Float::NAN] },
+      "with nils"                    => { dtype: :RObject, input: [1, nil, 2, nil, 3, nil] },
+      "with both NANs and nils"      => { dtype: :RObject, input: [1, nil, 2, Float::NAN, 3, Float::NAN, nil] },
+    )
+    def test_notnull(data)
+      input, dtype = data.values_at(:input, :dtype)
+      expected = input.map do |v|
+        case
+        when v.nil?
+          false
+        when v.respond_to?(:nan?) && v.nan?
+          false
+        else
+          true
+        end
+      end
+
+      index = input.map.with_index {|_, i| i*100 }
+      array = @classes[dtype][*input]
+      result = Charty::Vector.new(array, index: index, name: "foo").notnull
+      assert_equal({
+                     class: Charty::Vector,
+                     boolean_p: true,
+                     data_class: Numo::Bit,
+                     data: Numo::Bit[*expected],
+                     index_values: index,
+                     name: "foo"
+                   },
+                   {
+                     class: result.class,
+                     boolean_p: result.boolean?,
+                     data_class: result.data.class,
+                     data: result.data,
+                     index_values: result.index.to_a,
+                     name: result.name
+                   })
+    end
   end
 end

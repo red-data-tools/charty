@@ -130,6 +130,21 @@ module Charty
                            name: name)
       end
 
+      def notnull
+        case
+        when PyCall.builtins.issubclass(data.dtype.type, Numpy.object_)
+          i, n = 0, length
+          notnull_data = Numpy::NDArray.new(n, dtype: :bool)
+          while i < n
+            notnull_data[i] = ! missing_value?(data[i])
+            i += 1
+          end
+        else
+          notnull_data = Numpy.isnan(data)
+        end
+        Charty::Vector.new(notnull_data, index: index, name: name)
+      end
+
       def mean
         Numpy.mean(data)
       end

@@ -45,7 +45,9 @@ module Charty
     def_delegators :adapter, :drop_na
     def_delegators :adapter, :values_at
 
-    def_delegators :adapter, :eq
+    def_delegators :adapter, :eq, :notnull
+
+    alias completecases notnull
 
     def_delegators :adapter, :mean, :stdev
   end

@@ -120,6 +120,11 @@ module Charty
                            name: name)
       end
 
+      def notnull
+        notnull_data = data.map {|x| ! missing_value?(x) }
+        Charty::Vector.new(notnull_data, index: index.to_a, name: name)
+      end
+
       def_delegator :data, :mean
 
       def stdev(population: false)

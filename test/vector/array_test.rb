@@ -308,4 +308,44 @@ class VectorArrayTest < Test::Unit::TestCase
                    name: result.name
                  })
   end
+
+  sub_test_case("#notnull") do
+    data(
+      "without null values"     => [1, 2, 3],
+      "with NANs"               => [1, Float::NAN, 2, Float::NAN, 3, Float::NAN],
+      "with nils"               => [1, nil, 2, nil, 3, nil],
+      "with both NANs and nils" => [1, nil, 2, Float::NAN, 3, Float::NAN, nil],
+    )
+    def test_notnull(input)
+      expected = input.map do |v|
+        case
+        when v.nil?
+          false
+        when v.respond_to?(:nan?) && v.nan?
+          false
+        else
+          true
+        end
+      end
+
+      index = input.map.with_index {|_, i| i*100 }
+      result = Charty::Vector.new(input, index: index, name: "foo").notnull
+      assert_equal({
+                     class: Charty::Vector,
+                     boolean_p: true,
+                     data_class: Array,
+                     data: expected,
+                     index_values: index,
+                     name: "foo"
+                   },
+                   {
+                     class: result.class,
+                     boolean_p: result.boolean?,
+                     data_class: result.data.class,
+                     data: result.data,
+                     index_values: result.index.to_a,
+                     name: result.name
+                   })
+    end
+  end
 end

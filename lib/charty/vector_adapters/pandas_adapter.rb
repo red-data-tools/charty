@@ -141,6 +141,10 @@ module Charty
                            name: name)
       end
 
+      def notnull
+        Charty::Vector.new(data.notnull, index: index, name: name)
+      end
+
       def mean
         data.mean()
       end

@@ -140,6 +140,23 @@ module Charty
                            name: name)
       end
 
+      def notnull
+        case data
+        when Numo::RObject
+          i, n = 0, length
+          notnull_data = Numo::Bit.zeros(n)
+          while i < n
+            notnull_data[i] = ! missing_value?(data[i])
+            i += 1
+          end
+        when ->(x) { x.respond_to?(:isnan) }
+          notnull_data = ~data.isnan
+        else
+          notnull_data = Numo::Bit.ones(length)
+        end
+        Charty::Vector.new(notnull_data, index: index, name: name)
+      end
+
       def mean
         data.mean(nan: true)
       end
