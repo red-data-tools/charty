@@ -72,5 +72,13 @@ class TablePandasTest < Test::Unit::TestCase
                      values: value.to_a
                    })
     end
+
+    sub_test_case("with non-default index") do
+      def test_aref
+        @table.index = [1, 20]
+        assert_equal([1, 20],
+                     @table["b"].index.to_a)
+      end
+    end
   end
 end

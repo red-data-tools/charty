@@ -165,5 +165,11 @@ class TableHashTest < Test::Unit::TestCase
       assert_equal([100, 200, 300, 400, 500],
                    @table[:baz].to_a)
     end
+
+    test("with non-default index") do
+      @table.index = [100, 2000, 30, 4, -5]
+      assert_equal([100, 2000, 30, 4, -5],
+                   @table[:foo].index.to_a)
+    end
   end
 end

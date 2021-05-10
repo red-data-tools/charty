@@ -1,6 +1,6 @@
 module Charty
   module TableAdapters
-    class DatasetsAdapter
+    class DatasetsAdapter < BaseAdapter
       TableAdapters.register(:datasets, self)
 
       include Enumerable
@@ -23,6 +23,10 @@ module Charty
         @table.column_names
       end
 
+      def length
+        data.n_rows
+      end
+
       def each(&block)
         return to_enum(__method__) unless block_given?
 
@@ -37,7 +41,7 @@ module Charty
           return nil if record.nil?
           record[column]
         else
-          Vector.new(@table[column], name: column)
+          Vector.new(@table[column], index: index, name: column)
         end
       end
     end

@@ -20,6 +20,12 @@ class TableNArrayTest < Test::Unit::TestCase
                    @table.column_names)
     end
 
+    def test_length
+      table = Charty::Table.new(Numo::DFloat.new(3, 2).seq)
+      assert_equal(3,
+                   table.length)
+    end
+
     sub_test_case("#[]") do
       test("row index and column name") do
         assert_equal({
@@ -225,43 +231,53 @@ class TableNArrayTest < Test::Unit::TestCase
         end
 
         sub_test_case("column name only") do
-          test("class") do
-            assert_equal({
-                           :X0 => Charty::Vector,
-                           :X1 => Charty::Vector,
-                           :X2 => Charty::Vector
-                         },
-                         {
-                           :X0 => @table[:X0].class,
-                           :X1 => @table[:X1].class,
-                           :X2 => @table[:X2].class
-                         })
+          sub_test_case("with default index") do
+            test("class") do
+              assert_equal({
+                             :X0 => Charty::Vector,
+                             :X1 => Charty::Vector,
+                             :X2 => Charty::Vector
+                           },
+                           {
+                             :X0 => @table[:X0].class,
+                             :X1 => @table[:X1].class,
+                             :X2 => @table[:X2].class
+                           })
+            end
+
+            test("name") do
+              assert_equal({
+                             :X0 => :X0,
+                             :X1 => :X1,
+                             :X2 => :X2
+                           },
+                           {
+                             :X0 => @table[:X0].name,
+                             :X1 => @table[:X1].name,
+                             :X2 => @table[:X2].name
+                           })
+            end
+
+            test("values") do
+              assert_equal({
+                             :X0 => Numo::DFloat[1, 2, 3, 4],
+                             :X1 => Numo::DFloat[5, 6, 7, 8],
+                             :X2 => Numo::DFloat[9, 10, 11, 12]
+                           },
+                           {
+                             :X0 => @table[:X0].data,
+                             :X1 => @table[:X1].data,
+                             :X2 => @table[:X2].data
+                           })
+            end
           end
 
-          test("name") do
-            assert_equal({
-                           :X0 => :X0,
-                           :X1 => :X1,
-                           :X2 => :X2
-                         },
-                         {
-                           :X0 => @table[:X0].name,
-                           :X1 => @table[:X1].name,
-                           :X2 => @table[:X2].name
-                         })
-          end
-
-          test("values") do
-            assert_equal({
-                           :X0 => Numo::DFloat[1, 2, 3, 4],
-                           :X1 => Numo::DFloat[5, 6, 7, 8],
-                           :X2 => Numo::DFloat[9, 10, 11, 12]
-                         },
-                         {
-                           :X0 => @table[:X0].data,
-                           :X1 => @table[:X1].data,
-                           :X2 => @table[:X2].data
-                         })
+          sub_test_case("with non-default index") do
+            def test_aref
+              @table.index = [1, 20, 300, 4000]
+              assert_equal([1, 20, 300, 4000],
+                           @table[:X0].index.to_a)
+            end
           end
         end
       end

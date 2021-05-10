@@ -171,46 +171,59 @@ class TableActiveRecordTest < Test::Unit::TestCase
       end
 
       sub_test_case("column name only") do
-        test("class") do
-          assert_equal({
-                         "id"   => Charty::Vector,
-                         "name" => Charty::Vector,
-                         "rate" => Charty::Vector,
-                       },
-                       {
-                         "id"   => @table["id"].class,
-                         "name" => @table["name"].class,
-                         "rate" => @table["rate"].class
-                       })
+        sub_test_case("with default index") do
+          test("class") do
+            assert_equal({
+                           "id"   => Charty::Vector,
+                           "name" => Charty::Vector,
+                           "rate" => Charty::Vector,
+                         },
+                         {
+                           "id"   => @table["id"].class,
+                           "name" => @table["name"].class,
+                           "rate" => @table["rate"].class
+                         })
+          end
+
+          test("name") do
+            assert_equal({
+                           "id"   => "id",
+                           "name" => "name",
+                           "rate" => "rate"
+                         },
+                         {
+                           "id"   => @table["id"].name,
+                           "name" => @table["name"].name,
+                           "rate" => @table["rate"].name
+                         })
+          end
+
+          test("values") do
+            assert_equal({
+                           "id"   => [1, 2, 3, 4, 5],
+                           "name" => ["foo", "bar", "baz", "qux", "quux"],
+                           "rate" => [0.1, 0.2, 0.3, 0.4, 0.5]
+                         },
+                         {
+                           "id"   => @table["id"].data,
+                           "name" => @table["name"].data,
+                           "rate" => @table["rate"].data
+                         })
+          end
+
+          test("index") do
+            assert_equal([0, 1, 2, 3, 4],
+                         @table["name"].index.to_a)
+          end
         end
 
-        test("name") do
-          assert_equal({
-                         "id"   => "id",
-                         "name" => "name",
-                         "rate" => "rate"
-                       },
-                       {
-                         "id"   => @table["id"].name,
-                         "name" => @table["name"].name,
-                         "rate" => @table["rate"].name
-                       })
+        sub_test_case("with non-default index") do
+          def test_aref
+            @table.index = [10, 20, 30, 40, 500]
+            assert_equal([10, 20, 30, 40, 500],
+                         @table["name"].index.to_a)
+          end
         end
-
-        test("values") do
-          assert_equal({
-                         "id"   => [1, 2, 3, 4, 5],
-                         "name" => ["foo", "bar", "baz", "qux", "quux"],
-                         "rate" => [0.1, 0.2, 0.3, 0.4, 0.5]
-                       },
-                       {
-                         "id"   => @table["id"].data,
-                         "name" => @table["name"].data,
-                         "rate" => @table["rate"].data
-                       })
-        end
-      end
-      test("column name only") do
       end
     end
 

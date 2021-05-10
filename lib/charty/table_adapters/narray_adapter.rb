@@ -1,6 +1,6 @@
 module Charty
   module TableAdapters
-    class NArrayAdapter
+    class NArrayAdapter < BaseAdapter
       TableAdapters.register(:narray, self)
 
       def self.supported?(data)
@@ -22,11 +22,16 @@ module Charty
 
       attr_reader :column_names, :data
 
+      def length
+        data.shape[0]
+      end
+
       def [](row, column)
         if row
           @data[row, resolve_column_index(column)]
         else
-          Charty::Vector.new(@data[true, resolve_column_index(column)], name: column)
+          column_data = @data[true, resolve_column_index(column)]
+          Charty::Vector.new(column_data, index: index, name: column)
         end
       end
 

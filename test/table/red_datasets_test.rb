@@ -95,6 +95,14 @@ class TableRedDatasetsTest < Test::Unit::TestCase
       @table = Charty::Table.new(@data)
     end
 
+    sub_test_case("#index=") do
+      test("with non-default index") do
+        @table.index = Array.new(150) {|i| i*2 }
+        assert_equal(Array.new(150) {|i| i*2 },
+                     @table.index.to_a)
+      end
+    end
+
     test("#column_names") do
       assert_equal([
                      :sepal_length,
@@ -104,6 +112,11 @@ class TableRedDatasetsTest < Test::Unit::TestCase
                      :label
                    ],
                    @table.column_names)
+    end
+
+    test("#length") do
+      assert_equal(150,
+                   @table.length)
     end
 
     sub_test_case("#[]") do
@@ -125,6 +138,15 @@ class TableRedDatasetsTest < Test::Unit::TestCase
                        name: @table[:sepal_width].name,
                        values: @table[:sepal_width].data
                      })
+      end
+
+      sub_test_case("with non-default index") do
+        def test_aref
+          index_data = Array.new(@table.length) {|i| 100 + 2*i }
+          @table.index = index_data
+          assert_equal(index_data,
+                       @table[:sepal_width].index.to_a)
+        end
       end
     end
   end

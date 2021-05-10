@@ -86,7 +86,7 @@ module Charty
         if row
           @data[column][row]
         else
-          Vector.new(@data[column], name: column)
+          Vector.new(@data[column], index: index, name: column)
         end
       end
 
