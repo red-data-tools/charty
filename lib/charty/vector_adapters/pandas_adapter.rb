@@ -20,7 +20,22 @@ module Charty
       attr_reader :data
 
       def_delegator :data, :size, :length
-      def_delegators :data, :index, :index=
+
+      def index
+        PandasIndex.new(data.index)
+      end
+
+      def index=(new_index)
+        case new_index
+        when PandasIndex
+          data.index = new_index.values
+        when Index
+          data.index = new_index.to_a
+        else
+          data.index = new_index
+        end
+      end
+
       def_delegators :data, :name, :name=
 
       def [](key)

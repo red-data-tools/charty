@@ -20,6 +20,10 @@ class VectorPandasTest < Test::Unit::TestCase
   end
 
   sub_test_case("#index") do
+    def test_index_class
+      assert_equal(Charty::PandasIndex, @vector.index.class)
+    end
+
     sub_test_case("without explicit index") do
       def test_index
         assert_equal([0, 1, 2, 3, 4], @vector.index.to_a)

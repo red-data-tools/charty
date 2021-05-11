@@ -17,7 +17,7 @@ module Charty
 
     def ==(other)
       case other
-      when DaruIndex
+      when DaruIndex, PandasIndex
         return false if length != other.length
         to_a == other.to_a
       when Index
@@ -86,6 +86,26 @@ module Charty
       case other
       when DaruIndex
         values == other.values
+      else
+        super
+      end
+    end
+  end
+
+  class PandasIndex < Index
+    def_delegators :values, :name, :name=
+
+    def length
+      size
+    end
+
+    def ==(other)
+      case other
+      when PandasIndex
+        Numpy.all(values == other.values)
+      when Index
+        return false if length != other.length
+        Numpy.all(values == other.values.to_a)
       else
         super
       end
