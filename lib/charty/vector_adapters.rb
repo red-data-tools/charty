@@ -31,6 +31,28 @@ module Charty
       attr_reader :data
 
       def_delegators :data, :length, :size
+
+      def ==(other)
+        case other.adapter
+        when BaseAdapter
+          return false if other.index != index
+          if respond_to?(:compare_data_equality)
+            compare_data_equality(other.adapter)
+          elsif other.adapter.respond_to?(:compare_data_equality)
+            other.adapter.compare_data_equality(self)
+          else
+            case other.adapter
+            when self.class
+              data == other.data
+            else
+              false
+            end
+          end
+        else
+          super
+        end
+      end
+
       def_delegators :data, :[], :[]=
       def_delegators :data, :each, :to_a, :empty?
 

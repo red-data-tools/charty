@@ -27,7 +27,7 @@ module Charty
 
     def_delegators :adapter, :data
     def_delegators :adapter, :index, :index=
-    def_delegators :adapter, :[], :[]=
+    def_delegators :adapter, :==, :[], :[]=
 
     def_delegators :adapter, :length
     def_delegators :adapter, :name, :name=

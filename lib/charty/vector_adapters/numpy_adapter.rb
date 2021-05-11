@@ -22,6 +22,17 @@ module Charty
 
       def_delegator :data, :size, :length
 
+      def compare_data_equality(other)
+        case other
+        when NumpyAdapter, PandasSeriesAdapter
+          Numpy.all(data == other.data)
+        when BaseAdapter
+          Numpy.all(data == other.data.to_a)
+        else
+          false
+        end
+      end
+
       include NameSupport
       include IndexSupport
 

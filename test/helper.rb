@@ -53,6 +53,14 @@ module Charty
       omit("Matplotlib is required") unless matplotlib_available?
     end
 
+    module_function def numpy_available?
+      pandas_available?
+    end
+
+    module_function def numpy_required
+      omit("Numpy is required") unless numpy_available?
+    end
+
     module_function def pandas_available?
       defined?(::Pandas)
     end

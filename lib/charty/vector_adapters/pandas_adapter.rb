@@ -38,6 +38,17 @@ module Charty
 
       def_delegators :data, :name, :name=
 
+      def compare_data_equality(other)
+        case other
+        when NumpyAdapter, PandasSeriesAdapter
+          (data == other.data).all
+        when BaseAdapter
+          (data == other.data.to_a).all
+        else
+          false
+        end
+      end
+
       def [](key)
         case key
         when Charty::Vector
