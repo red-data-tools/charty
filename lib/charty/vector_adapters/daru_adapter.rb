@@ -12,7 +12,22 @@ module Charty
       end
 
       def_delegator :data, :size, :length
-      def_delegators :data, :index, :index=
+
+      def index
+        DaruIndex.new(data.index)
+      end
+
+      def index=(new_index)
+        case new_index
+        when DaruIndex
+          data.index = new_index.values
+        when Index
+          data.index = new_index.to_a
+        else
+          data.index = new_index
+        end
+      end
+
       def_delegators :data, :name, :name=
 
       def [](key)
@@ -43,7 +58,7 @@ module Charty
           case f
           when true, 1
             masked_data << data[i]
-            masked_index << index.key(i)
+            masked_index << data.index.key(i)
           end
         end
         return masked_data, masked_index
@@ -116,13 +131,13 @@ module Charty
 
       def eq(val)
         Charty::Vector.new(data.eq(val).to_a,
-                           index: index.to_a,
+                           index: data.index.to_a,
                            name: name)
       end
 
       def notnull
         notnull_data = data.map {|x| ! missing_value?(x) }
-        Charty::Vector.new(notnull_data, index: index.to_a, name: name)
+        Charty::Vector.new(notnull_data, index: data.index.to_a, name: name)
       end
 
       def_delegator :data, :mean

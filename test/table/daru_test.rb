@@ -23,7 +23,7 @@ class TableDaruTest < Test::Unit::TestCase
     sub_test_case("without explicit index") do
       def test_index
         assert_equal({
-                       class: Charty::TableAdapters::DaruAdapter::IndexAdapter,
+                       class: Charty::DaruIndex,
                        length: 5,
                        values: [0, 1, 2, 3, 4],
                      },
@@ -39,7 +39,7 @@ class TableDaruTest < Test::Unit::TestCase
       def test_index
         @table.index = 10...15
         assert_equal({
-                       class: Charty::TableAdapters::DaruAdapter::IndexAdapter,
+                       class: Charty::DaruIndex,
                        length: 5,
                        values: [10, 11, 12, 13, 14],
                      },
@@ -55,7 +55,7 @@ class TableDaruTest < Test::Unit::TestCase
       def test_index
         @table.index = ["a", "b", "c", "d", "e"]
         assert_equal({
-                       class: Charty::TableAdapters::DaruAdapter::IndexAdapter,
+                       class: Charty::DaruIndex,
                        length: 5,
                        values: ["a", "b", "c", "d", "e"]
                      },
@@ -81,7 +81,7 @@ class TableDaruTest < Test::Unit::TestCase
     sub_test_case("default columns") do
       def test_columns
         assert_equal({
-                       class: Charty::TableAdapters::DaruAdapter::IndexAdapter,
+                       class: Charty::DaruIndex,
                        length: 2,
                        values: ["Beer", "Gallons sold"],
                      },
@@ -97,7 +97,7 @@ class TableDaruTest < Test::Unit::TestCase
       def test_columns
         @table.columns = 3...5
         assert_equal({
-                       class: Charty::TableAdapters::DaruAdapter::IndexAdapter,
+                       class: Charty::DaruIndex,
                        length: 2,
                        values: [3, 4],
                      },
@@ -113,7 +113,7 @@ class TableDaruTest < Test::Unit::TestCase
       def test_columns
         @table.columns = ["a", "b"]
         assert_equal({
-                       class: Charty::TableAdapters::DaruAdapter::IndexAdapter,
+                       class: Charty::DaruIndex,
                        length: 2,
                        values: ["a", "b"],
                      },

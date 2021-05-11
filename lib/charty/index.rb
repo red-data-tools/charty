@@ -15,6 +15,20 @@ module Charty
 
     def_delegators :values, :length, :size, :each, :to_a
 
+    def ==(other)
+      case other
+      when DaruIndex
+        return false if length != other.length
+        to_a == other.to_a
+      when Index
+        return false if length != other.length
+        return true if values == other.values
+        to_a == other.to_a
+      else
+        super
+      end
+    end
+
     def [](i)
       case i
       when 0 ... length
@@ -57,6 +71,23 @@ module Charty
         if values.cover?(key)
           return key - values.begin
         end
+      end
+    end
+  end
+
+  class DaruIndex < Index
+    def_delegators :values, :name, :name=
+
+    def length
+      size
+    end
+
+    def ==(other)
+      case other
+      when DaruIndex
+        values == other.values
+      else
+        super
       end
     end
   end

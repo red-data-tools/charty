@@ -27,7 +27,7 @@ class VectorDaruTest < Test::Unit::TestCase
     sub_test_case("without explicit index") do
       def test_index
         assert_equal({
-                       class: Daru::Index,
+                       class: Charty::DaruIndex,
                        length: 5,
                        values: [0, 1, 2, 3, 4]
                      },
@@ -43,7 +43,7 @@ class VectorDaruTest < Test::Unit::TestCase
       def test_index
         @vector.index = ["a", "b", "c", "d", "e"]
         assert_equal({
-                       class: Daru::Index,
+                       class: Charty::DaruIndex,
                        length: 5,
                        values: ["a", "b", "c", "d", "e"]
                      },

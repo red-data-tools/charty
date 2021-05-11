@@ -5,16 +5,6 @@ module Charty
     class DaruAdapter
       TableAdapters.register(:daru, self)
 
-      class IndexAdapter < SimpleDelegator
-        def initialize(index)
-          super
-        end
-
-        def length
-          size
-        end
-      end
-
       extend Forwardable
       include Enumerable
 
@@ -29,13 +19,13 @@ module Charty
       attr_reader :data
 
       def index
-        IndexAdapter.new(data.index)
+        DaruIndex.new(data.index)
       end
 
       def_delegator :data, :index=
 
       def columns
-        IndexAdapter.new(data.vectors)
+        DaruIndex.new(data.vectors)
       end
 
       def columns=(values)
@@ -44,6 +34,30 @@ module Charty
 
       def column_names
         @data.vectors.to_a
+      end
+
+      def ==(other)
+        return true if equal?(other)
+
+        case other
+        when BaseAdapter
+          case other
+          when DaruAdapter
+            return false if index != other.index
+            data == other.data
+          when HashAdapter
+            return false unless other.index == self.index  # Use Charty::Index#==
+            return false unless column_names == other.column_names
+
+            data.vectors.all? do |name|
+              data[name].to_a == other.data[name]
+            end
+          else
+            raise NotImplementedError
+          end
+        else
+          false
+        end
       end
 
       def [](row, column)
