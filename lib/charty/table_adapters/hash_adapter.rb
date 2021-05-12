@@ -95,7 +95,21 @@ module Charty
         if row
           @data[column][row]
         else
-          Vector.new(@data[column], index: index, name: column)
+          case column
+          when Symbol
+            sym_key = column
+            str_key = column.to_s
+          else
+            str_key = String.try_convert(column)
+            sym_key = str_key.to_sym
+          end
+
+          column_data = if @data.key?(sym_key)
+                          @data[sym_key]
+                        else
+                          @data[str_key]
+                        end
+          Vector.new(column_data, index: index, name: column)
         end
       end
 

@@ -52,7 +52,12 @@ module Charty
         if row
           @data[column][row]
         else
-          Vector.new(@data[column])
+          column_data = if @data.has_vector?(column)
+                          @data[column]
+                        else
+                          @data[column.to_s]
+                        end
+          Vector.new(column_data)
         end
       end
 

@@ -21,6 +21,8 @@ module Charty
       else
         @adapter = adapter_class.new(data, **kwargs)
       end
+
+      @column_cache = {}
     end
 
     attr_reader :adapter
@@ -48,20 +50,17 @@ module Charty
       length == 0
     end
 
-    def [](*args)
-      n_args = args.length
-      case n_args
-      when 1
-        row = nil
-        column = args[0]
-        @adapter[row, column]
-      when 2
-        row = args[0]
-        column = args[1]
-        @adapter[row, column]
+    def [](key)
+      key = case key
+            when Symbol
+              key
+            else
+              String.try_convert(key).to_sym
+            end
+      if @column_cache.key?(key)
+        @column_cache[key]
       else
-        message = "wrong number of arguments (given #{n_args}, expected 1..2)"
-        raise ArgumentError, message
+        @column_cache[key] = @adapter[nil, key]
       end
     end
 
