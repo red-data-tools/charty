@@ -12,10 +12,34 @@ module Charty
         @columns = check_and_convert_index(values, :columns, column_length)
       end
 
+      def column_names
+        columns.to_a
+      end
+
       attr_reader :index
 
       def index=(values)
         @index = check_and_convert_index(values, :index, length)
+      end
+
+      def ==(other)
+        case other
+        when BaseAdapter
+          return false if columns != other.columns
+          return false if index != other.index
+          compare_data_equality(other)
+        else
+          false
+        end
+      end
+
+      def compare_data_equality(other)
+        columns.each do |name|
+          if self[nil, name] != other[nil, name]
+            return false
+          end
+        end
+        true
       end
 
       private def check_and_convert_index(values, name, expected_length)

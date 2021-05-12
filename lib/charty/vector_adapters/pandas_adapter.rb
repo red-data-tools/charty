@@ -40,13 +40,25 @@ module Charty
 
       def compare_data_equality(other)
         case other
-        when NumpyAdapter, PandasSeriesAdapter
-          (data == other.data).all
+        when PandasSeriesAdapter
+          return data.equals(other.data)
+        when NumpyAdapter
+          other = other.data
+        when NArrayAdapter
+          case other.data
+          when Numo::Bit
+            other = other.data.to_a
+            other.map! {|x| [false, true][x] }
+          else
+            other = other.data.to_a
+          end
         when BaseAdapter
-          (data == other.data.to_a).all
+          other = other.data.to_a
         else
-          false
+          return false
         end
+
+        data.equals(Pandas::Series.new(other, index: data.index))
       end
 
       def [](key)

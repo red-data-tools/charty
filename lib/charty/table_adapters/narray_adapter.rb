@@ -7,7 +7,7 @@ module Charty
         defined?(Numo::NArray) && data.is_a?(Numo::NArray) && data.ndim <= 2
       end
 
-      def initialize(data, columns: nil)
+      def initialize(data, columns: nil, index: nil)
         case data.ndim
         when 1
           data = data.reshape(data.length, 1)
@@ -17,13 +17,27 @@ module Charty
           raise ArgumentError, "Unsupported data format"
         end
         @data = data
-        @column_names = generate_column_names(data.shape[1], columns)
+        self.columns = Index.new(generate_column_names(data.shape[1], columns))
+        self.index = index || RangeIndex.new(0 ... length)
       end
 
-      attr_reader :column_names, :data
+      attr_reader :data
 
       def length
         data.shape[0]
+      end
+
+      def column_length
+        data.shape[1]
+      end
+
+      def compare_data_equality(other)
+        case other
+        when NArrayAdapter
+          data == other.data
+        else
+          super
+        end
       end
 
       def [](row, column)
@@ -38,7 +52,7 @@ module Charty
       private def resolve_column_index(column)
         case column
         when String, Symbol
-          index = column_names.index(column.to_s)
+          index = column_names.index(column.to_sym) || column_names.index(column.to_s)
           return index if index
           raise IndexError, "invalid column name: #{column}"
         when Integer

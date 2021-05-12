@@ -33,6 +33,21 @@ module Charty
     def_delegator :@adapter, :column_names
     def_delegator :@adapter, :data, :raw_data
 
+    def ==(other)
+      return true if equal?(other)
+
+      case other
+      when Charty::Table
+        adapter == other.adapter
+      else
+        super
+      end
+    end
+
+    def empty?
+      length == 0
+    end
+
     def [](*args)
       n_args = args.length
       case n_args

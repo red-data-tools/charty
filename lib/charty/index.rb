@@ -110,5 +110,15 @@ module Charty
         super
       end
     end
+
+    def each(&block)
+      return enum_for(__method__) unless block_given?
+
+      i, n = 0, length
+      while i < n
+        yield self[i]
+        i += 1
+      end
+    end
   end
 end

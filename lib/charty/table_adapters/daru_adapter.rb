@@ -2,7 +2,7 @@ require "delegate"
 
 module Charty
   module TableAdapters
-    class DaruAdapter
+    class DaruAdapter < BaseAdapter
       TableAdapters.register(:daru, self)
 
       extend Forwardable
@@ -12,8 +12,11 @@ module Charty
         defined?(Daru::DataFrame) && data.is_a?(Daru::DataFrame)
       end
 
-      def initialize(data)
+      def initialize(data, columns: nil, index: nil)
         @data = check_type(Daru::DataFrame, data, :data)
+
+        self.columns = columns unless columns.nil?
+        self.index = index unless index.nil?
       end
 
       attr_reader :data
@@ -36,27 +39,12 @@ module Charty
         @data.vectors.to_a
       end
 
-      def ==(other)
-        return true if equal?(other)
-
+      def compare_data_equality(other)
         case other
-        when BaseAdapter
-          case other
-          when DaruAdapter
-            return false if index != other.index
-            data == other.data
-          when HashAdapter
-            return false unless other.index == self.index  # Use Charty::Index#==
-            return false unless column_names == other.column_names
-
-            data.vectors.all? do |name|
-              data[name].to_a == other.data[name]
-            end
-          else
-            raise NotImplementedError
-          end
+        when DaruAdapter
+          data == other.data
         else
-          false
+          super
         end
       end
 

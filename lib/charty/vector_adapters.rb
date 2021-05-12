@@ -23,6 +23,10 @@ module Charty
       extend Forwardable
       include Enumerable
 
+      def self.adapter_name
+        name[/:?(\w+)Adapter\z/, 1]
+      end
+
       private def check_data(data)
         return data if self.class.supported?(data)
         raise UnsupportedVectorData, "Unsupported vector data (#{data.class})"

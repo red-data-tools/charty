@@ -82,6 +82,15 @@ module Charty
         data.length
       end
 
+      def compare_data_equality(other)
+        case other
+        when DaruAdapter, PandasDataFrameAdapter
+          other.compare_data_equality(self)
+        else
+          super
+        end
+      end
+
       def [](row, column)
         if row
           @data[column][row]
