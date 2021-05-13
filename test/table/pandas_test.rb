@@ -46,18 +46,7 @@ class TablePandasTest < Test::Unit::TestCase
   end
 
   sub_test_case("#[]") do
-    test("when row and column are given") do
-      assert_equal([
-                     1,
-                     5
-                   ],
-                   [
-                     @table[0, "a"],
-                     @table[1, "b"]
-                   ])
-    end
-
-    test("when only column are given") do
+    test("with default index") do
       value = @table["b"]
       assert_equal({
                      class: Charty::Vector,

@@ -16,26 +16,18 @@ class TableRedDatasetsTest < Test::Unit::TestCase
                    @table.column_names)
     end
 
-    sub_test_case("#[]") do
-      test("row index and column name") do
-        first_record = @data.first
-        assert_equal(first_record.label,
-                     @table[0, :label])
-      end
-
-      test("column name only") do
-        label_column = @data.map(&:label)
-        assert_equal({
-                       class: Charty::Vector,
-                       name: :label,
-                       values: label_column
-                     },
-                     {
-                       class: @table[:label].class,
-                       name: @table[:label].name,
-                       values: @table[:label].data
-                     })
-      end
+    test("#[]") do
+      label_column = @data.map(&:label)
+      assert_equal({
+                     class: Charty::Vector,
+                     name: :label,
+                     values: label_column
+                   },
+                   {
+                     class: @table[:label].class,
+                     name: @table[:label].name,
+                     values: @table[:label].data
+                   })
     end
   end
 
@@ -66,26 +58,18 @@ class TableRedDatasetsTest < Test::Unit::TestCase
                    @table.column_names)
     end
 
-    sub_test_case("#[]") do
-      test("row index and column name") do
-        first_record = @data.first
-        assert_equal(first_record.age,
-                     @table[0, :age])
-      end
-
-      test("column name only") do
-        race_column = @data.map(&:race)
-        assert_equal({
-                       class: Charty::Vector,
-                       name: :race,
-                       values: race_column
-                     },
-                     {
-                       class: @table[:race].class,
-                       name: @table[:race].name,
-                       values: @table[:race].data
-                     })
-      end
+    test("#[]") do
+      race_column = @data.map(&:race)
+      assert_equal({
+                     class: Charty::Vector,
+                     name: :race,
+                     values: race_column
+                   },
+                   {
+                     class: @table[:race].class,
+                     name: @table[:race].name,
+                     values: @table[:race].data
+                   })
     end
   end
 
@@ -120,13 +104,7 @@ class TableRedDatasetsTest < Test::Unit::TestCase
     end
 
     sub_test_case("#[]") do
-      test("row index and column name") do
-        first_record = @data.first
-        assert_equal(first_record.sepal_length,
-                     @table[0, :sepal_length])
-      end
-
-      test("column name only") do
+      test("with default index") do
         sepal_width_column = @data.map(&:sepal_width)
         assert_equal({
                        class: Charty::Vector,
@@ -186,26 +164,18 @@ class TableRedDatasetsTest < Test::Unit::TestCase
                    @table.column_names)
     end
 
-    sub_test_case("#[]") do
-      test("row index and column name") do
-        first_record = @data.first
-        assert_equal(first_record.cap_shape,
-                     @table[0, :cap_shape])
-      end
-
-      test("column name only") do
-        odor_column = @data.map(&:odor)
-        assert_equal({
-                       class: Charty::Vector,
-                       name: :odor,
-                       values: odor_column
-                     },
-                     {
-                       class: @table[:odor].class,
-                       name: @table[:odor].name,
-                       values: @table[:odor].data
-                     })
-      end
+    test("#[]") do
+      odor_column = @data.map(&:odor)
+      assert_equal({
+                     class: Charty::Vector,
+                     name: :odor,
+                     values: odor_column
+                   },
+                   {
+                     class: @table[:odor].class,
+                     name: @table[:odor].name,
+                     values: @table[:odor].data
+                   })
     end
   end
 
@@ -236,26 +206,18 @@ class TableRedDatasetsTest < Test::Unit::TestCase
                    @table.column_names)
     end
 
-    sub_test_case("#[]") do
-      test("row index and column name") do
-        first_record = @data.first
-        assert_equal(first_record.postal_code,
-                     @table[0, :postal_code])
-      end
-
-      test("column name only") do
-        prefecture_column = @data.map(&:prefecture)
-        assert_equal({
-                       class: Charty::Vector,
-                       name: :prefecture,
-                       values: prefecture_column
-                     },
-                     {
-                       class: @table[:prefecture].class,
-                       name: @table[:prefecture].name,
-                       values: @table[:prefecture].data
-                     })
-      end
+    test("#[]") do
+      prefecture_column = @data.map(&:prefecture)
+      assert_equal({
+                     class: Charty::Vector,
+                     name: :prefecture,
+                     values: prefecture_column
+                   },
+                   {
+                     class: @table[:prefecture].class,
+                     name: @table[:prefecture].name,
+                     values: @table[:prefecture].data
+                   })
     end
   end
 
@@ -285,26 +247,18 @@ class TableRedDatasetsTest < Test::Unit::TestCase
                    @table.column_names)
     end
 
-    sub_test_case("#[]") do
-      test("row index and column name") do
-        first_record = @data.first
-        assert_equal(first_record.malic_acid,
-                     @table[0, :malic_acid])
-      end
-
-      test("column name only") do
-        hue_column = @data.map(&:hue)
-        assert_equal({
-                       class: Charty::Vector,
-                       name: :hue,
-                       values: hue_column,
-                     },
-                     {
-                       class: @table[:hue].class,
-                       name: @table[:hue].name,
-                       values: @table[:hue].data
-                     })
-      end
+    test("#[]") do
+      hue_column = @data.map(&:hue)
+      assert_equal({
+                     class: Charty::Vector,
+                     name: :hue,
+                     values: hue_column,
+                   },
+                   {
+                     class: @table[:hue].class,
+                     name: @table[:hue].name,
+                     values: @table[:hue].data
+                   })
     end
   end
 end

@@ -150,12 +150,7 @@ class TableHashTest < Test::Unit::TestCase
   end
 
   sub_test_case("#[]") do
-    test("row index and column name") do
-      assert_equal(20,
-                   @table[1, :bar])
-    end
-
-    test("column name only") do
+    test("with default index") do
       assert_equal(Charty::Vector,
                    @table[:foo].class)
       assert_equal([1, 2, 3, 4, 5],

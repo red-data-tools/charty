@@ -141,69 +141,56 @@ class TableDaruTest < Test::Unit::TestCase
   end
 
   sub_test_case("#[]") do
-    test("row index and column name") do
-      assert_equal({
-                     [2, "Beer"] => "Bud Light",
-                     [1, "Gallons sold"] => 400
-                   },
-                   {
-                     [2, "Beer"] => @table[2, "Beer"],
-                     [1, "Gallons sold"] => @table[1, "Gallons sold"]
-                   })
-    end
-
-    sub_test_case("column name only") do
-      sub_test_case("with default index") do
-        test("class") do
-          assert_equal(Charty::Vector,
-                       @table["Beer"].class)
-        end
-
-        test("names") do
-          assert_equal({
-                         "Beer" => "Beer",
-                         "Gallons sold" => "Gallons sold"
-                       },
-                       {
-                         "Beer" => @table["Beer"].name,
-                         "Gallons sold" => @table["Gallons sold"].name
-                       })
-        end
-
-        test("values") do
-          vectors = [
-            Daru::Vector.new([
-              "Kingfisher",
-              "Snow",
-              "Bud Light",
-              "Tiger Beer",
-              "Budweiser",
-            ]),
-            Daru::Vector.new([
-              500,
-              400,
-              450,
-              200,
-              250,
-            ]),
-          ]
-          assert_equal({
-                         "Beer" => vectors[0],
-                         "Gallons sold" => vectors[1]
-                       },
-                       {
-                         "Beer" => @table["Beer"].data,
-                         "Gallons sold" => @table["Gallons sold"].data
-                       })
-        end
+    sub_test_case("with default index") do
+      test("class") do
+        assert_equal(Charty::Vector,
+                     @table["Beer"].class)
       end
 
-      sub_test_case("with non-default index") do
-        def test_aref
-          @table.index = [1, 20, 300, 4000, 50000]
-          assert_equal([1, 20, 300, 4000, 50000],
-                       @table["Beer"].index.to_a)
-        end
+      test("names") do
+        assert_equal({
+                       "Beer" => "Beer",
+                       "Gallons sold" => "Gallons sold"
+                     },
+                     {
+                       "Beer" => @table["Beer"].name,
+                       "Gallons sold" => @table["Gallons sold"].name
+                     })
+      end
+
+      test("values") do
+        vectors = [
+          Daru::Vector.new([
+            "Kingfisher",
+            "Snow",
+            "Bud Light",
+            "Tiger Beer",
+            "Budweiser",
+          ]),
+          Daru::Vector.new([
+            500,
+            400,
+            450,
+            200,
+            250,
+          ]),
+        ]
+        assert_equal({
+                       "Beer" => vectors[0],
+                       "Gallons sold" => vectors[1]
+                     },
+                     {
+                       "Beer" => @table["Beer"].data,
+                       "Gallons sold" => @table["Gallons sold"].data
+                     })
+      end
+    end
+
+    sub_test_case("with non-default index") do
+      def test_aref
+        @table.index = [1, 20, 300, 4000, 50000]
+        assert_equal([1, 20, 300, 4000, 50000],
+                     @table["Beer"].index.to_a)
       end
     end
   end

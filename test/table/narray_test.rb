@@ -27,18 +27,7 @@ class TableNArrayTest < Test::Unit::TestCase
     end
 
     sub_test_case("#[]") do
-      test("row index and column name") do
-        assert_equal({
-                       [0, "X0"] => 1,
-                       [1, "X2"] => 7
-                     },
-                     {
-                       [0, "X0"] => @table[0, "X0"],
-                       [1, "X2"] => @table[1, "X2"]
-                     })
-      end
-
-      sub_test_case("column name only") do
+      sub_test_case("with default index") do
         test("class") do
           assert_equal({
                          "X0" => Charty::Vector,
@@ -56,10 +45,10 @@ class TableNArrayTest < Test::Unit::TestCase
 
         test("name") do
           assert_equal({
-                         "X0" => "X0",
-                         "X1" => "X1",
-                         "X2" => "X2",
-                         "X3" => "X3"
+                         "X0" => :X0,
+                         "X1" => :X1,
+                         "X2" => :X2,
+                         "X3" => :X3
                        },
                        {
                          "X0" => @table["X0"].name,
@@ -100,45 +89,27 @@ class TableNArrayTest < Test::Unit::TestCase
     end
 
     sub_test_case("#[]") do
-      sub_test_case("with string column name") do
-        test("row index and column name") do
-          assert_equal(1,
-                       @table[0, "X0"])
-          assert_equal(4,
-                       @table[3, "X0"])
-        end
-
-        test("column name only") do
-          assert_equal(Charty::Vector,
-                       @table["X0"].class)
-          assert_equal(Numo::DFloat[1, 2, 3, 4, 5],
-                       @table["X0"])
-        end
+      test("with string column name") do
+        assert_equal(Charty::Vector,
+                     @table["X0"].class)
+        assert_equal(Numo::DFloat[1, 2, 3, 4, 5],
+                     @table["X0"])
       end
 
       sub_test_case("with symbol column name") do
-        test("row index and column name") do
-          assert_equal(1,
-                       @table[0, :X0])
-          assert_equal(4,
-                       @table[3, :X0])
+        test("class") do
+          assert_equal(Charty::Vector,
+                       @table[:X0].class)
         end
 
-        sub_test_case("column name only") do
-          test("class") do
-            assert_equal(Charty::Vector,
-                         @table[:X0].class)
-          end
+        test("name") do
+          assert_equal(:X0,
+                       @table[:X0].name)
+        end
 
-          test("name") do
-            assert_equal(:X0,
-                         @table[:X0].name)
-          end
-
-          test("values") do
-            assert_equal(Numo::DFloat[1, 2, 3, 4, 5],
-                         @table[:X0].data)
-          end
+        test("values") do
+          assert_equal(Numo::DFloat[1, 2, 3, 4, 5],
+                       @table[:X0].data)
         end
       end
     end
@@ -163,121 +134,95 @@ class TableNArrayTest < Test::Unit::TestCase
 
     sub_test_case("with string column name") do
       sub_test_case("#[]") do
-        test("row index and column name") do
+        test("class") do
           assert_equal({
-                         [1, "X0"] => 2,
-                         [2, "X2"] => 11,
+                         "X0" => Charty::Vector,
+                         "X1" => Charty::Vector,
+                         "X2" => Charty::Vector
                        },
                        {
-                         [1, "X0"] => @table[1, "X0"],
-                         [2, "X2"] => @table[2, "X2"]
+                         "X0" => @table["X0"].class,
+                         "X1" => @table["X1"].class,
+                         "X2" => @table["X2"].class
                        })
         end
 
-        sub_test_case("column name only") do
-          test("class") do
-            assert_equal({
-                           "X0" => Charty::Vector,
-                           "X1" => Charty::Vector,
-                           "X2" => Charty::Vector
-                         },
-                         {
-                           "X0" => @table["X0"].class,
-                           "X1" => @table["X1"].class,
-                           "X2" => @table["X2"].class
-                         })
-          end
+        test("name") do
+          assert_equal({
+                         "X0" => :X0,
+                         "X1" => :X1,
+                         "X2" => :X2
+                       },
+                       {
+                         "X0" => @table["X0"].name,
+                         "X1" => @table["X1"].name,
+                         "X2" => @table["X2"].name
+                       })
+        end
 
-          test("name") do
-            assert_equal({
-                           "X0" => "X0",
-                           "X1" => "X1",
-                           "X2" => "X2"
-                         },
-                         {
-                           "X0" => @table["X0"].name,
-                           "X1" => @table["X1"].name,
-                           "X2" => @table["X2"].name
-                         })
-          end
-
-          test("values") do
-            assert_equal({
-                           "X0" => Numo::DFloat[1, 2, 3, 4],
-                           "X1" => Numo::DFloat[5, 6, 7, 8],
-                           "X2" => Numo::DFloat[9, 10, 11, 12]
-                         },
-                         {
-                           "X0" => @table["X0"].data,
-                           "X1" => @table["X1"].data,
-                           "X2" => @table["X2"].data
-                         })
-          end
+        test("values") do
+          assert_equal({
+                         "X0" => Numo::DFloat[1, 2, 3, 4],
+                         "X1" => Numo::DFloat[5, 6, 7, 8],
+                         "X2" => Numo::DFloat[9, 10, 11, 12]
+                       },
+                       {
+                         "X0" => @table["X0"].data,
+                         "X1" => @table["X1"].data,
+                         "X2" => @table["X2"].data
+                       })
         end
       end
     end
 
     sub_test_case("with symbol column name") do
       sub_test_case("#[]") do
-        test("row index and column name") do
-          assert_equal({
-                         [1, :X0] => 2,
-                         [2, :X2] => 11,
-                       },
-                       {
-                         [1, :X0] => @table[1, :X0],
-                         [2, :X2] => @table[2, :X2]
-                       })
-        end
-
-        sub_test_case("column name only") do
-          sub_test_case("with default index") do
-            test("class") do
-              assert_equal({
-                             :X0 => Charty::Vector,
-                             :X1 => Charty::Vector,
-                             :X2 => Charty::Vector
-                           },
-                           {
-                             :X0 => @table[:X0].class,
-                             :X1 => @table[:X1].class,
-                             :X2 => @table[:X2].class
-                           })
-            end
-
-            test("name") do
-              assert_equal({
-                             :X0 => :X0,
-                             :X1 => :X1,
-                             :X2 => :X2
-                           },
-                           {
-                             :X0 => @table[:X0].name,
-                             :X1 => @table[:X1].name,
-                             :X2 => @table[:X2].name
-                           })
-            end
-
-            test("values") do
-              assert_equal({
-                             :X0 => Numo::DFloat[1, 2, 3, 4],
-                             :X1 => Numo::DFloat[5, 6, 7, 8],
-                             :X2 => Numo::DFloat[9, 10, 11, 12]
-                           },
-                           {
-                             :X0 => @table[:X0].data,
-                             :X1 => @table[:X1].data,
-                             :X2 => @table[:X2].data
-                           })
-            end
+        sub_test_case("with default index") do
+          test("class") do
+            assert_equal({
+                           :X0 => Charty::Vector,
+                           :X1 => Charty::Vector,
+                           :X2 => Charty::Vector
+                         },
+                         {
+                           :X0 => @table[:X0].class,
+                           :X1 => @table[:X1].class,
+                           :X2 => @table[:X2].class
+                         })
           end
 
-          sub_test_case("with non-default index") do
-            def test_aref
-              @table.index = [1, 20, 300, 4000]
-              assert_equal([1, 20, 300, 4000],
-                           @table[:X0].index.to_a)
-            end
+          test("name") do
+            assert_equal({
+                           :X0 => :X0,
+                           :X1 => :X1,
+                           :X2 => :X2
+                         },
+                         {
+                           :X0 => @table[:X0].name,
+                           :X1 => @table[:X1].name,
+                           :X2 => @table[:X2].name
+                         })
+          end
+
+          test("values") do
+            assert_equal({
+                           :X0 => Numo::DFloat[1, 2, 3, 4],
+                           :X1 => Numo::DFloat[5, 6, 7, 8],
+                           :X2 => Numo::DFloat[9, 10, 11, 12]
+                         },
+                         {
+                           :X0 => @table[:X0].data,
+                           :X1 => @table[:X1].data,
+                           :X2 => @table[:X2].data
+                         })
+          end
+        end
+
+        sub_test_case("with non-default index") do
+          def test_aref
+            @table.index = [1, 20, 300, 4000]
+            assert_equal([1, 20, 300, 4000],
+                         @table[:X0].index.to_a)
           end
         end
       end
