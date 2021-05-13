@@ -3,7 +3,9 @@ require "charty"
 require "test/unit"
 require "tmpdir"
 
+require "active_record"
 require "daru"
+require "datasets"
 require "set" # NOTE: daru needs set
 
 begin

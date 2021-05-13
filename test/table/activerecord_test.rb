@@ -1,6 +1,3 @@
-require "active_record"
-require "tmpdir"
-
 class TableActiveRecordTest < Test::Unit::TestCase
   class TestRecord < ActiveRecord::Base
   end
