@@ -1,8 +1,8 @@
 class TableEqualityTest < Test::Unit::TestCase
   include Charty::TestHelpers
 
-  data(:adapter_type,       [:array_hash, :daru, :narray_hash, :numpy_hash, :pandas], keep: true)
-  data(:other_adapter_type, [:array_hash, :daru, :narray_hash, :numpy_hash, :pandas], keep: true)
+  data(:adapter_type,       [:array_hash, :daru, :narray_hash, :nmatrix_hash, :numpy_hash, :pandas], keep: true)
+  data(:other_adapter_type, [:array_hash, :daru, :narray_hash, :nmatrix_hash, :numpy_hash, :pandas], keep: true)
   def test_equality(data)
     table = setup_table(data[:adapter_type])
     other_table = setup_table(data[:other_adapter_type])
@@ -87,7 +87,16 @@ class TableEqualityTest < Test::Unit::TestCase
 
     def setup_table_with_nmatrix_matrix(data, dtypes, columns:, index:)
       nmatrix_required
-      omit("TODO: support nmatrix matrix")
+      data ||= default_data
+      dtypes ||= default_dtypes
+      columns ||= data.keys
+      assert do
+        dtypes.all? {|d| d == dtypes[0] }
+      end
+
+      data = data.values.transpose
+      shape = [data.length, columns.length]
+      data = NMatrix.new(shape, data.flatten, dtype: dtypes[0])
     end
 
     def default_data
@@ -131,7 +140,14 @@ class TableEqualityTest < Test::Unit::TestCase
 
   def setup_table_with_nmatrix_hash(data, dtypes, columns:, index:)
     nmatrix_required
-    omit("TODO: support nmatrix hash")
+    data ||= default_data
+    dtypes ||= default_dtypes
+    data = data.map.with_index { |(k, v), i|
+      dtype = dtypes[i]
+      dtype = :object if dtype == :bool
+      [k, NMatrix.new([v.length], v, dtype: dtype)]
+    }.to_h
+    Charty::Table.new(data, columns: columns, index: index)
   end
 
   def setup_table_with_numpy_hash(data, dtypes, columns:, index:)

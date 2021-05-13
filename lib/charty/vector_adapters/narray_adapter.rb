@@ -19,12 +19,10 @@ module Charty
         case other
         when ArrayAdapter, NArrayAdapter
           data == other.data
-        when DaruVectorAdapter
-          data == other.data.to_a
         when NumpyAdapter, PandasSeriesAdapter
           other.compare_data_equality(self)
         else
-          false
+          data == other.data.to_a
         end
       end
 

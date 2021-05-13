@@ -56,7 +56,10 @@ class VectorEqualityTest < Test::Unit::TestCase
 
   def setup_vector_with_nmatrix(data, dtype, index:, name:)
     nmatrix_required
-    omit("TODO: nmatrix support")
+    data ||= default_data
+    dtype ||= default_dtype
+    data = NMatrix.new([data.length], data, dtype: dtype)
+    Charty::Vector.new(data, index: index, name: name)
   end
 
   def setup_vector_with_numpy(data, dtype, index:, name:)

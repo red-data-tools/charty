@@ -36,10 +36,10 @@ module Charty
           data == other.data
         when ArrayAdapter
           data.to_a == other.data
-        when NArrayAdapter, NumpyAdapter, PandasSeriesAdapter
+        when NArrayAdapter, NMatrixAdapter, NumpyAdapter, PandasSeriesAdapter
           other.compare_data_equality(self)
         else
-          false
+          data == other.data.to_a
         end
       end
 

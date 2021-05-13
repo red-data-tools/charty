@@ -64,7 +64,8 @@ class TableArefTest < Test::Unit::TestCase
 
     def setup_table_by_nmatrix(key_type)
       nmatrix_required
-      omit("TODO: support nmatrix")
+      matrix = NMatrix.new([2, 5], [1, 2, 3, 4, 5, 10, 20, 30, 40, 50], dtype: :float64).transpose
+      Charty::Table.new(matrix, columns: setup_columns(key_type))
     end
 
     def setup_table_by_numpy(key_type)

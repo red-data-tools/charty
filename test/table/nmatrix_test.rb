@@ -39,10 +39,10 @@ class TableNMatrixTest < Test::Unit::TestCase
 
         test("name") do
           assert_equal({
-                         "X0" => "X0",
-                         "X1" => "X1",
-                         "X2" => "X2",
-                         "X3" => "X3"
+                         "X0" => :X0,
+                         "X1" => :X1,
+                         "X2" => :X2,
+                         "X3" => :X3
                        },
                        {
                          "X0" => @table["X0"].name,
@@ -96,7 +96,7 @@ class TableNMatrixTest < Test::Unit::TestCase
         end
 
         test("name") do
-          assert_equal("X0",
+          assert_equal(:X0,
                        @table["X0"].name)
         end
 
@@ -159,9 +159,9 @@ class TableNMatrixTest < Test::Unit::TestCase
 
         test("name") do
           assert_equal({
-                         "X0" => "X0",
-                         "X1" => "X1",
-                         "X2" => "X2"
+                         "X0" => :X0,
+                         "X1" => :X1,
+                         "X2" => :X2
                        },
                        {
                          "X0" => @table["X0"].name,
