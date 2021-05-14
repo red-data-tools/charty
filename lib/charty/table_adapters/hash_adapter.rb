@@ -27,33 +27,49 @@ module Charty
         case data
         when Charty::Vector
           true
-        when Array,
-             ->(x) { defined?(Numo::NArray) && x.is_a?(Numo::NArray) },
-             ->(x) { defined?(Daru::Vector) && x.is_a?(Daru::Vector) },
-             ->(x) { defined?(NMatrix) && x.is_a?(NMatrix) }
+        when Array, method(:daru_vector?), method(:narray_vector?), method(:nmatrix_vector?),
+             method(:numpy_vector?), method(:pandas_series?)
           true
         else
           false
         end
       end
 
+      def self.daru_vector?(x)
+        defined?(Daru::Vector) && x.is_a?(Daru::Vector)
+      end
+
+      def self.narray_vector?(x)
+        defined?(Numo::NArray) && x.is_a?(Numo::NArray) && x.ndim == 1
+      end
+
+      def self.nmatrix_vector?(x)
+        defined?(NMatrix) && x.is_a?(NMatrix) && x.dim == 1
+      end
+
+      def self.numpy_vector?(x)
+        defined?(Numpy::NDArray) && x.is_a?(Numpy::NDArray) && x.ndim == 1
+      end
+
+      def self.pandas_series?(x)
+        defined?(Pandas::Series) && x.is_a?(Pandas::Series)
+      end
+
       def initialize(data, columns: nil, index: nil)
         case data
         when Hash
-          @data = data
-          if columns
-            # TODO: replace columns
-          end
+          arrays = data.values
+          columns ||= data.keys
         when Array
           case data[0]
           when Numeric, String, Time, Date
-            data = data.map {|x| [x] }
-            @data = make_data_from_records(data, columns)
+            arrays = data
           when Hash
-            # TODO
+            raise NotImplementedError,
+                  "an array of records is not supported"
           when self.class.method(:array?)
             unsupported_data_format unless data.all?(&self.class.method(:array?))
-            @data = make_data_from_records(data, columns)
+            arrays = data.transpose
           else
             unsupported_data_format
           end
@@ -61,8 +77,60 @@ module Charty
           unsupported_data_format
         end
 
-        self.columns = columns || Index.new(@data.keys)
-        self.index = index || RangeIndex.new(0 ... length)
+        unless arrays.empty?
+          arrays, columns, index = check_data(arrays, columns, index)
+        end
+
+        @data = arrays.map.with_index {|a, i| [columns[i], a] }.to_h
+        self.columns = columns unless columns.nil?
+        self.index = index unless index.nil?
+      end
+
+      private def check_data(arrays, columns, index)
+        # NOTE: After Ruby 2.7, we can write the following code by filter_map:
+        #         indexes = arrays.filter_map {|ary| ary.index if ary.is_a?(Charty::Vector) }
+        indexes = []
+        arrays.each do |array|
+          index = case array
+                  when Charty::Vector
+                    array.index
+                  when ->(x) { defined?(Daru) && x.is_a?(Daru::Vector) }
+                    Charty::DaruIndex.new(array.index)
+                  when ->(x) { defined?(Pandas) && x.is_a?(Pandas::Series) }
+                    Charty::PandasIndex.new(array.index)
+                  else
+                    RangeIndex.new(0 ... array.size)
+                  end
+          indexes << index
+        end
+        index = union_indexes(index, *indexes)
+
+        arrays = arrays.map do |array|
+          case array
+          when Charty::Vector
+            array.data
+          when Hash
+            raise NotImplementedError
+          when self.class.method(:array?)
+            array
+          else
+            Array.try_convert(array)
+          end
+        end
+
+        return arrays, columns, index
+      end
+
+      private def union_indexes(*indexes)
+        result = nil
+        while result.nil? && indexes.length > 0
+          result = indexes.shift
+        end
+        indexes.each do |index|
+          next if index.nil?
+          result = result.union(index)
+        end
+        result
       end
 
       attr_reader :data

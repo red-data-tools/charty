@@ -1,4 +1,6 @@
 class TableHashTest < Test::Unit::TestCase
+  include Charty::TestHelpers
+
   def setup
     @data = {
       foo: [1, 2, 3, 4, 5],
@@ -8,11 +10,69 @@ class TableHashTest < Test::Unit::TestCase
     @table = Charty::Table.new(@data)
   end
 
-  test("new with explicit columns") do
-    omit("TODO")
-    table = Charty::Table.new(@data, columns: [:a, :b, :c])
-    assert_equal([:a, :b, :c],
-                 table.index.to_a)
+  sub_test_case(".new") do
+    sub_test_case("with an array of Charty::Vector") do
+      data(:vector_type, [:array, :daru_vector, :narray, :nmatrix, :numpy, :pandas_series])
+      def test_new(data)
+        data = setup_data(data[:vector_type])
+        table = Charty::Table.new(data)
+        assert_equal(@table, table)
+      end
+
+      def setup_data(vector_type)
+        send("setup_#{vector_type}")
+      end
+
+      def setup_array
+        data = @data.map { |key, val|
+          [key, Charty::Vector.new(val)]
+        }.to_h
+      end
+
+      def setup_daru_vector
+        @data = @data.map { |key, val|
+          [key, Daru::Vector.new(val)]
+        }.to_h
+        @table = Charty::Table.new(@data)
+        setup_array
+      end
+
+      def setup_narray
+        numo_required
+        @data = @data.map { |key, val|
+          [key, Numo::DFloat[*val]]
+        }.to_h
+        @table = Charty::Table.new(@data)
+        setup_array
+      end
+
+      def setup_nmatrix
+        nmatrix_required
+        @data = @data.map { |key, val|
+          [key, NMatrix.new([val.length], val, dtype: :float64)]
+        }.to_h
+        @table = Charty::Table.new(@data)
+        setup_array
+      end
+
+      def setup_numpy
+        numpy_required
+        @data = @data.map { |key, val|
+          [key, Numpy.asarray(val, dtype: :float64)]
+        }.to_h
+        @table = Charty::Table.new(@data)
+        setup_array
+      end
+
+      def setup_pandas_series
+        pandas_required
+        @data = @data.map { |key, val|
+          [key, Pandas::Series.new(val, dtype: :float64)]
+        }.to_h
+        @table = Charty::Table.new(@data)
+        setup_array
+      end
+    end
   end
 
   sub_test_case("#index") do
@@ -74,6 +134,12 @@ class TableHashTest < Test::Unit::TestCase
   end
 
   sub_test_case("#columns") do
+    test("new with explicit columns") do
+      table = Charty::Table.new(@data, columns: [:a, :b, :c])
+      assert_equal([:a, :b, :c],
+                   table.columns.to_a)
+    end
+
     sub_test_case("default columns") do
       def test_columns
         assert_equal({
