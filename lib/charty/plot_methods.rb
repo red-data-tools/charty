@@ -248,6 +248,46 @@ module Charty
         &block
       )
     end
+
+    def hist_plot(data: nil, x: nil, y: nil, color: nil,
+                  stat: :count, bins: :auto,
+                  key_color: nil, palette: nil, color_order: nil, color_norm: nil,
+                  legend: true, **options, &block)
+      # TODO: support following arguments
+      # - wiehgts
+      # - binwidth
+      # - binrange
+      # - discrete
+      # - cumulative
+      # - common_bins
+      # - common_norm
+      # - multiple
+      # - element
+      # - fill
+      # - shrink
+      # - kde
+      # - kde_params
+      # - line_params
+      # - thresh
+      # - pthresh
+      # - pmax
+      # - cbar
+      # - cbar_params
+      # - x_log_scale
+      # - y_log_scale
+      Plotters::HistogramPlotter.new(
+        data: data,
+        variables: { x: x, y: y, color: color },
+        stat: stat,
+        bins: bins,
+        key_color: key_color,
+        palette: palette,
+        color_order: color_order,
+        color_norm: color_norm,
+        legend: legend,
+        **options,
+        &block)
+    end
   end
 
   extend PlotMethods

@@ -10,3 +10,6 @@ require_relative "plotters/vector_plotter"
 require_relative "plotters/relational_plotter"
 require_relative "plotters/scatter_plotter"
 require_relative "plotters/line_plotter"
+
+require_relative "plotters/distribution_plotter"
+require_relative "plotters/histogram_plotter"

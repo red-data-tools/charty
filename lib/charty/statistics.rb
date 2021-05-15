@@ -10,6 +10,10 @@ module Charty
       def self.stdev(enum, population: false)
         enum.stdev(population: population)
       end
+
+      def self.histogram(ary, *args, **kwargs)
+        ary.histogram(*args, **kwargs)
+      end
     rescue LoadError
       def self.mean(enum)
         xs = enum.to_a
@@ -23,6 +27,11 @@ module Charty
         ddof = population ? 0 : 1
         var = xs.map {|x| (x - mean)**2 }.sum / (n - ddof)
         Math.sqrt(var)
+      end
+
+      def self.histogram(ary, *args, **kwargs)
+        raise NotImplementedError,
+              "histogram is currently supported only with enumerable-statistics"
       end
     end
 

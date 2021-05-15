@@ -562,6 +562,43 @@ module Charty
         end
       end
 
+      PLOTLY_HISTNORM = {
+        count: "".freeze,
+        frequency: "density".freeze,
+        density: "probability density".freeze,
+        probability: "probability".freeze
+      }.freeze
+
+      def univariate_histogram(data, name, variable_name, stat,
+                               bin_start, bin_end, bin_size, alpha)
+        orientation = case variable_name
+                      when :x
+                        :v
+                      else
+                        :h
+                      end
+        @traces << {
+          type: "histogram",
+          name: name.to_s,
+          variable_name => data.to_a,
+          orientation: orientation,
+          histnorm: PLOTLY_HISTNORM[stat],
+          "#{variable_name}bins": {
+            start: bin_start,
+            end: bin_end,
+            size: bin_size
+          },
+          opacity: alpha
+        }
+
+        @layout[:bargap] = 0.05
+
+        if @traces.length > 1
+          @layout[:barmode] = "overlay"
+          @layout[:showlegend] = true
+        end
+      end
+
       def set_xlabel(label)
         @layout[:xaxis] ||= {}
         @layout[:xaxis][:title] = label

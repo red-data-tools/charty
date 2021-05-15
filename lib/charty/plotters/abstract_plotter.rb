@@ -183,7 +183,7 @@ module Charty
 
         levels = var_levels.dup
 
-        [:x, :y].each do |axis|
+        ([:x, :y] & grouping_vars).each do |axis|
           levels[axis] = plot_data[axis].categorical_order()
           if processed
             # TODO: perform inverse conversion of axis scaling here
