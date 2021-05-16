@@ -99,11 +99,15 @@ module Charty
                   when ->(x) { defined?(Pandas) && x.is_a?(Pandas::Series) }
                     Charty::PandasIndex.new(array.index)
                   else
-                    RangeIndex.new(0 ... array.size)
+                    if index.nil?
+                      RangeIndex.new(0 ... array.size)
+                    else
+                      check_and_convert_index(index, :index, array.size)
+                    end
                   end
           indexes << index
         end
-        index = union_indexes(index, *indexes)
+        index = union_indexes(*indexes)
 
         arrays = arrays.map do |array|
           case array
