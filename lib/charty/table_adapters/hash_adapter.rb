@@ -69,7 +69,7 @@ module Charty
                   "an array of records is not supported"
           when self.class.method(:array?)
             unsupported_data_format unless data.all?(&self.class.method(:array?))
-            arrays = data.transpose
+            arrays = data.map(&:to_a).transpose
           else
             unsupported_data_format
           end
