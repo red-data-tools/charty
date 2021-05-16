@@ -117,25 +117,7 @@ class PlotMethodsBarPlotTest < Test::Unit::TestCase
   end
 
   sub_test_case("rendering") do
-    def setup_data(adapter_name)
-      setup_array_data
-      case adapter_name
-      when :daru
-        setup_daru_data
-      when :nmatrix
-        nmatrix_required
-        setup_nmatrix_data
-      when :numo
-        numo_required
-        setup_numo_data
-      when :pandas
-        pandas_required
-        setup_pandas_data
-      when :numpy
-        pandas_required
-        setup_numpy_data
-      end
-    end
+    include Charty::RenderingTestHelpers
 
     def setup_array_data
       @data = {
@@ -170,34 +152,6 @@ class PlotMethodsBarPlotTest < Test::Unit::TestCase
       @data[:x] = Numpy.asarray(@data[:x], dtype: :str)
       @data[:c] = Numpy.asarray(@data[:c], dtype: :str)
       @data[:y] = Numpy.asarray(@data[:y])
-    end
-
-    def setup_backend(backend_name)
-      case backend_name
-      when :pyplot
-        if defined?(Matplotlib)
-          setup_pyplot_backend
-        else
-          matplotlib_required
-        end
-      end
-      Charty::Backends.use(backend_name)
-    end
-
-    def setup_pyplot_backend
-      require "matplotlib"
-      Matplotlib.use("agg")
-    end
-
-    def render_plot(backend_name, plot)
-      case backend_name
-      when :plotly
-        Dir.mktmpdir do |tmpdir|
-          plot.save(File.join(tmpdir, "test.html"))
-        end
-      else
-        plot.render
-      end
     end
 
     data(:adapter, [:array, :daru, :numo, :nmatrix, :numpy, :pandas], keep: true)
