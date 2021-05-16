@@ -63,7 +63,7 @@ module Charty
         when Array
           case data[0]
           when Numeric, String, Time, Date
-            arrays = data
+            arrays = [data]
           when Hash
             raise NotImplementedError,
                   "an array of records is not supported"
@@ -117,6 +117,8 @@ module Charty
             Array.try_convert(array)
           end
         end
+
+        columns = generate_column_names(arrays.length, columns)
 
         return arrays, columns, index
       end
