@@ -37,9 +37,10 @@ class PlotMethodsBoxPlotTest < Test::Unit::TestCase
     end
 
     def setup_nmatrix_data
-      @data[:x] = NMatrix[@data[:x], dtype: :object]
-      @data[:c] = NMatrix[@data[:c], dtype: :object]
-      @data[:y] = NMatrix[*@data[:y]]
+      omit("TODO: Support NMaatrix")
+      @data[:x] = NMatrix.new([100], @data[:x], dtype: :object)
+      @data[:c] = NMatrix.new([100], @data[:c], dtype: :object)
+      @data[:y] = NMatrix.new([100], @data[:y], dtype: :float64)
     end
 
     def setup_numo_data
@@ -88,7 +89,7 @@ class PlotMethodsBoxPlotTest < Test::Unit::TestCase
       end
     end
 
-    data(:adapter, [:array, :daru, :numo, :numpy, :pandas], keep: true)
+    data(:adapter, [:array, :daru, :numo, :nmatrix, :numpy, :pandas], keep: true)
     data(:backend, [:plotly, :pyplot], keep: true)
     def test_box_plot(data)
       adapter_name, backend_name = data.values_at(:adapter, :backend)
@@ -126,19 +127,6 @@ class PlotMethodsBoxPlotTest < Test::Unit::TestCase
       setup_backend(backend_name)
       assert_raise(ArgumentError.new("Horizontal orientation requires numeric `x` variable")) do
         Charty.box_plot(data: @data, x: :x, y: :y, orient: :h)
-      end
-    end
-
-    # TODO: Support the following cases
-    data(:adapter, [:nmatrix])
-    data(:backend, [:plotly, :pyplot])
-    def test_box_plot_unsupported(data)
-      adapter_name, backend_name = data.values_at(:adapter, :backend)
-      setup_data(adapter_name)
-      setup_backend(backend_name)
-      assert_raise(NoMethodError) do
-        plot = Charty.bar_plot(data: @data, x: :x, y: :y)
-        render_plot(backend_name, plot)
       end
     end
   end
