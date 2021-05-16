@@ -22,6 +22,7 @@ module Charty
     class BaseAdapter
       extend Forwardable
       include Enumerable
+      include MissingValueSupport
 
       def self.adapter_name
         name[/:?(\w+)Adapter\z/, 1]
@@ -93,17 +94,6 @@ module Charty
 
       def stdev(population: false)
         Statistics.stdev(data, population: population)
-      end
-
-      def missing_value?(val)
-        case
-        when val.nil?
-          true
-        when val.respond_to?(:nan?) && val.nan?
-          true
-        else
-          false
-        end
       end
     end
 
