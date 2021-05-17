@@ -50,5 +50,20 @@ module Charty
     alias completecases notnull
 
     def_delegators :adapter, :mean, :stdev
+
+    # TODO: write test
+    def categorical_order(order=nil)
+      if order.nil?
+        case
+        when categorical?
+          order = categories
+        else
+          order = unique_values.compact
+          order.sort! if numeric?
+        end
+        order.compact!
+      end
+      order
+    end
   end
 end

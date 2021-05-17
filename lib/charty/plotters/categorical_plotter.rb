@@ -178,7 +178,7 @@ module Charty
             @group_label = groups.name
           end
 
-          @group_names = categorical_order(groups, order)
+          @group_names = groups.categorical_order(order)
           @plot_data, @value_label = group_long_form(vals, groups, @group_names)
 
           # Handle color variable
@@ -188,7 +188,7 @@ module Charty
             @color_names = nil
           else
             # Get the order of color levels
-            @color_names = categorical_order(color, color_order)
+            @color_names = color.categorical_order(color_order)
 
             # Group the color data
             @plot_colors, @color_title = group_long_form(color, groups, @group_names)
@@ -273,21 +273,6 @@ module Charty
             :categorical
           end
         end
-      end
-
-      # TODO: move to AbstractPlotter
-      private def categorical_order(vector, order=nil)
-        if order.nil?
-          case
-          when vector.categorical?
-            order = vector.categories
-          else
-            order = vector.unique_values.compact
-            order.sort! if vector.numeric?
-          end
-          order.compact!
-        end
-        order
       end
 
       private def group_long_form(vals, groups, group_order)
