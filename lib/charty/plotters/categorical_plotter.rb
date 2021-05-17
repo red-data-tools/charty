@@ -260,21 +260,6 @@ module Charty
         end
       end
 
-      private def variable_type(vector, boolean_type=:numeric)
-        if vector.numeric?
-          :numeric
-        elsif vector.categorical?
-          :categorical
-        else
-          case vector[0]
-          when true, false
-            boolean_type
-          else
-            :categorical
-          end
-        end
-      end
-
       private def group_long_form(vals, groups, group_order)
         grouped_vals = vals.group_by(groups)
 

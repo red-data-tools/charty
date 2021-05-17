@@ -117,6 +117,21 @@ module Charty
         end
       end
 
+      private def variable_type(vector, boolean_type=:numeric)
+        if vector.numeric?
+          :numeric
+        elsif vector.categorical?
+          :categorical
+        else
+          case vector[0]
+          when true, false
+            boolean_type
+          else
+            :categorical
+          end
+        end
+      end
+
       private def array?(value)
         TableAdapters::HashAdapter.array?(value)
       end
