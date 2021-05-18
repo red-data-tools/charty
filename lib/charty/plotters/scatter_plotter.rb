@@ -94,7 +94,8 @@ module Charty
           size = @size_mapper[data[:size]]
         end
 
-        backend.scatter(x, y, color, color_names, marker, marker_names, size) # TODO: key_color
+        # TODO: key_color
+        backend.scatter(x, y, @variables, legend, color, color_names, marker, marker_names, size)
       end
 
       private def annotate_axes(backend)

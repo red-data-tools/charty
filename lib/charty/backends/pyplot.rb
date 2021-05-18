@@ -300,7 +300,7 @@ module Charty
         end
       end
 
-      def scatter(x, y, color=nil, color_names=nil, marker=nil, marker_names=nil, size=nil)
+      def scatter(x, y, _variables, _legend, color=nil, color_names=nil, marker=nil, marker_names=nil, size=nil)
         kwd = {}
         kwd[:edgecolor] = "w"
 

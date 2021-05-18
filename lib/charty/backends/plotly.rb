@@ -247,7 +247,11 @@ module Charty
         @traces.concat(traces)
       end
 
-      def scatter(x, y, color=nil, color_names=nil, marker=nil, marker_names=nil, size=nil)
+      def scatter(x, y, variables, legend, color=nil, color_names=nil, marker=nil, marker_names=nil, size=nil)
+        if legend == :full
+          warn("Plotly backend does not support full verbosity legend")
+        end
+
         orig_x, orig_y = x, y
 
         x = case x
@@ -275,7 +279,7 @@ module Charty
         end
 
         unless color.nil? && marker.nil?
-          grouped_scatter(x, y, color, color_names, marker, marker_names, size)
+          grouped_scatter(variables, x, y, color, color_names, marker, marker_names, size)
           return
         end
 
@@ -296,7 +300,7 @@ module Charty
         @traces << trace
       end
 
-      private def grouped_scatter(x, y, color, color_names, marker, marker_names, size)
+      private def grouped_scatter(variables, x, y, color, color_names, marker, marker_names, size)
         @layout[:showlegend] = true
 
         groups = (0 ... x.length).group_by do |i|
@@ -326,20 +330,28 @@ module Charty
           end
 
           name = []
+          legend_title = []
 
           if props.key?(:color)
             trace[:marker][:color] = props[:color].to_hex_string
             name << color_names[props[:color]]
+            legend_title << variables[:color]
           end
 
           if props.key?(:marker)
             trace[:marker][:symbol] = props[:marker]
             name << marker_names[props[:marker]]
+            legend_title << variables[:style]
           end
 
-          trace[:name] = name.join(", ")
+          trace[:name] = name.uniq.join(", ") unless name.empty?
 
           @traces << trace
+
+          unless legend_title.empty?
+            @layout[:legend] ||= {}
+            @layout[:legend][:title] = {text: legend_title.uniq.join(", ")}
+          end
         end
       end
 
