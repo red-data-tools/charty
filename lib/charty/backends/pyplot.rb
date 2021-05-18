@@ -13,6 +13,8 @@ module Charty
 
       def initialize
         @pyplot = ::Matplotlib::Pyplot
+        @default_line_width = ::Matplotlib.rcParams["lines.linewidth"]
+        @default_marker_size = ::Matplotlib.rcParams["lines.markersize"]
       end
 
       def self.activate_iruby_integration
@@ -165,7 +167,7 @@ module Charty
       end
 
       private def confidence_intervals(ax, at_group, conf_int, orient, colors, error_width=nil, cap_size=nil, **options)
-        options[:lw] = error_width || Matplotlib.rcParams["lines.linewidth"] * 1.8
+        options[:lw] = error_width || @default_line_width * 1.8
 
         at_group.each_index do |i|
           at = at_group[i]
@@ -297,6 +299,247 @@ module Charty
           width.to_r / color_names.length * 0.98r
         else
           width
+        end
+      end
+
+      def scatter(x, y, variables, legend:, color:, color_mapper:,
+                  style:, style_mapper:, size:, size_mapper:)
+        kwd = {}
+        kwd[:edgecolor] = "w"
+
+        ax = @pyplot.gca
+        points = ax.scatter(x.to_a, y.to_a, **kwd)
+
+        unless color.nil?
+          color = color_mapper[color].map(&:to_hex_string)
+          points.set_facecolors(color)
+        end
+
+        unless size.nil?
+          size = size_mapper[size].map(&method(:scale_scatter_point_size))
+          points.set_sizes(size)
+        end
+
+        unless style.nil?
+          paths = style_mapper[style, :marker].map(&method(:marker_to_path))
+          points.set_paths(paths)
+        end
+
+        sizes = points.get_sizes
+        points.set_linewidths(0.08 * Numpy.sqrt(Numpy.percentile(sizes, 10)))
+
+        if legend
+          add_relational_plot_legend(
+            ax, legend, variables, color_mapper, size_mapper, style_mapper,
+            [:color, :s, :marker]
+          ) do |label, kwargs|
+            ax.scatter([], [], label: label, **kwargs)
+          end
+        end
+      end
+
+      PYPLOT_MARKERS = {
+               circle: "o",
+                    x: "X",
+                cross: "P",
+          triangle_up: "^",
+        triangle_down: "v",
+               square: [4, 0, 45].freeze,
+              diamond: [4, 0, 0].freeze,
+                 star: [5, 1, 0].freeze,
+         star_diamond: [4, 1, 0].freeze,
+          star_square: [4, 1, 45].freeze,
+             pentagon: [5, 0, 0].freeze,
+              hexagon: [6, 0, 0].freeze,
+      }.freeze
+
+      private def marker_to_path(marker)
+        @path_cache ||= {}
+        if @path_cache.key?(marker)
+          @path_cache[marker]
+        elsif PYPLOT_MARKERS.key?(marker)
+          val = PYPLOT_MARKERS[marker]
+          ms = Matplotlib.markers.MarkerStyle.new(val)
+          @path_cache[marker] = ms.get_path().transformed(ms.get_transform())
+        else
+          raise ArgumentError, "Unknown marker name: %p" % marker
+        end
+      end
+
+      RELATIONAL_PLOT_LEGEND_BRIEF_TICKS = 6
+
+      private def add_relational_plot_legend(ax, verbosity, variables, color_mapper, size_mapper, style_mapper,
+                                             legend_attributes, &func)
+        brief_ticks = RELATIONAL_PLOT_LEGEND_BRIEF_TICKS
+        verbosity = :auto if verbosity == true
+
+        legend_titles = [:color, :size, :style].filter_map {|v| variables[v] }
+        legend_title = legend_titles.pop if legend_titles.length == 1
+
+        legend_kwargs = {}
+        update_legend = ->(var_name, val_name, **kw) do
+          key = [var_name, val_name]
+          if legend_kwargs.key?(key)
+            legend_kwargs[key].update(kw)
+          else
+            legend_kwargs[key] = kw
+          end
+        end
+
+        title_kwargs = {visible: false, color: "w", s: 0, linewidth: 0, marker: "", dashes: ""}
+
+        # color legend
+
+        brief_color = case verbosity
+                      when :brief
+                        color_mapper.map_type == :numeric
+                      when :auto
+                        if color_mapper.levels.nil?
+                          false
+                        else
+                          color_mapper.levels.length > brief_ticks
+                        end
+                      else
+                        false
+                      end
+        case
+        when brief_color
+          # TODO: Also support LogLocator
+          # locator = Matplotlib.ticker.LogLocator.new(numticks: brief_ticks)
+          locator = Matplotlib.ticker.MaxNLocator.new(nbins: brief_ticks)
+          limits = color_map.levels.minmax
+          color_levels, color_formatted_levels = locator_to_legend_entries(locator, limits)
+        when color_mapper.levels.nil?
+          color_levels = color_formatted_levels = []
+        else
+          color_levels = color_formatted_levels = color_mapper.levels
+        end
+
+        if legend_title.nil? && variables.key?(:color)
+          update_legend.([variables[:color], :title], variables[:color], **title_kwargs)
+        end
+
+        color_levels.length.times do |i|
+          next if color_levels[i].nil?
+          color_value = color_mapper[color_levels[i]].to_hex_string
+          update_legend.(variables[:color], color_formatted_levels[i], color: color_value)
+        end
+
+        brief_size = case verbosity
+                     when :brief
+                       size_mapper.map_type == :numeric
+                     when :auto
+                       if size_mapper.levels.nil?
+                         false
+                       else
+                         size_mapper.levels.length > brief_ticks
+                       end
+                     else
+                       false
+                     end
+        case
+        when brief_size
+          # TODO: Also support LogLocator
+          # locator = Matplotlib.ticker.LogLocator(numticks: brief_ticks)
+          locator = Matplotlib.ticker.MaxNLocator.new(nbins: brief_ticks)
+          limits = size_mapper.levels.minmax
+          size_levels, size_formatted_levels = locator_to_legend_entries(locator, limits)
+        when size_mapper.levels.nil?
+          size_levels = size_formatted_levels = []
+        else
+          size_levels = size_formatted_levels = size_mapper.levels
+        end
+
+        if legend_title.nil? && variables.key?(:size)
+          update_legend.([variables[:size], :title], variables[:size], **title_kwargs)
+        end
+
+        size_levels.length.times do |i|
+          next if size_levels[i].nil?
+          size_value = scale_scatter_point_size(size_mapper[size_levels[i]])
+          update_legend.(variables[:size], size_formatted_levels[i], linewidth: size_value, s: size_value)
+        end
+
+        if legend_title.nil? && variables.key?(:style)
+          update_legend.([variables[:style], :title], variables[:style], **title_kwargs)
+        end
+
+        unless style_mapper.levels.nil?
+          style_mapper.levels.each do |level|
+            next if level.nil?
+            attrs = style_mapper[level]
+            marker = if attrs.key?(:marker)
+                       PYPLOT_MARKERS[attrs[:marker]]
+                     else
+                       ""
+                     end
+            # TODO: support dashes
+            update_legend.(variables[:style], level,
+                           marker: marker,
+                           dashes: attrs.fetch(:dashes, ""))
+          end
+        end
+
+        legend_kwargs.each do |key, kw|
+          _, label = key
+          kw[:color] ||= ".2"
+          use_kw = legend_attributes.filter_map {|attr|
+            [attr, kw[attr]] if kw.key?(attr)
+          }.to_h
+          use_kw[:visible] = kw[:visible] if kw.key?(:visible)
+          func.(label, use_kw)
+        end
+
+        handles = ax.get_legend_handles_labels()[0].to_a
+        unless handles.empty?
+          legend = ax.legend(title: legend_title || "")
+          adjust_legend_subtitles(legend)
+        end
+      end
+
+      private def scale_scatter_point_size(x)
+        min = 0.5 * @default_marker_size**2
+        max = 2.0 * @default_marker_size**2
+
+        min + x * (max - min)
+      end
+
+      private def locator_to_legend_entries(locator, limits)
+        vmin, vmax = limits
+        raw_levels = locator.tick_values(vmin, vmax).to_a
+        raw_levels.reject! {|v| v < limits[0] || limits[1] < v }
+
+        formatter = case locator
+                    when Matplotlib.ticker.LogLocator
+                      Matplotlib.ticker.LogFormatter.new
+                    else
+                      Matplotlib.ticker.ScalarFormatter.new
+                    end
+
+        dummy_axis = Object.new
+        dummy_axis.define_singleton_method(:get_view_interval) { limits }
+        formatter.axis =  dummy_axis
+
+        formatter.set_locs(raw_levels)
+        formatted_levels = raw_levels.map {|x| formatter.(x) }
+
+        return raw_levels, formatted_levels
+      end
+
+      private def adjust_legend_subtitles(legend)
+        font_size = Matplotlib.rcParams.get("legend.title_fontsize", nil)
+        hpackers = legend.findobj(Matplotlib.offsetbox.VPacker)[0].get_children()
+        hpackers.each do |hpack|
+          draw_area, text_area = hpack.get_children()
+          handles = draw_area.get_children()
+          unless handles.all? {|a| a.get_visible() }
+            draw_area.set_width(0)
+            unless font_size.nil?
+              text_area.get_children().each do |text|
+                text.set_size(font_size)
+              end
+            end
+          end
         end
       end
 

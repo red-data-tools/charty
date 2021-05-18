@@ -247,6 +247,123 @@ module Charty
         @traces.concat(traces)
       end
 
+      def scatter(x, y, variables, legend:, color:, color_mapper:,
+                  style:, style_mapper:, size:, size_mapper:)
+        if legend == :full
+          warn("Plotly backend does not support full verbosity legend")
+        end
+
+        orig_x, orig_y = x, y
+
+        x = case x
+            when Charty::Vector
+              x.to_a
+            else
+              Array.try_convert(x)
+            end
+        if x.nil?
+          raise ArgumentError, "Invalid value for x: %p" % orig_x
+        end
+
+        y = case y
+            when Charty::Vector
+              y.to_a
+            else
+              Array.try_convert(y)
+            end
+        if y.nil?
+          raise ArgumentError, "Invalid value for y: %p" % orig_y
+        end
+
+        unless color.nil? && style.nil?
+          grouped_scatter(x, y, variables, legend: legend,
+                          color: color, color_mapper: color_mapper,
+                          style: style, style_mapper: style_mapper,
+                          size: size, size_mapper: size_mapper)
+          return
+        end
+
+        trace = {
+          type: :scatter,
+          mode: :markers,
+          x: x,
+          y: y,
+          marker: {
+            line: {
+              width: 1,
+              color: "#fff"
+            },
+            size: size
+          }
+        }
+
+        unless size.nil?
+          trace[:marker][:size] = size_mapper[size].map {|x| 6.0 + x * 6.0 }
+        end
+
+        @traces << trace
+      end
+
+      private def grouped_scatter(x, y, variables, legend:, color:, color_mapper:,
+                                  style:, style_mapper:, size:, size_mapper:)
+        @layout[:showlegend] = true
+
+        groups = (0 ... x.length).group_by do |i|
+          key = {}
+          key[:color] = color[i] unless color.nil?
+          key[:style] = style[i] unless style.nil?
+          key
+        end
+
+        groups.each do |group_key, indices|
+          trace = {
+            type: :scatter,
+            mode: :markers,
+            x: x.values_at(*indices),
+            y: y.values_at(*indices),
+            marker: {
+              line: {
+                width: 1,
+                color: "#fff"
+              },
+            }
+          }
+
+          unless size.nil?
+            vals = size.values_at(*indices)
+            trace[:marker][:size] = size_mapper[vals].map(&method(:scale_scatter_point_size))
+          end
+
+          name = []
+          legend_title = []
+
+          if group_key.key?(:color)
+            trace[:marker][:color] = color_mapper[group_key[:color]].to_hex_string
+            name << group_key[:color]
+            legend_title << variables[:color]
+          end
+
+          if group_key.key?(:style)
+            trace[:marker][:symbol] = style_mapper[group_key[:style], :marker]
+            name << group_key[:style]
+            legend_title << variables[:style]
+          end
+
+          trace[:name] = name.uniq.join(", ") unless name.empty?
+
+          @traces << trace
+
+          unless legend_title.empty?
+            @layout[:legend] ||= {}
+            @layout[:legend][:title] = {text: legend_title.uniq.join(", ")}
+          end
+        end
+      end
+
+      private def scale_scatter_point_size(x)
+        6.0 + x * 6.0
+      end
+
       def set_xlabel(label)
         @layout[:xaxis] ||= {}
         @layout[:xaxis][:title] = label
