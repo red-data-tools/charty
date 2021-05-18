@@ -80,7 +80,27 @@ module Charty
         return levels, lookup_table
       end
 
-      attr_reader :palette, :order, :norm
+      private def infer_map_type(palette, norm, input_format, var_type)
+        case
+        when false # palette is qualitative_palette
+          :categorical
+        when ! norm.nil?
+          :numeric
+        when palette.is_a?(Array),
+             palette.is_a?(Hash)
+          :categorical
+        when input_format == :wide
+          :categorical
+        else
+          var_type
+        end
+      end
+
+      attr_reader :palette, :order, :norm, :lookup_table
+
+      def inverse_lookup_table
+        lookup_table.invert
+      end
 
       def lookup_single_value(key)
         if @lookup_table.key?(key)
@@ -100,25 +120,6 @@ module Charty
           # end
         end
       end
-
-      private def infer_map_type(palette, norm, input_format, var_type)
-        case
-        when false # palette is qualitative_palette
-          :categorical
-        when ! norm.nil?
-          :numeric
-        when palette.is_a?(Array),
-             palette.is_a?(Hash)
-          :categorical
-        when input_format == :wide
-          :categorical
-        else
-          var_type
-        end
-      end
-
-
-      # TODO
     end
 
     class SizeMapper < BaseMapper
@@ -212,8 +213,7 @@ module Charty
           when Range
             size_range = [sizes.begin, sizes.end]
           when nil
-            # TODO: The following value is specialized for matplotlib
-            size_range = [0.5 , 2.0].map {|x| x * 6**2 }
+            size_range = [0r, 1r]
           else
             raise ArgumentError,
                   "Unable to recognize the value for `sizes`: %p" % sizes
@@ -328,7 +328,11 @@ module Charty
         end
       end
 
-      attr_reader :palette, :order, :norm
+      attr_reader :palette, :order, :norm, :lookup_table
+
+      def inverse_lookup_table(attr)
+        lookup_table.map { |k, v| [v[attr], k] }.to_h
+      end
 
       def lookup_single_value(key, attr=nil)
         case attr
@@ -338,8 +342,6 @@ module Charty
           @lookup_table[key][attr]
         end
       end
-
-      # TODO
     end
 
     class RelationalPlotter < AbstractPlotter

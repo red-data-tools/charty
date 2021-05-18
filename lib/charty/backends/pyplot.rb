@@ -300,7 +300,7 @@ module Charty
         end
       end
 
-      def scatter(x, y, color=nil, marker=nil, size=nil)
+      def scatter(x, y, color=nil, color_names=nil, marker=nil, marker_names=nil, size=nil)
         kwd = {}
         kwd[:edgecolor] = "w"
 
@@ -313,6 +313,9 @@ module Charty
         end
 
         unless size.nil?
+          min = 0.5 * 6**2
+          max = 2.0 * 6**2
+          size = size.map {|x| min + x * (max - min) }
           points.set_sizes(size)
         end
 

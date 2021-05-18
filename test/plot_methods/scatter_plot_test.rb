@@ -65,7 +65,7 @@ class PlotMethodScatterPlotTest < Test::Unit::TestCase
     include Charty::RenderingTestHelpers
 
     data(:adapter, [:array], keep: true)
-    data(:backend, [:pyplot], keep: true)
+    data(:backend, [:pyplot, :plotly], keep: true)
     def test_scatter_plot(data)
       adapter_name, backend_name = data.values_at(:adapter, :backend)
       setup_data(adapter_name)

@@ -247,6 +247,102 @@ module Charty
         @traces.concat(traces)
       end
 
+      def scatter(x, y, color=nil, color_names=nil, marker=nil, marker_names=nil, size=nil)
+        orig_x, orig_y = x, y
+
+        x = case x
+            when Charty::Vector
+              x.to_a
+            else
+              Array.try_convert(x)
+            end
+        if x.nil?
+          raise ArgumentError, "Invalid value for x: %p" % orig_x
+        end
+
+        y = case y
+            when Charty::Vector
+              y.to_a
+            else
+              Array.try_convert(y)
+            end
+        if y.nil?
+          raise ArgumentError, "Invalid value for y: %p" % orig_y
+        end
+
+        unless size.nil?
+          size = size.map {|x| 6.0 + x * 6.0 }
+        end
+
+        unless color.nil? && marker.nil?
+          grouped_scatter(x, y, color, color_names, marker, marker_names, size)
+          return
+        end
+
+        trace = {
+          type: :scatter,
+          mode: :markers,
+          x: x,
+          y: y,
+          marker: {
+            line: {
+              width: 1,
+              color: "#fff"
+            },
+            size: size
+          }
+        }
+
+        @traces << trace
+      end
+
+      private def grouped_scatter(x, y, color, color_names, marker, marker_names, size)
+        @layout[:showlegend] = true
+
+        groups = (0 ... x.length).group_by do |i|
+          key = {}
+          key[:color]  = color[i]  unless color.nil?
+          key[:marker] = marker[i] unless marker.nil?
+
+          key
+        end
+
+        groups.each do |props, indices|
+          trace = {
+            type: :scatter,
+            mode: :markers,
+            x: x.values_at(*indices),
+            y: y.values_at(*indices),
+            marker: {
+              line: {
+                width: 1,
+                color: "#fff"
+              },
+            }
+          }
+
+          unless size.nil?
+            trace[:marker][:size] = size.values_at(*indices)
+          end
+
+          name = []
+
+          if props.key?(:color)
+            trace[:marker][:color] = props[:color].to_hex_string
+            name << color_names[props[:color]]
+          end
+
+          if props.key?(:marker)
+            trace[:marker][:symbol] = props[:marker]
+            name << marker_names[props[:marker]]
+          end
+
+          trace[:name] = name.join(", ")
+
+          @traces << trace
+        end
+      end
+
       def set_xlabel(label)
         @layout[:xaxis] ||= {}
         @layout[:xaxis][:title] = label

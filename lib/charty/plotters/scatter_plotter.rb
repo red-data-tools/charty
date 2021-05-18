@@ -82,17 +82,19 @@ module Charty
 
         if @variables.key?(:color)
           color = @color_mapper[data[:color]]
+          color_names = @color_mapper.inverse_lookup_table
         end
 
         if @variables.key?(:style)
           marker = @style_mapper[data[:style], :marker]
+          marker_names = @style_mapper.inverse_lookup_table(:marker)
         end
 
         if @variables.key?(:size)
           size = @size_mapper[data[:size]]
         end
 
-        backend.scatter(x, y, color, marker, size) # TODO: key_color
+        backend.scatter(x, y, color, color_names, marker, marker_names, size) # TODO: key_color
       end
 
       private def annotate_axes(backend)
