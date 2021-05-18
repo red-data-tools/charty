@@ -83,3 +83,4 @@ jobs:
     - run: bundle exec rake
       env:
         PYTHON: python
+      continue-on-error: ${{ matrix.python == '2.x' }}
