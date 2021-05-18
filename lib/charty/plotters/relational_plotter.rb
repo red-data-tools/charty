@@ -96,7 +96,7 @@ module Charty
         end
       end
 
-      attr_reader :palette, :order, :norm, :lookup_table
+      attr_reader :palette, :order, :norm, :levels, :lookup_table, :map_type
 
       def inverse_lookup_table
         lookup_table.invert
@@ -249,7 +249,7 @@ module Charty
               "A categorical variable for size is not supported"
       end
 
-      attr_reader :palette, :order, :norm
+      attr_reader :palette, :order, :norm, :levels
 
       def lookup_single_value(key)
         if @lookup_table.key?(key)
@@ -328,7 +328,7 @@ module Charty
         end
       end
 
-      attr_reader :palette, :order, :norm, :lookup_table
+      attr_reader :palette, :order, :norm, :lookup_table, :levels
 
       def inverse_lookup_table(attr)
         lookup_table.map { |k, v| [v[attr], k] }.to_h

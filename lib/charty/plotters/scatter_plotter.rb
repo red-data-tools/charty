@@ -70,32 +70,23 @@ module Charty
 
         data = @plot_data.drop_na
 
-        x = data[:x]
-        y = data[:y]
-
         # TODO: shold pass key_color to backend's scatter method.
         #       In pyplot backend, it is passed as color parameter.
 
-        color = nil
-        style = nil
-        size  = nil
-
-        if @variables.key?(:color)
-          color = @color_mapper[data[:color]]
-          color_names = @color_mapper.inverse_lookup_table
-        end
-
-        if @variables.key?(:style)
-          marker = @style_mapper[data[:style], :marker]
-          marker_names = @style_mapper.inverse_lookup_table(:marker)
-        end
-
-        if @variables.key?(:size)
-          size = @size_mapper[data[:size]]
-        end
+        x = data[:x]
+        y = data[:y]
+        color = data[:color] if @variables.key?(:color)
+        style = data[:style] if @variables.key?(:style)
+        size = data[:size] if @variables.key?(:size)
 
         # TODO: key_color
-        backend.scatter(x, y, @variables, legend, color, color_names, marker, marker_names, size)
+        backend.scatter(
+          x, y, @variables,
+          color: color, color_mapper: @color_mapper,
+          style: style, style_mapper: @style_mapper,
+          size: size, size_mapper: @size_mapper,
+          legend: legend
+        )
       end
 
       private def annotate_axes(backend)
