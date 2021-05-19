@@ -1,5 +1,6 @@
 require "json"
 require "securerandom"
+require "tmpdir"
 
 module Charty
   module Backends
@@ -447,7 +448,42 @@ module Charty
         # TODO: Handle loc
       end
 
-      def save(filename, title: nil)
+      def save(filename, format: nil, title: nil, width: 700, height: 500)
+        format = detect_format(filename) if format.nil?
+
+        case format
+        when :html
+          save_html(filename, title: title)
+        when :png, :jpeg
+          save_image(filename, format: format, title: title, width: width, height: height)
+        end
+        nil
+      end
+
+      private def detect_format(filename)
+        case File.extname(filename).downcase
+        when ".htm", ".html"
+          :html
+        when ".png"
+          :png
+        when ".jpg", ".jpeg"
+          :jpeg
+        else
+          raise ArgumentError,
+                "Unable to infer file type from filename: %p" % filename
+        end
+      end
+
+      private def save_image(filename, format:, title:, width:, height:)
+        element_id = "plotly-#{SecureRandom.uuid}"
+        Dir.mktmpdir do |tmpdir|
+          html_filename = File.join(tmpdir, "charty-plotly-%s.html" % element_id)
+          save_html(html_filename, title: title, element_id: element_id)
+          self.class.render_image(html_filename, filename, format, element_id, width, height)
+        end
+      end
+
+      private def save_html(filename, title:, element_id: nil)
         html = <<~HTML
           <!DOCTYPE html>
           <html>
@@ -464,14 +500,16 @@ module Charty
           </body>
           </html>
         HTML
+
+        element_id = SecureRandom.uuid if element_id.nil?
+
         html %= {
           title: title || default_html_title,
-          id: SecureRandom.uuid,
+          id: element_id,
           data: JSON.dump(@traces),
           layout: JSON.dump(@layout)
         }
         File.write(filename, html)
-        nil
       end
 
       private def default_html_title
@@ -543,6 +581,57 @@ module Charty
             if (window.MathJax) {MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
           END
         end
+      end
+
+      @playwright_fiber = nil
+
+      def self.ensure_playwright
+        if @playwright_fiber.nil?
+          begin
+            require "playwright"
+          rescue LoadError
+            $stderr.puts "ERROR: You need to install playwright and playwright-ruby-client before using Plotly renderer"
+            raise
+          end
+
+          @playwright_fiber = Fiber.new do
+            playwright_cli_executable_path = ENV.fetch("PLAYWRIGHT_CLI_EXECUTABLE_PATH", "npx playwright")
+            Playwright.create(playwright_cli_executable_path: playwright_cli_executable_path) do |playwright|
+              playwright.chromium.launch(headless: true) do |browser|
+                request = Fiber.yield
+                loop do
+                  result = nil
+                  case request.shift
+                  when :finish
+                    break
+                  when :render
+                    input, output, format, element_id, width, height = request
+                    page = browser.new_page
+                    page.set_viewport_size(width: width, height: height)
+                    page.goto("file://#{input}")
+                    element = page.query_selector("\##{element_id}")
+                    result = element.screenshot(path: output, type: format)
+                  end
+                  request = Fiber.yield(result)
+                end
+              end
+            end
+          end
+          @playwright_fiber.resume
+        end
+      end
+
+      def self.terminate_playwright
+        return if @playwright_fiber.nil?
+
+        @playwright_fiber.resume([:finish])
+      end
+
+      at_exit { terminate_playwright }
+
+      def self.render_image(input, output, format, element_id, width, height)
+        ensure_playwright if @playwright_fiber.nil?
+        @playwright_fiber.resume([:render, input, output, format.to_s, element_id, width, height])
       end
     end
   end
