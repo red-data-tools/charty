@@ -8,6 +8,7 @@ module Charty
       class << self
         def prepare
           require 'matplotlib/pyplot'
+          require 'numpy'
         end
       end
 
