@@ -293,7 +293,7 @@ module Charty
               width: 1,
               color: "#fff"
             },
-            size: size
+            size: 10
           }
         }
 
@@ -326,6 +326,7 @@ module Charty
                 width: 1,
                 color: "#fff"
               },
+              size: 10
             }
           }
 
@@ -361,7 +362,10 @@ module Charty
       end
 
       private def scale_scatter_point_size(x)
-        6.0 + x * 6.0
+        min = 6
+        max = 12
+
+        min + x * (max - min)
       end
 
       def set_xlabel(label)
