@@ -17,13 +17,13 @@ module Charty
         @series = series
       end
 
-      def render(context, filename)
+      def old_style_render(context, filename)
         plot = plot(context)
         save(plot, context, filename)
         PyCall.import_module('bokeh.io').show(plot)
       end
 
-      def save(plot, context, filename)
+      def old_style_save(plot, context, filename)
         if filename
           PyCall.import_module('bokeh.io').save(plot, filename)
         end

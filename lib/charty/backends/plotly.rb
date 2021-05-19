@@ -37,7 +37,7 @@ module Charty
         @series = series
       end
 
-      def render(context, filename)
+      def old_style_render(context, filename)
         plot(nil, context)
       end
 

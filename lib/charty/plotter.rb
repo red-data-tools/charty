@@ -237,11 +237,11 @@ module Charty
     end
 
     def render(filename=nil)
-      @backend.render(self, filename)
+      @backend.old_style_render(self, filename)
     end
 
     def save(filename=nil, **kw)
-      @backend.save(self, filename, **kw)
+      @backend.old_style_save(self, filename, **kw)
     end
 
     def apply(backend)
