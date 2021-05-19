@@ -140,6 +140,38 @@ Charty.box_plot(data: penguins, x: :species, y: :body_mass_g, color: :sex).rende
 
 ![](images/penguins_species_body_mass_g_sex_box_plot_v.png)
 
+#### Scatter plot
+
+Charty's scatter plot shows the relationship between two numeric variables.
+
+```ruby
+Charty::Backends.use(:pyplot)
+Charty.scatter_plot(data: penguins, x: :body_mass_g, y: flipper_length_mm)
+```
+
+![](images/penguins_body_mass_g_flipper_length_mm_scatter_plot.png)
+
+Adding color axis introduces color grouping in the scatter plot.
+The following example specifies `:species` variable in the color axis.
+It shows the different species by the different colors.
+
+```ruby
+Charty::Backends.use(:pyplot)
+Charty.scatter_plot(data: penguins, x: :body_mass_g, y: flipper_length_mm, color: :species)
+```
+
+![](images/penguins_body_mass_g_flipper_length_mm_species_scatter_plot.png)
+
+Moreover, size and style axes can be specified.
+The following example specifies `:sex` variable in the style axis.
+
+```ruby
+Charty::Backends.use(:pyplot)
+Charty.scatter_plot(data: penguins, x: :body_mass_g, y: flipper_length_mm, color: :species, style: :sex)
+```
+
+![](images/penguins_body_mass_g_flipper_length_mm_species_sex_scatter_plot.png)
+
 ### Old-style plotting interface
 
 ```ruby
