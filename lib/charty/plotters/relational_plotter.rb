@@ -345,7 +345,7 @@ module Charty
     end
 
     class RelationalPlotter < AbstractPlotter
-      def initialize(x, y, color, stype, size, data: nil, **options, &block)
+      def initialize(x, y, color, style, size, data: nil, **options, &block)
         super(x, y, color, data: data, **options, &block)
 
         self.style = style
