@@ -135,7 +135,7 @@ module Charty
     # @param x [vector-like object, key in data]
     # @param y [vector-like object, key in data]
     # @param color [vector-like object, key in data]
-    # @param marker [vector-like object, key in data]
+    # @param style [vector-like object, key in data]
     # @param size [vector-like object, key in data]
     # @param data [table-like object]
     # @param key_color [color object]
@@ -155,14 +155,14 @@ module Charty
     #        :full, every group will get an entry in the legend.  If :auto,
     #        choose between brief or full representation based on number of
     #        levels.  If false, no legend data is added and no legend is drawn.
-    def scatter_plot(x: nil, y: nil, color: nil, marker: nil, size: nil,
+    def scatter_plot(x: nil, y: nil, color: nil, style: nil, size: nil,
                      data: nil, key_color: nil, palette: nil, color_order: nil,
                      color_norm: nil, sizes: nil, size_order: nil, size_norm: nil,
                      markers: true, marker_order: nil, alpha: nil, legend: :auto,
                      **options, &block)
       Plotters::ScatterPlotter.new(
         data: data,
-        variables: { x: x, y: y, color: color, marker: marker, size: size },
+        variables: { x: x, y: y, color: color, style: style, size: size },
         key_color: key_color,
         palette: palette,
         color_order: color_order,
