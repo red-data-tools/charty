@@ -88,7 +88,7 @@ module Charty
 
       private def check_data(arrays, columns, index)
         # NOTE: After Ruby 2.7, we can write the following code by filter_map:
-        #         indexes = arrays.filter_map {|ary| ary.index if ary.is_a?(Charty::Vector) }
+        #         indexes = Util.filter_map(arrays) {|ary| ary.index if ary.is_a?(Charty::Vector) }
         indexes = []
         arrays.each do |array|
           index = case array
