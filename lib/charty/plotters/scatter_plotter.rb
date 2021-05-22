@@ -105,7 +105,7 @@ module Charty
         verbosity = legend
         verbosity = :auto if verbosity == true
 
-        titles = [:color, :size, :style].filter_map do |v|
+        titles = Util.filter_map([:color, :size, :style]) do |v|
           variables[v] if variables.key?(v)
         end
         legend_title = titles.length == 1 ? titles[0] : ""

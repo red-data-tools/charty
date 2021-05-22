@@ -374,7 +374,7 @@ module Charty
         brief_ticks = RELATIONAL_PLOT_LEGEND_BRIEF_TICKS
         verbosity = :auto if verbosity == true
 
-        legend_titles = [:color, :size, :style].filter_map {|v| variables[v] }
+        legend_titles = Util.filter_map([:color, :size, :style]) {|v| variables[v] }
         legend_title = legend_titles.pop if legend_titles.length == 1
 
         legend_kwargs = {}
@@ -484,7 +484,7 @@ module Charty
         legend_kwargs.each do |key, kw|
           _, label = key
           kw[:color] ||= ".2"
-          use_kw = legend_attributes.filter_map {|attr|
+          use_kw = Util.filter_map(legend_attributes) {|attr|
             [attr, kw[attr]] if kw.key?(attr)
           }.to_h
           use_kw[:visible] = kw[:visible] if kw.key?(:visible)
