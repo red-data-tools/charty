@@ -592,6 +592,10 @@ module Charty
         @pyplot.gca.legend(loc: loc, title: title)
       end
 
+      def render(notebook: false)
+        show
+      end
+
       def show
         @pyplot.show
       end

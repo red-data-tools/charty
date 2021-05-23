@@ -42,13 +42,13 @@ module Charty
         @cap_size = check_number(cap_size, :cap_size, allow_nil: true)
       end
 
-      def render
+      def render(notebook: false)
         backend = Backends.current
         backend.begin_figure
         draw_bars(backend)
         annotate_axes(backend)
         backend.invert_yaxis if orient == :h
-        backend.show
+        backend.render(notebook: notebook)
       end
 
       # TODO:

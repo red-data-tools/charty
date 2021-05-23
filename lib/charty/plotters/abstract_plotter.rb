@@ -14,6 +14,10 @@ module Charty
       attr_reader :data, :x, :y, :color
       attr_reader :color_order, :key_color, :palette
 
+      def inspect
+        "#<#{self.class}:0x%016x>" % self.object_id
+      end
+
       def data=(data)
         @data = case data
                 when nil, Charty::Table
@@ -148,8 +152,12 @@ module Charty
       end
 
       def to_iruby
-        result = render
-        ["text/html", result] if result
+        render(notebook: iruby_notebook?)
+      end
+
+      private def iruby_notebook?
+        return false unless defined?(IRuby)
+        true # TODO: Check the server is notebook or not
       end
     end
   end

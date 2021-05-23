@@ -47,12 +47,12 @@ module Charty
         @line_width = check_color(val, :edge_color, allow_nil: true)
       end
 
-      def render
+      def render(notebook: false)
         backend = Backends.current
         backend.begin_figure
         draw_points(backend)
         annotate_axes(backend)
-        backend.show
+        backend.render(notebook: notebook)
       end
 
       def save(filename, **opts)

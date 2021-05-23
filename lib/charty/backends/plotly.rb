@@ -516,16 +516,10 @@ module Charty
         "Charty plot"
       end
 
-      def show
-        unless defined?(IRuby)
-          raise NotImplementedError,
-                "Plotly backend outside of IRuby is not supported"
-        end
-
-        IRubyOutput.prepare
-
+      def render(notebook: false)
+        # TODO: size should be customizable
         html = <<~HTML
-          <div id="%{id}" style="width: 100%%; height:100%%;"></div>
+          <div id="%{id}" style="width: 100%%; height:525px;"></div>
           <script type="text/javascript">
             requirejs(["plotly"], function (Plotly) {
               Plotly.newPlot("%{id}", %{data}, %{layout});
@@ -538,8 +532,13 @@ module Charty
           data: JSON.dump(@traces),
           layout: JSON.dump(@layout)
         }
-        IRuby.display(html, mime: "text/html")
-        nil
+
+        if notebook
+          IRubyOutput.prepare
+          ["text/html", html]
+        else
+          html
+        end
       end
 
       module IRubyOutput
