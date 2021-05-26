@@ -8,6 +8,10 @@ require "daru"
 require "datasets"
 require "set" # NOTE: daru needs set
 
+require "iruby"
+require "iruby/logger"
+IRuby.logger = Logger.new(STDERR, level: Logger::Severity::INFO)
+
 begin
   require "numo/narray"
 rescue LoadError
@@ -120,15 +124,36 @@ module Charty
       Matplotlib.use("agg")
     end
 
-    def render_plot(backend_name, plot)
-      case backend_name
-      when :plotly
-        Dir.mktmpdir do |tmpdir|
-          plot.save(File.join(tmpdir, "test.html"))
-        end
-      else
-        plot.render
-      end
+    def render_plot(backend_name, plot, **kwargs)
+      plot.render(**kwargs)
+    end
+  end
+
+  module IRubyTestHelper
+    def setup_iruby
+      @__iruby_config_dir = Dir.mktmpdir("iruby-test")
+      @__iruby_config_path = Pathname.new(@__iruby_config_dir) + "config.json"
+      File.write(@__iruby_config_path, {
+        control_port: 50160,
+        shell_port: 57503,
+        transport: "tcp",
+        signature_scheme: "hmac-sha256",
+        stdin_port: 52597,
+        hb_port: 42540,
+        ip: "127.0.0.1",
+        iopub_port: 40885,
+        key: "a0436f6c-1916-498b-8eb9-e81ab9368e84"
+      }.to_json)
+
+      @__original_iruby_kernel_instance = IRuby::Kernel.instance
+
+      IRuby::Kernel.new(@__iruby_config_path.to_s, "test")
+      $stdout = STDOUT
+      $stderr = STDERR
+    end
+
+    def teardown_iruby
+      IRuby::Kernel.instance = @__original_iruby_kernel_instance
     end
   end
 end
