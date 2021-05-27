@@ -516,7 +516,31 @@ module Charty
         "Charty plot"
       end
 
-      def render(element_id: nil, notebook: false)
+      def render(element_id: nil, format: nil, notebook: false)
+        case format
+        when :html, "html"
+          format = "text/html"
+        when :png, "png"
+          format = "image/png"
+        when :jpeg, "jpeg"
+          format = "image/jpeg"
+        end
+
+        case format
+        when "text/html", nil
+          # render html after this case cause
+        when "image/png", "image/jpeg"
+          image_data = render_image(format, element_id: element_id, notebook: false)
+          if notebook
+            return [format, image_data]
+          else
+            return image_data
+          end
+        else
+          raise ArgumentError,
+                "Unsupported mime type to render: %p" % format
+        end
+
         # TODO: size should be customizable
         html = <<~HTML
           <div id="%{id}" style="width: 100%%; height:525px;"></div>
@@ -540,6 +564,32 @@ module Charty
           ["text/html", html]
         else
           html
+        end
+      end
+
+      def render_image(format=nil, filename: nil, element_id: nil, notebook: false,
+                       title: nil, width: nil, height: nil)
+        format = "image/png" if format.nil?
+        case format
+        when :png, "png", :jpeg, "jpeg"
+          image_type = format.to_s
+        when "image/png", "image/jpeg"
+          image_type = format.split("/").last
+        else
+          raise ArgumentError,
+                "Unsupported mime type to render image: %p" % format
+        end
+
+        height = 525 if height.nil?
+        width = (height * Math.sqrt(2)).to_i if width.nil?
+        title = "Charty plot" if title.nil?
+
+        element_id = SecureRandom.uuid if element_id.nil?
+        element_id = "charty-plotly-#{element_id}"
+        Dir.mktmpdir do |tmpdir|
+          html_filename = File.join(tmpdir, "%s.html" % element_id)
+          save_html(html_filename, title: title, element_id: element_id)
+          return self.class.render_image(html_filename, filename, image_type, element_id, width, height)
         end
       end
 
@@ -607,11 +657,15 @@ module Charty
                     break
                   when :render
                     input, output, format, element_id, width, height = request
+
                     page = browser.new_page
                     page.set_viewport_size(width: width, height: height)
                     page.goto("file://#{input}")
                     element = page.query_selector("\##{element_id}")
-                    result = element.screenshot(path: output, type: format)
+
+                    kwargs = {type: format}
+                    args[:path] = output unless output.nil?
+                    result = element.screenshot(**kwargs)
                   end
                   request = Fiber.yield(result)
                 end
