@@ -69,6 +69,63 @@ require "datasets"
 penguins = Datasets::Penguins.new
 ```
 
+#### A basic workflow
+
+The following code shows a basic workflow of the visualization with Charty.
+
+First you need to load the Charty library.
+
+```ruby
+require "charty"
+```
+
+Next you msut have a dataset you want to visualize.  Here, we use the penguins dataset provided in red-datasets library.
+
+```ruby
+require "datasets"
+penguins = Datasets::Penguins.new
+```
+
+Next you need to create a plotter object by a plotting method.  Here, we use `scatter_plot` method to show the relationship
+among `body_mass_g`, `flipper_length_mm`, and `species` columns in the penguins dataset.
+
+```ruby
+plot = Charty.scatter_plot(data: penguins, x: :body_mass_g, y: :flipper_length_mm, color: :species)
+```
+
+If you want to render and save this plotter object into an HTML file by plotly backend, you can do it like below.
+
+```ruby
+Charty::Backends.use(:plotly)  # select plotly backend
+plot.save("scatter.html")      # save the plot as  an HTML file
+```
+
+If you want to save the plotter into a PNG file, you can do it by specifying a output filename with `.png` extension.
+
+```ruby
+plot.save("scatter.png")
+```
+
+#### Jupyter Notebook
+
+If you use Charty on Jupyter Notebook with IRuby kerenl (a.k.a. IRuby notebook),
+you can render the plot just evaluate a plotter object.  For example, the code below shows a scatter plot figure in
+the output area.
+
+```ruby
+Charty::Backends.use(:plotly)
+
+Charty.scatter_plot(data: penguins, x: :body_mass_g, y: :flipper_length_mm, color: :species)
+```
+
+Note that if you want to use the pyplot backend, you need to activate the integration between the pyplot backend and IRuby.
+You can activate the integration by the following two lines.
+
+```ruby
+Charty::Backends.use(:pyplot)
+Charty::Backends::Pyplot.activate_iruby_integration
+```
+
 #### Bar plot
 
 Charty's statistical bar plot shows the relationship between a categorical variable and estimated means of a numeric variable.
@@ -80,8 +137,7 @@ Instead, when we specify the categorical variable as y-axis, the plot draws a ho
 The following code shows the relationship between species and the mean body masses of penguins in a vertical bar chart.
 
 ```ruby
-Charty::Backends.use(:pyplot)
-Charty.bar_plot(data: penguins, x: :species, y: :body_mass_g).render
+Charty.bar_plot(data: penguins, x: :species, y: :body_mass_g)
 ```
 
 ![](images/penguins_species_body_mass_g_bar_plot_v.png)
@@ -89,8 +145,7 @@ Charty.bar_plot(data: penguins, x: :species, y: :body_mass_g).render
 Exchanging x and y axes alternates the orientation of the resulting chart.
 
 ```ruby
-Charty::Backends.use(:pyplot)
-Charty.bar_plot(data: penguins, x: :body_mass_g, y: :species).render
+Charty.bar_plot(data: penguins, x: :body_mass_g, y: :species)
 ```
 
 ![](images/penguins_species_body_mass_g_bar_plot_h.png)
@@ -98,8 +153,7 @@ Charty.bar_plot(data: penguins, x: :body_mass_g, y: :species).render
 Adding color axis introduces color grouping in the bar plot.
 
 ```ruby
-Charty::Backends.use(:pyplot)
-Charty.bar_plot(data: penguins, x: :species, y: :body_mass_g, color: :sex).render
+Charty.bar_plot(data: penguins, x: :species, y: :body_mass_g, color: :sex)
 ```
 
 ![](images/penguins_species_body_mass_g_sex_bar_plot_v.png)
@@ -116,8 +170,7 @@ Instead, when we specify the categorical variable as y-axis, the plot draws a ho
 The following code draws a vertical box plot to show distributions of penguins' body mass per species.
 
 ```ruby
-Charty::Backends.use(:pyplot)
-Charty.box_plot(data: penguins, x: :species, y: :body_mass_g).render
+Charty.box_plot(data: penguins, x: :species, y: :body_mass_g)
 ```
 
 ![](images/penguins_species_body_mass_g_box_plot_v.png)
@@ -125,8 +178,7 @@ Charty.box_plot(data: penguins, x: :species, y: :body_mass_g).render
 As `bar_plot` above, exchanging x and y axes alternates the orientation of the resulting chart.
 
 ```ruby
-Charty::Backends.use(:pyplot)
-Charty.box_plot(data: penguins, x: :body_mass_g, y: :species).render
+Charty.box_plot(data: penguins, x: :body_mass_g, y: :species)
 ```
 
 ![](images/penguins_species_body_mass_g_box_plot_h.png)
@@ -134,8 +186,7 @@ Charty.box_plot(data: penguins, x: :body_mass_g, y: :species).render
 Adding color axis introduces color grouping in the box plot.
 
 ```ruby
-Charty::Backends.use(:pyplot)
-Charty.box_plot(data: penguins, x: :species, y: :body_mass_g, color: :sex).render
+Charty.box_plot(data: penguins, x: :species, y: :body_mass_g, color: :sex)
 ```
 
 ![](images/penguins_species_body_mass_g_sex_box_plot_v.png)
@@ -145,7 +196,6 @@ Charty.box_plot(data: penguins, x: :species, y: :body_mass_g, color: :sex).rende
 Charty's scatter plot shows the relationship between two numeric variables.
 
 ```ruby
-Charty::Backends.use(:pyplot)
 Charty.scatter_plot(data: penguins, x: :body_mass_g, y: flipper_length_mm)
 ```
 
@@ -156,7 +206,6 @@ The following example specifies `:species` variable in the color axis.
 It shows the different species by the different colors.
 
 ```ruby
-Charty::Backends.use(:pyplot)
 Charty.scatter_plot(data: penguins, x: :body_mass_g, y: flipper_length_mm, color: :species)
 ```
 
@@ -166,7 +215,6 @@ Moreover, size and style axes can be specified.
 The following example specifies `:sex` variable in the style axis.
 
 ```ruby
-Charty::Backends.use(:pyplot)
 Charty.scatter_plot(data: penguins, x: :body_mass_g, y: flipper_length_mm, color: :species, style: :sex)
 ```
 
