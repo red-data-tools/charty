@@ -26,7 +26,7 @@ module Charty
         raise NotImplementedError
       end
 
-      def render(context, filename="")
+      def old_style_render(context, filename="")
         FileUtils.mkdir_p(File.dirname(filename))
         plot(@plot, context).write(filename)
       end

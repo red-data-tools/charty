@@ -42,25 +42,10 @@ module Charty
         @cap_size = check_number(cap_size, :cap_size, allow_nil: true)
       end
 
-      def render
-        backend = Backends.current
-        backend.begin_figure
+      private def render_plot(backend, **)
         draw_bars(backend)
         annotate_axes(backend)
         backend.invert_yaxis if orient == :h
-        backend.show
-      end
-
-      # TODO:
-      # - Should infer mime type from file's extname
-      # - Should check backend's supported mime type before begin_figure
-      def save(filename, **opts)
-        backend = Backends.current
-        backend.begin_figure
-        draw_bars(backend)
-        annotate_axes(backend)
-        backend.invert_yaxis if orient == :h
-        backend.save(filename, **opts)
       end
 
       private def draw_bars(backend)

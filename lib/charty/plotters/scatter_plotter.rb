@@ -47,20 +47,9 @@ module Charty
         @line_width = check_color(val, :edge_color, allow_nil: true)
       end
 
-      def render
-        backend = Backends.current
-        backend.begin_figure
+      private def render_plot(backend, **)
         draw_points(backend)
         annotate_axes(backend)
-        backend.show
-      end
-
-      def save(filename, **opts)
-        backend = Backends.current
-        backend.begin_figure
-        draw_points(backend)
-        annotate_axes(backend)
-        backend.save(filename, **opts)
       end
 
       private def draw_points(backend)

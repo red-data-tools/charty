@@ -36,4 +36,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "daru"
   spec.add_development_dependency "activerecord"
   spec.add_development_dependency "sqlite3"
+  spec.add_development_dependency "playwright-ruby-client"
+  spec.add_development_dependency "iruby"
 end

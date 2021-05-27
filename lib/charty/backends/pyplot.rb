@@ -41,7 +41,7 @@ module Charty
         @pyplot.show
       end
 
-      def render(context, filename)
+      def old_style_render(context, filename)
         plot(@pyplot, context)
         if filename
           FileUtils.mkdir_p(File.dirname(filename))
@@ -50,7 +50,7 @@ module Charty
         @pyplot.show
       end
 
-      def save(context, filename, finish: true)
+      def old_style_save(context, filename, finish: true)
         plot(context)
         if filename
           FileUtils.mkdir_p(File.dirname(filename))
@@ -590,6 +590,10 @@ module Charty
 
       def legend(loc:, title:)
         @pyplot.gca.legend(loc: loc, title: title)
+      end
+
+      def render(notebook: false)
+        show
       end
 
       def show

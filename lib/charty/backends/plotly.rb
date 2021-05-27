@@ -1,5 +1,6 @@
 require "json"
 require "securerandom"
+require "tmpdir"
 
 module Charty
   module Backends
@@ -36,7 +37,7 @@ module Charty
         @series = series
       end
 
-      def render(context, filename)
+      def old_style_render(context, filename)
         plot(nil, context)
       end
 
@@ -447,7 +448,34 @@ module Charty
         # TODO: Handle loc
       end
 
-      def save(filename, title: nil)
+      def save(filename, format: nil, title: nil, width: 700, height: 500, **kwargs)
+        format = detect_format(filename) if format.nil?
+
+        case format
+        when nil, :html, "text/html"
+          save_html(filename, title: title, **kwargs)
+        when :png, "png", "image/png",
+             :jpeg, "jpeg", "image/jpeg"
+          render_image(format, filename: filename, notebook: false, title: title, width: width, height: height, **kwargs)
+        end
+        nil
+      end
+
+      private def detect_format(filename)
+        case File.extname(filename).downcase
+        when ".htm", ".html"
+          :html
+        when ".png"
+          :png
+        when ".jpg", ".jpeg"
+          :jpeg
+        else
+          raise ArgumentError,
+                "Unable to infer file type from filename: %p" % filename
+        end
+      end
+
+      private def save_html(filename, title:, element_id: nil)
         html = <<~HTML
           <!DOCTYPE html>
           <html>
@@ -464,30 +492,50 @@ module Charty
           </body>
           </html>
         HTML
+
+        element_id = SecureRandom.uuid if element_id.nil?
+
         html %= {
           title: title || default_html_title,
-          id: SecureRandom.uuid,
+          id: element_id,
           data: JSON.dump(@traces),
           layout: JSON.dump(@layout)
         }
         File.write(filename, html)
-        nil
       end
 
       private def default_html_title
         "Charty plot"
       end
 
-      def show
-        unless defined?(IRuby)
-          raise NotImplementedError,
-                "Plotly backend outside of IRuby is not supported"
+      def render(element_id: nil, format: nil, notebook: false)
+        case format
+        when :html, "html"
+          format = "text/html"
+        when :png, "png"
+          format = "image/png"
+        when :jpeg, "jpeg"
+          format = "image/jpeg"
         end
 
-        IRubyOutput.prepare
+        case format
+        when "text/html", nil
+          # render html after this case cause
+        when "image/png", "image/jpeg"
+          image_data = render_image(format, element_id: element_id, notebook: false)
+          if notebook
+            return [format, image_data]
+          else
+            return image_data
+          end
+        else
+          raise ArgumentError,
+                "Unsupported mime type to render: %p" % format
+        end
 
+        # TODO: size should be customizable
         html = <<~HTML
-          <div id="%{id}" style="width: 100%%; height:100%%;"></div>
+          <div id="%{id}" style="width: 100%%; height:525px;"></div>
           <script type="text/javascript">
             requirejs(["plotly"], function (Plotly) {
               Plotly.newPlot("%{id}", %{data}, %{layout});
@@ -495,13 +543,46 @@ module Charty
           </script>
         HTML
 
+        element_id = SecureRandom.uuid if element_id.nil?
+
         html %= {
-          id: SecureRandom.uuid,
+          id: element_id,
           data: JSON.dump(@traces),
           layout: JSON.dump(@layout)
         }
-        IRuby.display(html, mime: "text/html")
-        nil
+
+        if notebook
+          IRubyOutput.prepare
+          ["text/html", html]
+        else
+          html
+        end
+      end
+
+      private def render_image(format=nil, filename: nil, element_id: nil, notebook: false,
+                       title: nil, width: nil, height: nil)
+        format = "image/png" if format.nil?
+        case format
+        when :png, "png", :jpeg, "jpeg"
+          image_type = format.to_s
+        when "image/png", "image/jpeg"
+          image_type = format.split("/").last
+        else
+          raise ArgumentError,
+                "Unsupported mime type to render image: %p" % format
+        end
+
+        height = 525 if height.nil?
+        width = (height * Math.sqrt(2)).to_i if width.nil?
+        title = "Charty plot" if title.nil?
+
+        element_id = SecureRandom.uuid if element_id.nil?
+        element_id = "charty-plotly-#{element_id}"
+        Dir.mktmpdir do |tmpdir|
+          html_filename = File.join(tmpdir, "%s.html" % element_id)
+          save_html(html_filename, title: title, element_id: element_id)
+          return self.class.render_image(html_filename, filename, image_type, element_id, width, height)
+        end
       end
 
       module IRubyOutput
@@ -543,6 +624,61 @@ module Charty
             if (window.MathJax) {MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
           END
         end
+      end
+
+      @playwright_fiber = nil
+
+      def self.ensure_playwright
+        if @playwright_fiber.nil?
+          begin
+            require "playwright"
+          rescue LoadError
+            $stderr.puts "ERROR: You need to install playwright and playwright-ruby-client before using Plotly renderer"
+            raise
+          end
+
+          @playwright_fiber = Fiber.new do
+            playwright_cli_executable_path = ENV.fetch("PLAYWRIGHT_CLI_EXECUTABLE_PATH", "npx playwright")
+            Playwright.create(playwright_cli_executable_path: playwright_cli_executable_path) do |playwright|
+              playwright.chromium.launch(headless: true) do |browser|
+                request = Fiber.yield
+                loop do
+                  result = nil
+                  case request.shift
+                  when :finish
+                    break
+                  when :render
+                    input, output, format, element_id, width, height = request
+
+                    page = browser.new_page
+                    page.set_viewport_size(width: width, height: height)
+                    page.goto("file://#{input}")
+                    element = page.query_selector("\##{element_id}")
+
+                    kwargs = {type: format}
+                    kwargs[:path] = output unless output.nil?
+                    result = element.screenshot(**kwargs)
+                  end
+                  request = Fiber.yield(result)
+                end
+              end
+            end
+          end
+          @playwright_fiber.resume
+        end
+      end
+
+      def self.terminate_playwright
+        return if @playwright_fiber.nil?
+
+        @playwright_fiber.resume([:finish])
+      end
+
+      at_exit { terminate_playwright }
+
+      def self.render_image(input, output, format, element_id, width, height)
+        ensure_playwright if @playwright_fiber.nil?
+        @playwright_fiber.resume([:render, input, output, format.to_s, element_id, width, height])
       end
     end
   end
