@@ -516,7 +516,7 @@ module Charty
         "Charty plot"
       end
 
-      def render(notebook: false)
+      def render(element_id: nil, notebook: false)
         # TODO: size should be customizable
         html = <<~HTML
           <div id="%{id}" style="width: 100%%; height:525px;"></div>
@@ -527,8 +527,10 @@ module Charty
           </script>
         HTML
 
+        element_id = SecureRandom.uuid if element_id.nil?
+
         html %= {
-          id: SecureRandom.uuid,
+          id: element_id,
           data: JSON.dump(@traces),
           layout: JSON.dump(@layout)
         }

@@ -10,8 +10,10 @@ class BackendsPlotlyTest < Test::Unit::TestCase
         setup_data(adapter_name)
         setup_backend(backend_name)
         plot = Charty.scatter_plot(data: @data, x: :x, y: :y)
-        result = render_plot(backend_name, plot, notebook: false)
-        assert_not_equal("text/html", result[0])
+        result = render_plot(backend_name, plot, element_id: "foo", notebook: false)
+        assert do
+          result =~ /<div id="foo" /
+        end
       end
     end
 

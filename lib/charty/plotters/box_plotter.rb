@@ -27,13 +27,10 @@ module Charty
         @whisker = check_number(val, :whisker, allow_nil: true)
       end
 
-      def render(notebook: false)
-        backend = Backends.current
-        backend.begin_figure
+      private def render_plot(backend, **)
         draw_box_plot(backend)
         annotate_axes(backend)
         backend.invert_yaxis if orient == :h
-        backend.render(notebook: notebook)
       end
 
       # TODO:

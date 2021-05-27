@@ -151,6 +151,18 @@ module Charty
         ary
       end
 
+      def render(notebook: false, **kwargs)
+        backend = Backends.current
+        backend.begin_figure
+        render_plot(backend, notebook: notebook, **kwargs)
+        backend.render(notebook: notebook, **kwargs)
+      end
+
+      private def render_plot(*, **)
+        raise NotImplementedError,
+              "subclass must implement #{__method__}"
+      end
+
       def to_iruby
         render(notebook: iruby_notebook?)
       end
