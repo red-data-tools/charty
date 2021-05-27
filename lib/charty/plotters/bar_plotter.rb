@@ -48,18 +48,6 @@ module Charty
         backend.invert_yaxis if orient == :h
       end
 
-      # TODO:
-      # - Should infer mime type from file's extname
-      # - Should check backend's supported mime type before begin_figure
-      def save(filename, **opts)
-        backend = Backends.current
-        backend.begin_figure
-        draw_bars(backend)
-        annotate_axes(backend)
-        backend.invert_yaxis if orient == :h
-        backend.save(filename, **opts)
-      end
-
       private def draw_bars(backend)
         setup_estimations
 

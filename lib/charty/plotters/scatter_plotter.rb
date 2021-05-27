@@ -52,14 +52,6 @@ module Charty
         annotate_axes(backend)
       end
 
-      def save(filename, **opts)
-        backend = Backends.current
-        backend.begin_figure
-        draw_points(backend)
-        annotate_axes(backend)
-        backend.save(filename, **opts)
-      end
-
       private def draw_points(backend)
         map_color(palette: palette, order: color_order, norm: color_norm)
         map_size(sizes: sizes, order: size_order, norm: size_norm)

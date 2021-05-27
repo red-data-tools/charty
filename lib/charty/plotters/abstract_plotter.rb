@@ -151,6 +151,13 @@ module Charty
         ary
       end
 
+      def save(filename, **kwargs)
+        backend = Backends.current
+        backend.begin_figure
+        render_plot(backend, **kwargs)
+        backend.save(filename, **kwargs)
+      end
+
       def render(notebook: false, **kwargs)
         backend = Backends.current
         backend.begin_figure

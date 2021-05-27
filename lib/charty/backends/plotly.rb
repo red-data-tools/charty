@@ -448,14 +448,15 @@ module Charty
         # TODO: Handle loc
       end
 
-      def save(filename, format: nil, title: nil, width: 700, height: 500)
+      def save(filename, format: nil, title: nil, width: 700, height: 500, **kwargs)
         format = detect_format(filename) if format.nil?
 
         case format
-        when :html
-          save_html(filename, title: title)
-        when :png, :jpeg
-          save_image(filename, format: format, title: title, width: width, height: height)
+        when nil, :html, "text/html"
+          save_html(filename, title: title, **kwargs)
+        when :png, "png", "image/png",
+             :jpeg, "jpeg", "image/jpeg"
+          render_image(format, filename: filename, notebook: false, title: title, width: width, height: height, **kwargs)
         end
         nil
       end
@@ -471,15 +472,6 @@ module Charty
         else
           raise ArgumentError,
                 "Unable to infer file type from filename: %p" % filename
-        end
-      end
-
-      private def save_image(filename, format:, title:, width:, height:)
-        element_id = "plotly-#{SecureRandom.uuid}"
-        Dir.mktmpdir do |tmpdir|
-          html_filename = File.join(tmpdir, "charty-plotly-%s.html" % element_id)
-          save_html(html_filename, title: title, element_id: element_id)
-          self.class.render_image(html_filename, filename, format, element_id, width, height)
         end
       end
 
@@ -567,7 +559,7 @@ module Charty
         end
       end
 
-      def render_image(format=nil, filename: nil, element_id: nil, notebook: false,
+      private def render_image(format=nil, filename: nil, element_id: nil, notebook: false,
                        title: nil, width: nil, height: nil)
         format = "image/png" if format.nil?
         case format
@@ -664,7 +656,7 @@ module Charty
                     element = page.query_selector("\##{element_id}")
 
                     kwargs = {type: format}
-                    args[:path] = output unless output.nil?
+                    kwargs[:path] = output unless output.nil?
                     result = element.screenshot(**kwargs)
                   end
                   request = Fiber.yield(result)
