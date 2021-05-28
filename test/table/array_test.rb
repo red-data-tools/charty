@@ -8,6 +8,11 @@ class TableArrayTest < Test::Unit::TestCase
       @table = Charty::Table.new(@data)
     end
 
+    def test_length
+      assert_equal(2,
+                   @table.length)
+    end
+
     def test_shape
       assert_equal([2, 4],
                    [@table.length, @table.column_length])

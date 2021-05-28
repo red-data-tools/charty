@@ -75,6 +75,68 @@ class TableHashTest < Test::Unit::TestCase
     end
   end
 
+  sub_test_case("#length") do
+    data(:vector_type, [:charty_vector, :array, :daru_vector, :narray, :nmatrix, :numpy, :pandas_series])
+    def test_length(data)
+      setup_table(data[:vector_type])
+      assert_equal(5,
+                   @table.length)
+    end
+
+    def setup_table(vector_type)
+      send("setup_#{vector_type}")
+    end
+
+    def setup_charty_vector
+      data = @data.map { |key, val|
+        [key, Charty::Vector.new(val)]
+      }.to_h
+    end
+
+    def setup_array
+      # do nothing
+    end
+
+    def setup_daru_vector
+      @data = @data.map { |key, val|
+        [key, Daru::Vector.new(val)]
+      }.to_h
+      @table = Charty::Table.new(@data)
+    end
+
+    def setup_narray
+      numo_required
+      @data = @data.map { |key, val|
+        [key, Numo::DFloat[*val]]
+      }.to_h
+      @table = Charty::Table.new(@data)
+    end
+
+    def setup_nmatrix
+      nmatrix_required
+      @data = @data.map { |key, val|
+        [key, NMatrix.new([val.length], val, dtype: :float64)]
+      }.to_h
+      @table = Charty::Table.new(@data)
+    end
+
+    def setup_numpy
+      numpy_required
+      @data = @data.map { |key, val|
+        [key, Numpy.asarray(val, dtype: :float64)]
+      }.to_h
+      @table = Charty::Table.new(@data)
+    end
+
+    def setup_pandas_series
+      pandas_required
+      @data = @data.map { |key, val|
+        [key, Pandas::Series.new(val, dtype: :float64)]
+      }.to_h
+      @table = Charty::Table.new(@data)
+    end
+  end
+
   sub_test_case("#index") do
     sub_test_case("without explicit index") do
       def test_index

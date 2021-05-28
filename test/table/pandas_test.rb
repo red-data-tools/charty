@@ -29,6 +29,11 @@ class TablePandasTest < Test::Unit::TestCase
     end
   end
 
+  def test_length
+    assert_equal(2,
+                 @table.length)
+  end
+
   sub_test_case("#index") do
     def test_index
       assert_equal([0, 1],

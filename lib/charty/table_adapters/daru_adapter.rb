@@ -21,6 +21,8 @@ module Charty
 
       attr_reader :data
 
+      def_delegator :data, :size, :length
+
       def index
         DaruIndex.new(data.index)
       end

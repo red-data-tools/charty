@@ -19,6 +19,11 @@ class TableDaruTest < Test::Unit::TestCase
     @table = Charty::Table.new(@data)
   end
 
+  def test_length
+    assert_equal(5,
+                 @table.length)
+  end
+
   sub_test_case("#index") do
     sub_test_case("without explicit index") do
       def test_index

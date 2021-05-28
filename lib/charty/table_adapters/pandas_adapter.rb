@@ -21,6 +21,10 @@ module Charty
 
       attr_reader :data
 
+      def length
+        data.shape[0]
+      end
+
       def columns
         PandasIndex.new(data.columns)
       end
