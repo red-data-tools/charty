@@ -64,7 +64,7 @@ class PlotMethodScatterPlotTest < Test::Unit::TestCase
   sub_test_case("rendering") do
     include Charty::RenderingTestHelpers
 
-    data(:adapter, [:array], keep: true)
+    data(:adapter, [:array, :daru, :numo, :nmatrix, :numpy, :pandas_series, :pandas_dataframe], keep: true)
     data(:backend, [:pyplot, :plotly], keep: true)
     def test_scatter_plot(data)
       adapter_name, backend_name = data.values_at(:adapter, :backend)
@@ -135,6 +135,47 @@ class PlotMethodScatterPlotTest < Test::Unit::TestCase
         c: Array.new(100) {|i| ["red", "blue", "green"][rand(3)] },
         d: Array.new(100) {|i| rand(10..50) }
       }
+    end
+
+    def setup_daru_data
+      @data = Daru::DataFrame.new(@data)
+    end
+
+    def setup_numo_data
+      @data[:y] = Numo::DFloat[*@data[:y]]
+      @data[:x] = Numo::Int64[*@data[:x]]
+      @data[:c] = Numo::RObject[*@data[:c]]
+      @data[:d] = Numo::Int64[*@data[:d]]
+    end
+
+    def setup_nmatrix_data
+      omit("TODO: nmatrix suppor")
+      @data[:y] = NMatrix.new([100], @data[:y], dtype: :float64)
+      @data[:x] = NMatrix.new([100], @data[:x], dtype: :int64)
+      @data[:c] = NMatrix.new([100], @data[:c], dtype: :object)
+      @data[:d] = NMatrix.new([100], @data[:d], dtype: :int64)
+    end
+
+    def setup_numpy_data
+      @data[:y] = Numpy.asarray(@data[:y], dtype: :float64)
+      @data[:x] = Numpy.asarray(@data[:x], dtype: :int64)
+      @data[:c] = Numpy.asarray(@data[:c], dtype: :object)
+      @data[:d] = Numpy.asarray(@data[:d], dtype: :float64)
+    end
+
+    def setup_pandas_series_data
+      @data[:y] = Pandas::Series.new(@data[:y], dtype: :float64)
+      @data[:x] = Pandas::Series.new(@data[:x], dtype: :int64)
+      @data[:c] = Pandas::Series.new(@data[:c], dtype: :object)
+      @data[:d] = Pandas::Series.new(@data[:d], dtype: :float64)
+    end
+
+    def setup_pandas_dataframe_data
+      @data[:y] = Pandas::Series.new(@data[:y], dtype: :float64)
+      @data[:x] = Pandas::Series.new(@data[:x], dtype: :int64)
+      @data[:c] = Pandas::Series.new(@data[:c], dtype: :object)
+      @data[:d] = Pandas::Series.new(@data[:d], dtype: :float64)
+      @data = Pandas::DataFrame.new(data: @data)
     end
   end
 end
