@@ -1,5 +1,5 @@
 module Charty
-  VERSION = "0.2.4"
+  VERSION = "0.2.5"
 
   module Version
     numbers, TAG = VERSION.split("-")
