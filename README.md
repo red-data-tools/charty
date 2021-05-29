@@ -100,7 +100,8 @@ Charty::Backends.use(:plotly)  # select plotly backend
 plot.save("scatter.html")      # save the plot as  an HTML file
 ```
 
-If you want to save the plotter into a PNG file, you can do it by specifying a output filename with `.png` extension.
+When you already have prepared [playwright-ruby-client](https://github.com/YusukeIwaki/playwright-ruby-client),
+you can render a plot into a PNG file by plotly backend by specifying a filename with `.png` extension.
 
 ```ruby
 plot.save("scatter.png")
