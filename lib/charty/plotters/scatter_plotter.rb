@@ -55,7 +55,7 @@ module Charty
       private def draw_points(backend)
         map_color(palette: palette, order: color_order, norm: color_norm)
         map_size(sizes: sizes, order: size_order, norm: size_norm)
-        map_style(markers: markers, order: marker_order)
+        map_style(markers: markers, order: style_order)
 
         data = @plot_data.drop_na
 

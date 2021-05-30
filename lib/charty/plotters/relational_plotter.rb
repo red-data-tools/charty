@@ -389,7 +389,7 @@ module Charty
 
       attr_reader :sizes, :size_order, :size_norm
 
-      attr_reader :markers, :marker_order
+      attr_reader :markers, :style_order
 
       def style=(val)
         @style = check_dimension(val, :style)
@@ -434,10 +434,10 @@ module Charty
         val
       end
 
-      def marker_order=(val)
+      def style_order=(val)
         unless val.nil?
           raise NotImplementedError,
-                "Specifying marker_order is not supported yet"
+                "Specifying style_order is not supported yet"
         end
       end
 

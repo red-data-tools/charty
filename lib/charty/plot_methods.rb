@@ -146,7 +146,7 @@ module Charty
     # @param size_order [Array]
     # @param size_norm
     # @param markers [true, false, Array, Hash]
-    # @param marker_order [Array]
+    # @param style_order [Array]
     # @param alpha [scalar number]
     #        Propotional opacity of the points.
     # @param legend [:auto, :brief, :full, false]
@@ -158,7 +158,7 @@ module Charty
     def scatter_plot(x: nil, y: nil, color: nil, style: nil, size: nil,
                      data: nil, key_color: nil, palette: nil, color_order: nil,
                      color_norm: nil, sizes: nil, size_order: nil, size_norm: nil,
-                     markers: true, marker_order: nil, alpha: nil, legend: :auto,
+                     markers: true, style_order: nil, alpha: nil, legend: :auto,
                      **options, &block)
       Plotters::ScatterPlotter.new(
         data: data,
@@ -171,7 +171,7 @@ module Charty
         size_order: size_order,
         size_norm: size_norm,
         markers: markers,
-        marker_order: marker_order,
+        style_order: style_order,
         alpha: alpha,
         legend: legend,
         **options,
