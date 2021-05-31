@@ -317,7 +317,7 @@ module Charty
         end
 
         unless size.nil?
-          size = size_mapper[size].map(&method(:scale_scatter_point_size))
+          size = size_mapper[size].map {|x| scale_scatter_point_size(x).to_f }
           points.set_sizes(size)
         end
 

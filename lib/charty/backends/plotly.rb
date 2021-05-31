@@ -333,7 +333,9 @@ module Charty
 
           unless size.nil?
             vals = size.values_at(*indices)
-            trace[:marker][:size] = size_mapper[vals].map(&method(:scale_scatter_point_size))
+            trace[:marker][:size] = size_mapper[vals].map do |x|
+              scale_scatter_point_size(x).to_f
+            end
           end
 
           name = []
