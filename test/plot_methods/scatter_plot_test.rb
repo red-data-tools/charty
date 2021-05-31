@@ -128,6 +128,36 @@ class PlotMethodScatterPlotTest < Test::Unit::TestCase
       end
     end
 
+    def test_scatter_plot_with_categorical_size_without_sizes(data)
+      adapter_name, backend_name = data.values_at(:adapter, :backend)
+      setup_data(adapter_name)
+      setup_backend(backend_name)
+      plot = Charty.scatter_plot(data: @data, x: :x, y: :y, size: :c)
+      assert_nothing_raised do
+        render_plot(backend_name, plot)
+      end
+    end
+
+    def test_scatter_plot_with_categorical_size_with_sizes(data)
+      adapter_name, backend_name = data.values_at(:adapter, :backend)
+      setup_data(adapter_name)
+      setup_backend(backend_name)
+      plot = Charty.scatter_plot(data: @data, x: :x, y: :y, size: :c, sizes: 10..100)
+      assert_nothing_raised do
+        render_plot(backend_name, plot)
+      end
+    end
+
+    def test_scatter_plot_with_numeric_size_without_sizes(data)
+      adapter_name, backend_name = data.values_at(:adapter, :backend)
+      setup_data(adapter_name)
+      setup_backend(backend_name)
+      plot = Charty.scatter_plot(data: @data, x: :x, y: :y, size: :d)
+      assert_nothing_raised do
+        render_plot(backend_name, plot)
+      end
+    end
+
     def setup_array_data
       @data = {
         y: Array.new(100) {|i| rand },

@@ -16,6 +16,24 @@ module Charty
           lookup_single_value(key, *args)
         end
       end
+
+      private def categorical_lut_from_hash(levels, pairs, name)
+        missing_keys = levels - pairs.keys
+        unless missing_keys.empty?
+          raise ArgumentError,
+                "The `#{name}` hash is missing keys: %p" % missing_keys
+        end
+        pairs.dup
+      end
+
+      private def categorical_lut_from_array(levels, values, name)
+        if levels.length != values.length
+          raise ArgumentError,
+            "The `#{name}` array has the wrong number of values " +
+            "(%d for %d)." % [values.length, levels.length]
+        end
+        levels.zip(values).to_h
+      end
     end
 
     class ColorMapper < BaseMapper
@@ -52,12 +70,8 @@ module Charty
 
         case palette
         when Hash
-          missing_keys = levels - palette.keys
-          unless missing_keys.empty?
-            raise ArgumentError,
-                  "The palette hash is missing keys: %p" % missing_keys
-          end
-          return levels, palette
+          lookup_table = categorical_lut_from_hash(levels, palette, :palette)
+          return levels, lookup_table
 
         when nil
           current_palette = Palette.default
@@ -66,17 +80,15 @@ module Charty
           else
             colors = Palette.husl_colors(n_colors)
           end
+
         when Array
-          if palette.length != n_colors
-            raise ArgumentError,
-                  "The palette list has the wrong number of colors"
-          end
           colors = palette
+
         else
           colors = Palette.new(palette, n_colors).colors
         end
-        lookup_table = levels.zip(colors).to_h
 
+        lookup_table = categorical_lut_from_array(levels, colors, :palette)
         return levels, lookup_table
       end
 
@@ -245,8 +257,27 @@ module Charty
       end
 
       private def categorical_mapping(data, sizes, order)
-        raise NotImplementedError,
-              "A categorical variable for size is not supported"
+        levels = data.categorical_order(order)
+
+        case sizes
+        when Hash
+          lookup_table = categorical_lut_from_hash(levels, sizes, :sizes)
+          return levels, lookup_table
+
+        when Array
+          # nothing to do
+
+        when Range, nil
+          # Reverse values to use the largest size for the first category
+          size_range = sizes || (0r .. 1r)
+          sizes = Linspace.new(size_range, levels.length).reverse_each.to_a
+        else
+          raise ArgumentError,
+            "Unable to recognize the value for `sizes`: %p" % sizes
+        end
+
+        lookup_table = categorical_lut_from_array(levels, sizes, :sizes)
+        return levels, lookup_table
       end
 
       attr_reader :palette, :order, :norm, :levels
@@ -261,8 +292,6 @@ module Charty
           min + normed * (max - min)
         end
       end
-
-      # TODO
     end
 
     class StyleMapper < BaseMapper
@@ -378,10 +407,8 @@ module Charty
       end
 
       def sizes=(val)
-        unless val.nil?
-          raise NotImplementedError,
-                "Specifying sizes is not supported yet"
-        end
+        # NOTE: the value check will be perfomed in SizeMapper
+        @sizes = val
       end
 
       def size_order=(val)
