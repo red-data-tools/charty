@@ -64,6 +64,10 @@ module Charty
       end
     end
 
+    def group_by(grouper, sort: true)
+      adapter.group_by(self, grouper, sort)
+    end
+
     def to_a(x=nil, y=nil, z=nil)
       case
       when defined?(Daru::DataFrame) && table.kind_of?(Daru::DataFrame)
@@ -99,6 +103,103 @@ module Charty
 
     def drop_na
       @adapter.drop_na || self
+    end
+
+    class GroupByBase
+    end
+
+    class HashGroupBy < GroupByBase
+      def initialize(table, grouper, sort)
+        @table = table
+        @grouper = check_grouper(grouper)
+        init_groups(sort)
+      end
+
+      private def check_grouper(grouper)
+        case grouper
+        when Symbol, String, Array
+          # TODO check column existence
+          return grouper
+        when Charty::Vector
+          if @table.length != grouper.length
+            raise ArgumentError,
+                  "Wrong number of items in grouper array " +
+                  "(%p for %p)" % [val.length, @table.length]
+          end
+          return grouper
+        when ->(x) { x.respond_to?(:call) }
+          raise NotImplementedError,
+                "A callable grouper is unsupported"
+        else
+          raise ArgumentError,
+                "Unable to recognize the value for `grouper`: %p" % val
+        end
+      end
+
+      private def init_groups(sort)
+        case @grouper
+        when Symbol, String
+          column = @table[@grouper]
+          @indices = (0 ... @table.length).group_by do |i|
+            column[i]
+          end
+        when Array
+          @indices = (0 ... @table.length).group_by { |i|
+            @grouper.map {|j| @table[j][i] }
+          }
+        when Charty::Vector
+          @indices = (0 ... @table.length).group_by do |i|
+            @grouper[i]
+          end
+        end
+        if sort
+          @indices = @indices.sort_by {|key, | key }.to_h
+        end
+      end
+
+      def indices
+        @indices.dup
+      end
+
+      def apply(*args, &block)
+        Charty::Table.new(
+          each_group.map { |key, table|
+            block.call(table, *args)
+          },
+          index: Charty::Index.new(@indices.keys, name: @grouper)
+        )
+      end
+
+      def each_group
+        return enum_for(__method__) unless block_given?
+
+        @indices.each_key do |key|
+          yield(key, self[key])
+        end
+      end
+
+      def [](key)
+        return nil unless @indices.key?(key)
+
+        columns = @table.column_names.dup
+        case @grouper
+        when Symbol, String
+          columns.delete(@grouper.to_sym)
+          columns.delete(@grouper.to_s)
+        when Array
+          @grouper.each do |g|
+            columns.delete(@grouper.to_sym)
+            columns.delete(@grouper.to_s)
+          end
+        end
+
+        index = @indices[key]
+        Charty::Table.new(
+          columns.map {|col|
+            [col, @table[col].values_at(*index)]
+          }.to_h
+        )
+      end
     end
   end
 end

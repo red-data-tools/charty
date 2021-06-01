@@ -34,6 +34,10 @@ module Charty
         end
       end
 
+      def group_by(table, grouper, sort)
+        Table::HashGroupBy.new(table, grouper, sort)
+      end
+
       def compare_data_equality(other)
         columns.each do |name|
           if self[nil, name] != other[nil, name]

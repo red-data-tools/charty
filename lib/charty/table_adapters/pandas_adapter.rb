@@ -33,8 +33,10 @@ module Charty
         case new_columns
         when PandasIndex
           data.columns = new_columns.values
+          data.columns.name = new_columns.name
         when Index
           data.columns = new_columns.to_a
+          data.columns.name = new_columns.name
         else
           data.columns = new_columns
         end
@@ -48,8 +50,10 @@ module Charty
         case new_index
         when PandasIndex
           data.index = new_index.values
+          data.index.name = new_index.name
         when Index
           data.index = new_index.to_a
+          data.index.name = new_index.name
         else
           data.index = new_index
         end
@@ -83,6 +87,30 @@ module Charty
       private def check_type(type, data, name)
         return data if data.is_a?(type)
         raise TypeError, "#{name} must be a #{type}"
+      end
+
+      class GroupBy < Charty::Table::GroupByBase
+        def initialize(groupby)
+          @groupby = groupby
+        end
+
+        def indices
+          @groupby.indices.map { |k, v|
+            [k, v.to_a]
+          }.to_h
+        end
+
+        def apply(*args, &block)
+          res = @groupby.apply(->(data) {
+            res = block.call(Charty::Table.new(data), *args)
+            Pandas::Series.new(data: res)
+          })
+          Charty::Table.new(res)
+        end
+      end
+
+      def group_by(_table, grouper, sort)
+        GroupBy.new(@data.groupby(by: grouper, sort: sort))
       end
     end
   end

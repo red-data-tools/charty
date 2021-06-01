@@ -49,7 +49,7 @@ module Charty
         return index.union(other) if index
       end
 
-      Index.new(to_a.union(other.to_a))
+      Index.new(to_a.union(other.to_a), name: name)
     end
   end
 
