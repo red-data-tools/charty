@@ -596,6 +596,21 @@ module Charty
         show
       end
 
+      SAVEFIG_OPTIONAL_PARAMS = [
+        :dpi, :quality, :optimize, :progressive, :facecolor, :edgecolor,
+        :orientation, :papertype, :transparent, :bbox_inches, :pad_inches,
+        :bbox_extra_artists, :backend, :metadata, :pil_kwargs
+      ].freeze
+
+      def save(filename, format: nil, title: nil, width: 700, height: 500, **kwargs)
+        params = {}
+        params[:format] = format unless format.nil?
+        SAVEFIG_OPTIONAL_PARAMS.each do |key|
+          params[key] = kwargs[key] if kwargs.key?(key)
+        end
+        @pyplot.savefig(filename, **params)
+      end
+
       def show
         @pyplot.show
       end
