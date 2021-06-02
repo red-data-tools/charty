@@ -346,4 +346,30 @@ class TableArrayTest < Test::Unit::TestCase
       end
     end
   end
+
+  sub_test_case("an array of hashes") do
+    def setup
+      @data = [
+                { a: 1, b: 2, c: 3 },
+                { a: 2, b: 3, c: 4, d: 5 },
+                { a: 10, d: 9, c: 8 },
+              ]
+      @table = Charty::Table.new(@data)
+    end
+
+    def test_length
+      assert_equal(3,
+                   @table.length)
+    end
+
+    def test_column_length
+      assert_equal(4,
+                   @table.column_length)
+    end
+
+    def test_column_names
+      assert_equal([:a, :b, :c, :d],
+                   @table.column_names)
+    end
+  end
 end

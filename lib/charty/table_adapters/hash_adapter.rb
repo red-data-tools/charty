@@ -65,8 +65,13 @@ module Charty
           when Numeric, String, Time, Date
             arrays = [data]
           when Hash
-            raise NotImplementedError,
-                  "an array of records is not supported"
+            columns ||= data.map(&:keys).inject(&:|)
+            arrays = columns.map { [] }
+            data.each do |record|
+              columns.each_with_index do |key, i|
+                arrays[i] << record[key]
+              end
+            end
           when self.class.method(:array?)
             unsupported_data_format unless data.all?(&self.class.method(:array?))
             arrays = data.map(&:to_a).transpose
