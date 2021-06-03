@@ -7,7 +7,7 @@ class TableActiveRecordTest < Test::Unit::TestCase
 
     def change
       create_table :test_records, id: false do |t|
-        t.bigint :id, null: false
+        t.bigint :id, null: false, primary_key: true
         t.string :name
         t.float  :rate
       end
@@ -252,6 +252,42 @@ class TableActiveRecordTest < Test::Unit::TestCase
                        })
         end
       end
+    end
+  end
+
+  sub_test_case("#drop_na") do
+    def setup
+      super
+
+      record = TestRecord.find(3)
+      record.name = nil
+      record.save!
+
+      record = TestRecord.find(4)
+      record.rate = nil
+      record.save!
+
+      TestRecord.create(id: 6, name: "xyzzy", rate: 0.6)
+
+      @data = TestRecord.all.map(&:attributes)
+      @table = Charty::Table.new(TestRecord.all)
+      @result = @table.drop_na
+    end
+
+    def test_class
+      assert_equal(Charty::Table, @result.class)
+    end
+
+    def test_equality
+      assert_equal(Charty::Table.new(
+                     {
+                       "id" => [1, 2, 5, 6],
+                       "name" => ["foo", "bar", "quux", "xyzzy"],
+                       "rate" => [0.1, 0.2, 0.5, 0.6]
+                     },
+                     index: [0, 1, 4, 5]
+                   ),
+                   @result)
     end
   end
 end

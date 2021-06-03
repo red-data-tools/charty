@@ -76,6 +76,10 @@ module Charty
         end
       end
 
+      def drop_na
+        Charty::Table.new(@data.dropna)
+      end
+
       private def check_type(type, data, name)
         return data if data.is_a?(type)
         raise TypeError, "#{name} must be a #{type}"

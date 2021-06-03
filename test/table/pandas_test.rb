@@ -75,4 +75,30 @@ class TablePandasTest < Test::Unit::TestCase
       end
     end
   end
+
+  sub_test_case("#drop_na") do
+    def setup
+      pandas_required
+      @data = Pandas::DataFrame.new(data: {
+        foo: [1, Float::NAN, 3, 4, 5],
+        bar: [10, 20, 30, 40, 50],
+        baz: ["a", "b", "c", nil, "e"]
+      })
+      @table = Charty::Table.new(@data)
+    end
+
+    def test_equality
+      assert_equal(Charty::Table.new(
+                     Pandas::DataFrame.new(
+                       data: {
+                         foo: [1.0, 3.0, 5.0],
+                         bar: [10, 30, 50],
+                         baz: ["a", "c", "e"]
+                       },
+                       index: [0, 2, 4]
+                     )
+                   ),
+                   @table.drop_na)
+    end
+  end
 end

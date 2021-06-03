@@ -259,4 +259,23 @@ class TableRedDatasetsTest < Test::Unit::TestCase
                    })
     end
   end
+
+  sub_test_case("#drop_na") do
+    def setup
+      @data = Datasets::Penguins.new
+      @table = Charty::Table.new(@data)
+      @na_rows = [3, 8, 9, 10, 11, 47, 246, 286, 324, 336, 339]
+    end
+
+    def test_length
+      assert_equal(@table.length - @na_rows.length,
+                   @table.drop_na.length)
+    end
+
+    def test_index
+      expected_index = (0 ... @table.length).to_a - @na_rows
+      assert_equal(expected_index,
+                   @table.drop_na.index.to_a)
+    end
+  end
 end

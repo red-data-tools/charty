@@ -5,6 +5,7 @@ module Charty
     class BaseAdapter
       extend Forwardable
       include Enumerable
+      include MissingValueSupport
 
       attr_reader :columns
 
@@ -40,6 +41,25 @@ module Charty
           end
         end
         true
+      end
+
+      def drop_na
+        # TODO: Must implement this method in each adapter
+        missing_index = index.select do |i|
+          column_names.any? do |key|
+            missing_value?(self[i, key])
+          end
+        end
+        if missing_index.empty?
+          nil
+        else
+          select_index = index.to_a - missing_index
+          new_data = column_names.map { |key|
+            vals = select_index.map {|i| self[i, key] }
+            [key, vals]
+          }.to_h
+          Charty::Table.new(new_data, index: select_index)
+        end
       end
 
       private def check_and_convert_index(values, name, expected_length)

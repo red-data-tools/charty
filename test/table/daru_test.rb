@@ -199,4 +199,10 @@ class TableDaruTest < Test::Unit::TestCase
       end
     end
   end
+
+  sub_test_case("#drop_na") do
+    def test_equality
+      omit("TODO: Support drop_na in daru table adapter")
+    end
+  end
 end

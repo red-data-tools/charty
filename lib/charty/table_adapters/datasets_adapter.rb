@@ -13,10 +13,17 @@ module Charty
       def initialize(dataset)
         @table = dataset.to_table
         @records = []
+
+        self.columns = self.column_names
+        self.index = 0 ... length
       end
 
       def data
         @table
+      end
+
+      def column_length
+        column_names.length
       end
 
       def column_names

@@ -295,4 +295,24 @@ class TableHashTest < Test::Unit::TestCase
                    @table[:foo].index.to_a)
     end
   end
+
+  sub_test_case("#drop_na") do
+    def setup
+      super
+      @data[:foo][1] = nil
+      @data[:baz][3] = nil
+    end
+
+    def test_equality
+      assert_equal(Charty::Table.new(
+                     {
+                       foo: [1, 3, 5],
+                       bar: [10, 30, 50],
+                       baz: [100, 300, 500]
+                     },
+                     index: [0, 2, 4]
+                   ),
+                   @table.drop_na)
+    end
+  end
 end

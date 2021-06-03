@@ -244,4 +244,10 @@ class TableNArrayTest < Test::Unit::TestCase
       Charty::Table.new(data)
     end
   end
+
+  sub_test_case("#drop_na") do
+    def test_equality
+      omit("TODO: Support drop_na in hash table adapter with numo-narray vector")
+    end
+  end
 end

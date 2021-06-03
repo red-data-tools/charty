@@ -13,7 +13,6 @@ module Charty
 
   class Table
     extend Forwardable
-    include MissingValueSupport
 
     def initialize(data, **kwargs)
       adapter_class = TableAdapters.find_adapter_class(data)
@@ -99,22 +98,7 @@ module Charty
     end
 
     def drop_na
-      # TODO: Must implement this method in each adapter
-      missing_index = index.select do |i|
-        column_names.any? do |key|
-          missing_value?(self[key][i])
-        end
-      end
-      if missing_index.empty?
-        self
-      else
-        select_index = index.to_a - missing_index
-        new_data = column_names.map { |key|
-          vals = select_index.map {|i| self[key][i] }
-          [key, vals]
-        }.to_h
-        Charty::Table.new(new_data, index: select_index)
-      end
+      @adapter.drop_na || self
     end
   end
 end
