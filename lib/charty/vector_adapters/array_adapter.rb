@@ -80,14 +80,7 @@ module Charty
 
       def drop_na
         if numeric?
-          Charty::Vector.new(data.reject { |x|
-            case x
-            when Float
-              x.nan?
-            else
-              x.nil?
-            end
-          })
+          Charty::Vector.new(data.reject { |x| Util.missing?(x) })
         else
           Charty::Vector.new(data.compact)
         end
@@ -100,7 +93,7 @@ module Charty
       end
 
       def notnull
-        Charty::Vector.new(data.map {|x| ! missing_value?(x) },
+        Charty::Vector.new(data.map {|x| ! Util.missing?(x) },
                            index: index,
                            name: name)
       end

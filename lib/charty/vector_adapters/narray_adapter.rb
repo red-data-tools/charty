@@ -157,7 +157,7 @@ module Charty
           i, n = 0, length
           notnull_data = Numo::Bit.zeros(n)
           while i < n
-            notnull_data[i] = ! missing_value?(data[i])
+            notnull_data[i] = ! Util.missing?(data[i])
             i += 1
           end
         when ->(x) { x.respond_to?(:isnan) }

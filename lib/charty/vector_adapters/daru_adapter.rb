@@ -130,15 +130,7 @@ module Charty
       end
 
       def drop_na
-        values = data.reject do |x|
-          case
-          when x.nil?,
-               x.respond_to?(:nan?) && x.nan?
-            true
-          else
-            false
-          end
-        end
+        values = data.reject {|x| Util.missing?(x) }
         Charty::Vector.new(Daru::Vector.new(values))
       end
 
@@ -149,7 +141,7 @@ module Charty
       end
 
       def notnull
-        notnull_data = data.map {|x| ! missing_value?(x) }
+        notnull_data = data.map {|x| ! Util.missing?(x) }
         Charty::Vector.new(notnull_data, index: data.index.to_a, name: name)
       end
 

@@ -22,7 +22,6 @@ module Charty
     class BaseAdapter
       extend Forwardable
       include Enumerable
-      include MissingValueSupport
 
       def self.adapter_name
         name[/:?(\w+)Adapter\z/, 1]

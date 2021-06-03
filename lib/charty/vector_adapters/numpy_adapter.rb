@@ -147,7 +147,7 @@ module Charty
           i, n = 0, length
           notnull_data = Numpy::NDArray.new(n, dtype: :bool)
           while i < n
-            notnull_data[i] = ! missing_value?(data[i])
+            notnull_data[i] = ! Util.missing?(data[i])
             i += 1
           end
         else

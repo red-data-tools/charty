@@ -124,7 +124,7 @@ module Charty
           # begin
           #   normed = @norm.(key)
           # rescue ArgumentError, TypeError => err
-          #   if key.respond_to?(:nan?) && key.nan?
+          #   if Util.nan?(key)
           #     return "#000000"
           #   else
           #     raise err

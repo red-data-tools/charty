@@ -5,7 +5,6 @@ module Charty
     class BaseAdapter
       extend Forwardable
       include Enumerable
-      include MissingValueSupport
 
       attr_reader :columns
 
@@ -51,7 +50,7 @@ module Charty
         # TODO: Must implement this method in each adapter
         missing_index = index.select do |i|
           column_names.any? do |key|
-            missing_value?(self[i, key])
+            Util.missing?(self[i, key])
           end
         end
         if missing_index.empty?

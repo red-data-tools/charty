@@ -4,6 +4,7 @@ require "test/unit"
 require "tmpdir"
 
 require "active_record"
+require "bigdecimal"
 require "daru"
 require "datasets"
 require "set" # NOTE: daru needs set

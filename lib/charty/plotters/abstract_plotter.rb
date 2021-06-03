@@ -144,10 +144,7 @@ module Charty
       end
 
       private def remove_na!(ary)
-        ary.reject! do |x|
-          next true if x.nil?
-          x.respond_to?(:nan?) && x.nan?
-        end
+        ary.reject! {|x| Util.missing?(x) }
         ary
       end
 

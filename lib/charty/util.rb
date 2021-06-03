@@ -16,5 +16,13 @@ module Charty
         end
       end
     end
+
+    module_function def missing?(val)
+      val.nil? || nan?(val)
+    end
+
+    module_function def nan?(val)
+      val.respond_to?(:nan?) && val.nan?
+    end
   end
 end
