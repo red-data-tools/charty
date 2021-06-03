@@ -64,8 +64,8 @@ module Charty
       end
     end
 
-    def group_by(grouper, sort: true)
-      adapter.group_by(self, grouper, sort)
+    def group_by(grouper, sort: true, drop_na: true)
+      adapter.group_by(self, grouper, sort, drop_na)
     end
 
     def to_a(x=nil, y=nil, z=nil)
@@ -109,10 +109,10 @@ module Charty
     end
 
     class HashGroupBy < GroupByBase
-      def initialize(table, grouper, sort)
+      def initialize(table, grouper, sort, drop_na)
         @table = table
         @grouper = check_grouper(grouper)
-        init_groups(sort)
+        init_groups(sort, drop_na)
       end
 
       private def check_grouper(grouper)
@@ -136,7 +136,7 @@ module Charty
         end
       end
 
-      private def init_groups(sort)
+      private def init_groups(sort, drop_na)
         case @grouper
         when Symbol, String
           column = @table[@grouper]
@@ -152,6 +152,16 @@ module Charty
             @grouper[i]
           end
         end
+
+        if drop_na
+          case @grouper
+          when Array
+            @indices.reject! {|key, | key.any? {|k| Util.missing?(k) } }
+          else
+            @indices.reject! {|key, | Util.missing?(key) }
+          end
+        end
+
         if sort
           @indices = @indices.sort_by {|key, | key }.to_h
         end
@@ -159,6 +169,14 @@ module Charty
 
       def indices
         @indices.dup
+      end
+
+      def group_keys
+        @indices.keys
+      end
+
+      def each_group_key(&block)
+        @indices.each_key(&block)
       end
 
       def apply(*args, &block)

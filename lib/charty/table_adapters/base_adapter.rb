@@ -33,8 +33,8 @@ module Charty
         end
       end
 
-      def group_by(table, grouper, sort)
-        Table::HashGroupBy.new(table, grouper, sort)
+      def group_by(table, grouper, sort, drop_na)
+        Table::HashGroupBy.new(table, grouper, sort, drop_na)
       end
 
       def compare_data_equality(other)

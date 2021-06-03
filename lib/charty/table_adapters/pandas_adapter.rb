@@ -89,6 +89,10 @@ module Charty
         raise TypeError, "#{name} must be a #{type}"
       end
 
+      def group_by(_table, grouper, sort, drop_na)
+        GroupBy.new(@data.groupby(by: grouper, sort: sort, dropna: drop_na))
+      end
+
       class GroupBy < Charty::Table::GroupByBase
         def initialize(groupby)
           @groupby = groupby
@@ -100,6 +104,40 @@ module Charty
           }.to_h
         end
 
+        def group_keys
+          each_group_key.to_a
+        end
+
+        def each_group_key
+          return enum_for(__method__) unless block_given?
+
+          if PyCall.respond_to?(:iterable)
+            PyCall.iterable(@groupby).each do |key, index|
+              if key.class == PyCall.builtins.tuple
+                key = key.to_a
+              end
+              yield key
+            end
+          else # TODO: Remove this clause after the new PyCall will be released
+            iter = @groupby.__iter__()
+            while true
+              begin
+                key, sub_data = iter.__next__
+                if key.class == PyCall.builtins.tuple
+                  key = key.to_a
+                end
+                yield key
+              rescue PyCall::PyError => error
+                if error.type == PyCall.builtins.StopIteration
+                  break
+                else
+                  raise error
+                end
+              end
+            end
+          end
+        end
+
         def apply(*args, &block)
           res = @groupby.apply(->(data) {
             res = block.call(Charty::Table.new(data), *args)
@@ -107,10 +145,6 @@ module Charty
           })
           Charty::Table.new(res)
         end
-      end
-
-      def group_by(_table, grouper, sort)
-        GroupBy.new(@data.groupby(by: grouper, sort: sort))
       end
     end
   end

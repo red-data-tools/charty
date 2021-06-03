@@ -16,20 +16,38 @@ class TableGroupByTest < Test::Unit::TestCase
   end
 
   sub_test_case("group_keys") do
+    data(:table_adapter, [:daru, :hash, :datasets, :pandas], keep: true)
     def test_single_grouper(data)
-      omit
       setup_table(data[:table_adapter])
       result = @table.group_by(@grouper).group_keys
-      assert_equal([1, 2, 3, 4],
+      assert_equal(@expected_indices.keys,
                    result)
     end
 
     def test_multiple_groupers(data)
-      omit
       setup_table(data[:table_adapter])
       result = @table.group_by(@groupers).group_keys
-      assert_equal([1, 2, 3, 4],
+      assert_equal(@expected_multiple_group_keys,
                    result)
+    end
+  end
+
+  sub_test_case("each_group_key") do
+    data(:table_adapter, [:daru, :hash, :datasets, :pandas], keep: true)
+    def test_single_grouper(data)
+      setup_table(data[:table_adapter])
+      collected_keys = []
+      @table.group_by(@grouper).each_group_key {|gk| collected_keys << gk }
+      assert_equal(@expected_indices.keys,
+                   collected_keys)
+    end
+
+    def test_multiple_groupers(data)
+      setup_table(data[:table_adapter])
+      collected_keys = []
+      @table.group_by(@groupers).each_group_key {|gk| collected_keys << gk }
+      assert_equal(@expected_multiple_group_keys,
+                   collected_keys)
     end
   end
 
@@ -42,19 +60,26 @@ class TableGroupByTest < Test::Unit::TestCase
 
   def setup_table(table_adapter)
     @data = {
-      a: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
-      b: [1, 1, 1, 4, 4, 3, 2, 3, 3,  2,  4],
-      c: %w[A B C D A B C D A B C]
+      a: [1,   2,   3,   4,   5,   6,   7,   8,   9,   10,  11],
+      b: [1,   1,   1,   4,   4,   3,   2,   3,   3,   2,   4],
+      c: ["A", "B", "C", "D", "A", "B", "C", "D", "A", "B", "C"]
     }
 
     @grouper = :b
-    @groupers = [:b, :c]
     @expected_indices = {
       1 => [0, 1, 2],
       2 => [6, 9],
       3 => [5, 7, 8],
       4 => [3, 4, 10]
     }
+
+    @groupers = [:b, :c]
+    @expected_multiple_group_keys = [
+      [1, "A"], [1, "B"], [1, "C"],
+      [2, "B"], [2, "C"],
+      [3, "A"], [3, "B"], [3, "D"],
+      [4, "A"], [4, "C"], [4, "D"]
+    ]
 
     @apply_proc = ->(table, var) do
       {
@@ -98,13 +123,24 @@ class TableGroupByTest < Test::Unit::TestCase
   def setup_table_by_datasets
     @data = Datasets::Penguins.new
     @table = Charty::Table.new(@data)
+
     @grouper = :species
-    @groupers = [:species, :sex]
     @expected_indices = {
       "Adelie"    => (0...152).to_a,
       "Chinstrap" => (152...220).to_a,
       "Gentoo"    => (220...344).to_a
     }
+
+    @groupers = [:species, :sex]
+    @expected_multiple_group_keys = [
+      ["Adelie", "female"],
+      ["Adelie", "male"],
+      ["Chinstrap", "female"],
+      ["Chinstrap", "male"],
+      ["Gentoo", "female"],
+      ["Gentoo", "male"]
+    ]
+
     @apply_proc_args = [:year]
     @expected_applied_table = Charty::Table.new(
       {
