@@ -51,6 +51,14 @@ class TableGroupByTest < Test::Unit::TestCase
     end
   end
 
+  def test_aref(data)
+    setup_table(data[:table_adapter])
+    groups = @table.group_by(@grouper)
+    result = groups.each_group_key.map {|k| [k, groups[k]] }.to_h
+    assert_equal(@expected_groups,
+                 result)
+  end
+
   def test_apply(data)
     setup_table(data[:table_adapter])
     result = @table.group_by(@grouper).apply(*@apply_proc_args, &@apply_proc)
@@ -80,6 +88,20 @@ class TableGroupByTest < Test::Unit::TestCase
       [3, "A"], [3, "B"], [3, "D"],
       [4, "A"], [4, "C"], [4, "D"]
     ]
+
+    @expected_groups = @expected_indices.map {|key, index|
+      [
+        key,
+        Charty::Table.new(
+          {
+            a: @data[:a].values_at(*index),
+            b: @data[:b].values_at(*index),
+            c: @data[:c].values_at(*index),
+          },
+          index: index
+        )
+      ]
+    }.to_h
 
     @apply_proc = ->(table, var) do
       {
@@ -141,6 +163,21 @@ class TableGroupByTest < Test::Unit::TestCase
       ["Gentoo", "male"]
     ]
 
+    @expected_groups = @expected_indices.map {|key, index|
+      [
+        key,
+        Charty::Table.new(
+          @table.column_names.map {|name|
+            [
+              name,
+              @table[name].values_at(*index)
+            ]
+          }.to_h,
+          index: Charty::Index.new(index, name: :species)
+        )
+      ]
+    }.to_h
+
     @apply_proc_args = [:year]
     @expected_applied_table = Charty::Table.new(
       {
@@ -155,6 +192,23 @@ class TableGroupByTest < Test::Unit::TestCase
   def setup_table_by_pandas
     @data = Pandas::DataFrame.new(data: @data)
     @table = Charty::Table.new(@data)
+
+    @expected_groups = @expected_indices.map {|key, index|
+      [
+        key,
+        Charty::Table.new(
+          Pandas::DataFrame.new(
+            data: {
+              a: @data[:a].iloc[index],
+              b: @data[:b].iloc[index],
+              c: @data[:c].iloc[index],
+            },
+            index: index
+          )
+        )
+      ]
+    }.to_h
+
     df = Pandas::DataFrame.new(data: @expected_applied_table.adapter.data)
     df[:a_min] = df[:a_min].astype(:float64)
     df[:a_max] = df[:a_max].astype(:float64)

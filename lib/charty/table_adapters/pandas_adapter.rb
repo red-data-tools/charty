@@ -145,6 +145,10 @@ module Charty
           })
           Charty::Table.new(res)
         end
+
+        def [](key)
+          Charty::Table.new(@groupby.get_group(key))
+        end
       end
     end
   end
