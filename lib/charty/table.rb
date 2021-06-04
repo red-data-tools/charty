@@ -199,23 +199,12 @@ module Charty
       def [](key)
         return nil unless @indices.key?(key)
 
-        columns = @table.column_names.dup
-        case @grouper
-        when Symbol, String
-          columns.delete(@grouper.to_sym)
-          columns.delete(@grouper.to_s)
-        when Array
-          @grouper.each do |g|
-            columns.delete(@grouper.to_sym)
-            columns.delete(@grouper.to_s)
-          end
-        end
-
         index = @indices[key]
         Charty::Table.new(
-          columns.map {|col|
+          @table.column_names.map {|col|
             [col, @table[col].values_at(*index)]
-          }.to_h
+          }.to_h,
+          index: index
         )
       end
     end
