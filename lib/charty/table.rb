@@ -181,7 +181,7 @@ module Charty
 
       def apply(*args, &block)
         Charty::Table.new(
-          each_group.map { |key, table|
+          each_group.map { |_key, table|
             block.call(table, *args)
           },
           index: Charty::Index.new(@indices.keys, name: @grouper)
