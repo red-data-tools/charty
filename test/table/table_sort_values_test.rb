@@ -155,6 +155,7 @@ class TableSortValuesTest < Test::Unit::TestCase
     end
 
     def setup_table_by_pandas
+      pandas_required
       @table = Charty::Table.new(Pandas::DataFrame.new(data: @data))
       @expected_one_column_first = Charty::Table.new(
         Pandas::DataFrame.new(data: @expected_one_column_first, index: @order_one_column_first))
