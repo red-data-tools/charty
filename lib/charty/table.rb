@@ -105,6 +105,8 @@ module Charty
       @adapter.drop_na || self
     end
 
+    def_delegator :adapter, :sort_values
+
     class GroupByBase
     end
 

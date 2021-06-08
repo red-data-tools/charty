@@ -84,6 +84,10 @@ module Charty
         Charty::Table.new(@data.dropna)
       end
 
+      def sort_values(by, na_position: :last)
+        Charty::Table.new(@data.sort_values(by, na_position: na_position, kind: :mergesort))
+      end
+
       private def check_type(type, data, name)
         return data if data.is_a?(type)
         raise TypeError, "#{name} must be a #{type}"
