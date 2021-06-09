@@ -15,6 +15,14 @@ class TableGroupByTest < Test::Unit::TestCase
                  @table.group_by(@grouper).indices)
   end
 
+  def test_indices_sorted(data)
+    return if data[:table_adapter] == :datasets  # skip for red-datasets
+    setup_table(data[:table_adapter])
+    sorted_table = @table.sort_values(@sort_key)
+    assert_equal(@expected_indices_after_sort,
+                 sorted_table.group_by(@grouper).indices)
+  end
+
   sub_test_case("group_keys") do
     data(:table_adapter, [:daru, :hash, :datasets, :pandas], keep: true)
     def test_single_grouper(data)
@@ -68,23 +76,37 @@ class TableGroupByTest < Test::Unit::TestCase
 
   def setup_table(table_adapter)
     @data = {
-      a: [1,   2,   3,   4,   5,   6,   7,   8,   9,   10,  11],
-      b: [1,   1,   1,   4,   4,   3,   2,   3,   3,   2,   4],
-      c: ["A", "B", "C", "D", "A", "B", "C", "D", "A", "B", "C"]
+      a: [1,   2,   3,   4,   5,   6,   7,   8,   9,   10,  11,  4  ],
+      b: [1,   1,   1,   4,   4,   3,   2,   3,   3,   2,   4,   2  ],
+      c: ["A", "B", "C", "D", "A", "B", "C", "D", "A", "B", "C", "D"]
     }
 
     @grouper = :b
     @expected_indices = {
       1 => [0, 1, 2],
-      2 => [6, 9],
+      2 => [6, 9, 11],
       3 => [5, 7, 8],
       4 => [3, 4, 10]
+    }
+
+    # @data_sorted = {
+    #   a: [1,   2,   3,   4,   4,   5,   6,   7,   8,   9,   10,  11, ],
+    #   b: [1,   1,   1,   4,   2,   4,   3,   2,   3,   3,   2,   4,  ],
+    #   c: ["A", "B", "C", "D", "D", "A", "B", "C", "D", "A", "B", "C",]
+    # }
+
+    @sort_key = :a
+    @expected_indices_after_sort = {
+      1 => [0, 1, 2],
+      2 => [4, 7, 10],
+      3 => [6, 8, 9],
+      4 => [3, 5, 11]
     }
 
     @groupers = [:b, :c]
     @expected_multiple_group_keys = [
       [1, "A"], [1, "B"], [1, "C"],
-      [2, "B"], [2, "C"],
+      [2, "B"], [2, "C"], [2, "D"],
       [3, "A"], [3, "B"], [3, "D"],
       [4, "A"], [4, "C"], [4, "D"]
     ]

@@ -145,15 +145,15 @@ module Charty
         when Symbol, String
           column = @table[@grouper]
           @indices = (0 ... @table.length).group_by do |i|
-            column[i]
+            column.data[i]
           end
         when Array
           @indices = (0 ... @table.length).group_by { |i|
-            @grouper.map {|j| @table[j][i] }
+            @grouper.map {|j| @table[j].data[i] }
           }
         when Charty::Vector
           @indices = (0 ... @table.length).group_by do |i|
-            @grouper[i]
+            @grouper.data[i]
           end
         end
 
