@@ -275,6 +275,11 @@ module Charty
         end
       end
 
+      def reset_index
+        index_name = index.name || :index
+        Charty::Table.new({ index_name => index.to_a }.merge(data))
+      end
+
       private def make_data_from_records(data, columns)
         n_rows = data.length
         n_columns = data.map(&:size).max

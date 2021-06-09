@@ -107,6 +107,8 @@ module Charty
 
     def_delegator :adapter, :sort_values
 
+    def_delegator :adapter, :reset_index
+
     class GroupByBase
     end
 

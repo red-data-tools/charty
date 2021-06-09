@@ -97,6 +97,10 @@ module Charty
         GroupBy.new(@data.groupby(by: grouper, sort: sort, dropna: drop_na))
       end
 
+      def reset_index
+        Charty::Table.new(data.reset_index)
+      end
+
       class GroupBy < Charty::Table::GroupByBase
         def initialize(groupby)
           @groupby = groupby
