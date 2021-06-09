@@ -55,7 +55,7 @@ module Charty
       def_delegators :data, :[]=, :to_a
 
       def values_at(*indices)
-        data.at(*indices).to_a
+        indices.map {|i| data.at(i) }
       end
 
       def where(mask)

@@ -4,8 +4,8 @@ class VectorValuesAtTest < Test::Unit::TestCase
   data(:adapter_type, [:array, :daru, :narray, :nmatrix, :numpy, :pandas], keep: true)
   def test_values_at(data)
     vector = setup_vector(data[:adapter_type], [1, 2, 3, 4, 5], index: [1, 3, 5, 2, 4])
-    assert_equal([1, 2, 3, 4, 5],
-                 vector.values_at(0, 1, 2, 3, 4))
+    assert_equal([1, 2, 3, 5, 4, 3],
+                 vector.values_at(0, 1, 2, 4, 3, 2))
   end
 
   def setup_vector(adapter_type, data, index:)
