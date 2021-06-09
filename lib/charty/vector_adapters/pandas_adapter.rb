@@ -86,7 +86,6 @@ module Charty
         data.size == 0
       end
 
-      # TODO: Reconsider the return value type of values_at
       def values_at(*indices)
         data.take(indices).to_a
       end

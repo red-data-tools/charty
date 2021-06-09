@@ -60,6 +60,11 @@ module Charty
       def_delegators :data, :[], :[]=
       def_delegators :data, :each, :to_a, :empty?
 
+      # Take values at the given positional indices (without indexing)
+      def values_at(*indices)
+        indices.map {|i| data[i] }
+      end
+
       def where_in_array(mask)
         mask = check_mask_vector(mask)
         masked_data = []

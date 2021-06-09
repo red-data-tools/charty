@@ -29,11 +29,6 @@ module Charty
       include NameSupport
       include IndexSupport
 
-      # TODO: Reconsider the return value type of values_at
-      def values_at(*indices)
-        data[indices].to_a
-      end
-
       def where(mask)
         mask = check_mask_vector(mask)
         case mask.data
