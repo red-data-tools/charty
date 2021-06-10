@@ -33,6 +33,20 @@ module Charty
     def_delegators :adapter, :index, :index=
 
     def_delegator :@adapter, :column_names
+
+    def column?(name)
+      return true if column_names.include?(name)
+
+      case name
+      when String
+        column_names.include?(name.to_sym)
+      when Symbol
+        column_names.include?(name.to_s)
+      else
+        false
+      end
+    end
+
     def_delegator :@adapter, :data, :raw_data
 
     def ==(other)
