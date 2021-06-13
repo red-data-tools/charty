@@ -234,8 +234,7 @@ module Charty
                          color: sub_vars[:color], color_mapper: @color_mapper,
                          size: sub_vars[:size], size_mapper: @size_mapper,
                          style: sub_vars[:style], style_mapper: @style_mapper,
-                         ci_params: ci_params,
-                         legend: legend)
+                         ci_params: ci_params)
           end
         end
 

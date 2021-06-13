@@ -376,6 +376,109 @@ module Charty
       end
 
       def line(x, y, color:, color_mapper:, size:, size_mapper:, style:, style_mapper:, ci_params:)
+        x = case x
+            when Charty::Vector
+              x.to_a
+            else
+              orig_x, x = x, Array.try_convert(x)
+              if x.nil?
+                raise ArgumentError, "Invalid value for x: %p" % orig_x
+              end
+            end
+
+        y = case y
+            when Charty::Vector
+              y.to_a
+            else
+              orig_y, y = y, Array.try_convert(y)
+              if y.nil?
+                raise ArgumentError, "Invalid value for y: %p" % orig_y
+              end
+            end
+
+        unless style.nil?
+          marker, dashes = style_mapper[style].values_at(:marker, :dashes)
+        end
+
+        trace = {
+          type: :scatter,
+          mode: marker.nil? ? "lines" : "lines+markers",
+          x: x,
+          y: y,
+          line: {
+            shape: :linear,
+          }
+        }
+
+        line_color = if color.nil?
+                       # TODO: do not hard code this
+                       Colors["#1f77b4"] # the first color of D3's category10 palette
+                     else
+                       color_mapper[color].to_rgb
+                     end
+        trace[:line][:color] = line_color.to_hex_string
+
+        unless size.nil?
+          line_width = 2.0 + 2.0 * size_mapper[size]
+          trace[:line][:width] = line_width
+        end
+
+        unless dashes.nil?
+          trace[:line][:dash] = dashes
+        end
+
+        unless marker.nil?
+          trace[:marker] = {
+            line: {
+              width: 1,
+              color: "#fff"
+            },
+            size: 10
+          }
+        end
+
+        unless ci_params.nil?
+          case ci_params[:style]
+          when :band
+            y_min = ci_params[:y_min].to_a
+            y_max = ci_params[:y_max].to_a
+            @traces << {
+              type: :scatter,
+              x: x,
+              y: y_max,
+              mode: :lines,
+              line: { shape: :linear, width: 0 },
+              showlegend: false
+            }
+            @traces << {
+              type: :scatter,
+              x: x,
+              y: y_min,
+              mode: :lines,
+              line: { shape: :linear, width: 0 },
+              fill: :tonexty,
+              fillcolor: line_color.to_rgba(alpha: 0.2).to_hex_string,
+              showlegend: false
+            }
+          when :bars
+            y_min = ci_params[:y_min].map.with_index {|v, i| y[i] - v }
+            y_max = ci_params[:y_max].map.with_index {|v, i| v - y[i] }
+            trace[:error_y] = {
+              visible: true,
+              type: :data,
+              array: y_max,
+              arrayminus: y_min
+            }
+            unless line_color.nil?
+              trace[:error_y][:color] = line_color
+            end
+            unless line_width.nil?
+              trace[:error_y][:thickness] = line_width
+            end
+          end
+        end
+
+        @traces << trace
       end
 
       def add_line_plot_legend(variables, color_mapper, size_mapper, style_mapper, legend)
