@@ -230,7 +230,7 @@ module Charty
                             y_max: sub_data[:y_max]
                           }
                         end
-            backend.line(unit_data[:x], unit_data[:y],
+            backend.line(unit_data[:x], unit_data[:y], self.variables,
                          color: sub_vars[:color], color_mapper: @color_mapper,
                          size: sub_vars[:size], size_mapper: @size_mapper,
                          style: sub_vars[:style], style_mapper: @style_mapper,

@@ -503,7 +503,7 @@ module Charty
         min + x * (max - min)
       end
 
-      def line(x, y, color:, color_mapper:, size:, size_mapper:, style:, style_mapper:, ci_params:)
+      def line(x, y, variables, color:, color_mapper:, size:, size_mapper:, style:, style_mapper:, ci_params:)
         kws = {
           markeredgewidth: 0.75,
           markeredgecolor: "w",

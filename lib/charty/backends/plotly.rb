@@ -364,8 +364,6 @@ module Charty
         if legend == :full
           warn("Plotly backend does not support full verbosity legend")
         end
-
-        # TODO
       end
 
       private def scale_scatter_point_size(x)
@@ -375,7 +373,7 @@ module Charty
         min + x * (max - min)
       end
 
-      def line(x, y, color:, color_mapper:, size:, size_mapper:, style:, style_mapper:, ci_params:)
+      def line(x, y, variables, color:, color_mapper:, size:, size_mapper:, style:, style_mapper:, ci_params:)
         x = case x
             when Charty::Vector
               x.to_a
@@ -396,8 +394,22 @@ module Charty
               end
             end
 
+        name = []
+        legend_title = []
+
+        if color.nil?
+          # TODO: do not hard code this
+          line_color = Colors["#1f77b4"] # the first color of D3's category10 palette
+        else
+          line_color = color_mapper[color].to_rgb
+          name << color
+          legend_title << variables[:color]
+        end
+
         unless style.nil?
           marker, dashes = style_mapper[style].values_at(:marker, :dashes)
+          name << style
+          legend_title << variables[:style]
         end
 
         trace = {
@@ -407,16 +419,9 @@ module Charty
           y: y,
           line: {
             shape: :linear,
+            color: line_color.to_hex_string
           }
         }
-
-        line_color = if color.nil?
-                       # TODO: do not hard code this
-                       Colors["#1f77b4"] # the first color of D3's category10 palette
-                     else
-                       color_mapper[color].to_rgb
-                     end
-        trace[:line][:color] = line_color.to_hex_string
 
         unless size.nil?
           line_width = 2.0 + 2.0 * size_mapper[size]
@@ -478,11 +483,21 @@ module Charty
           end
         end
 
+        trace[:name] = name.uniq.join(", ") unless name.empty?
+
         @traces << trace
+
+        unless legend_title.empty?
+          @layout[:showlegend] = true
+          @layout[:legend] ||= {}
+          @layout[:legend][:title] = {text: legend_title.uniq.join(", ")}
+        end
       end
 
       def add_line_plot_legend(variables, color_mapper, size_mapper, style_mapper, legend)
-        # TODO
+        if legend == :full
+          warn("Plotly backend does not support full verbosity legend")
+        end
       end
 
       def set_xlabel(label)
