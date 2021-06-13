@@ -90,7 +90,7 @@ module Charty
           when :categorical
             @cmap = nil
             @norm = nil
-            @levels, @lookup_table = categorical_mapping(data, @palette, @order)
+            @levels, @lookup_table = categorical_mapping(data, @palette, order)
           else
             raise NotImplementedError,
                   "datetime color mapping is not supported"

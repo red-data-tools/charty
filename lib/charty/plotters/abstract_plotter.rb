@@ -56,11 +56,7 @@ module Charty
       end
 
       def color_order=(color_order)
-        #@color_order = XXX
-        unless color_order.nil?
-          raise NotImplementedError,
-                "Specifying color_order is not supported yet"
-        end
+        @color_order = color_order
       end
 
       # TODO: move to categorical_plotter
