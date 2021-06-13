@@ -248,12 +248,8 @@ module Charty
         @traces.concat(traces)
       end
 
-      def scatter(x, y, variables, legend:, color:, color_mapper:,
+      def scatter(x, y, variables, color:, color_mapper:,
                   style:, style_mapper:, size:, size_mapper:)
-        if legend == :full
-          warn("Plotly backend does not support full verbosity legend")
-        end
-
         orig_x, orig_y = x, y
 
         x = case x
@@ -277,7 +273,7 @@ module Charty
         end
 
         unless color.nil? && style.nil?
-          grouped_scatter(x, y, variables, legend: legend,
+          grouped_scatter(x, y, variables,
                           color: color, color_mapper: color_mapper,
                           style: style, style_mapper: style_mapper,
                           size: size, size_mapper: size_mapper)
@@ -305,7 +301,7 @@ module Charty
         @traces << trace
       end
 
-      private def grouped_scatter(x, y, variables, legend:, color:, color_mapper:,
+      private def grouped_scatter(x, y, variables, color:, color_mapper:,
                                   style:, style_mapper:, size:, size_mapper:)
         @layout[:showlegend] = true
 
@@ -364,6 +360,14 @@ module Charty
         end
       end
 
+      def add_scatter_plot_legend(variables, color_mapper, size_mapper, style_mapper, legend)
+        if legend == :full
+          warn("Plotly backend does not support full verbosity legend")
+        end
+
+        # TODO
+      end
+
       private def scale_scatter_point_size(x)
         min = 6
         max = 12
@@ -372,6 +376,10 @@ module Charty
       end
 
       def line(x, y, color:, color_mapper:, size:, size_mapper:, style:, style_mapper:, ci_params:)
+      end
+
+      def add_line_plot_legend(variables, color_mapper, size_mapper, style_mapper, legend)
+        # TODO
       end
 
       def set_xlabel(label)

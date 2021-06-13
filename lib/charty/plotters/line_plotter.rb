@@ -234,8 +234,13 @@ module Charty
                          color: sub_vars[:color], color_mapper: @color_mapper,
                          size: sub_vars[:size], size_mapper: @size_mapper,
                          style: sub_vars[:style], style_mapper: @style_mapper,
-                         ci_params: ci_params)
+                         ci_params: ci_params,
+                         legend: legend)
           end
+        end
+
+        if legend
+          backend.add_line_plot_legend(@variables, @color_mapper, @size_mapper, @style_mapper, legend)
         end
       end
 
@@ -244,10 +249,6 @@ module Charty
         ylabel = self.variables[:y]
         backend.set_xlabel(xlabel) unless xlabel.nil?
         backend.set_ylabel(ylabel) unless ylabel.nil?
-
-        if legend
-          #add_legend_data(backend)
-        end
       end
     end
   end

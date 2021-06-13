@@ -14,7 +14,8 @@ class PlotMethodLinePlotTest < Test::Unit::TestCase
     end
 
     data(:adapter, [:array], keep: true)
-    data(:backend, [:pyplot, :plotly], keep: true)
+    data(:backend, [:pyplot], keep: true)
+    #data(:backend, [:pyplot, :plotly], keep: true)
     def test_line_plot(data)
       adapter_name, backend_name = data.values_at(:adapter, :backend)
       setup_data(adapter_name)
@@ -26,7 +27,6 @@ class PlotMethodLinePlotTest < Test::Unit::TestCase
     end
 
     def test_line_plot_with_numeric_color(data)
-      omit("TODO: support numeric variable in color dimension")
       adapter_name, backend_name = data.values_at(:adapter, :backend)
       setup_data(adapter_name)
       setup_backend(backend_name)

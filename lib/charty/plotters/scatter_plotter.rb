@@ -61,9 +61,12 @@ module Charty
           x, y, @variables,
           color: color, color_mapper: @color_mapper,
           style: style, style_mapper: @style_mapper,
-          size: size, size_mapper: @size_mapper,
-          legend: legend
+          size: size, size_mapper: @size_mapper
         )
+
+        if legend
+          backend.add_scatter_plot_legend(@variables, @color_mapper, @size_mapper, @style_mapper, legend)
+        end
       end
 
       private def annotate_axes(backend)
@@ -71,21 +74,6 @@ module Charty
         ylabel = self.variables[:y]
         backend.set_xlabel(xlabel) unless xlabel.nil?
         backend.set_ylabel(ylabel) unless ylabel.nil?
-
-        if legend
-          add_legend_data(backend)
-        end
-      end
-
-      private def add_legend_data(backend)
-        # TODO: Legend Support
-        verbosity = legend
-        verbosity = :auto if verbosity == true
-
-        titles = Util.filter_map([:color, :size, :style]) do |v|
-          variables[v] if variables.key?(v)
-        end
-        legend_title = titles.length == 1 ? titles[0] : ""
       end
     end
   end

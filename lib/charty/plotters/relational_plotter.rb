@@ -319,7 +319,7 @@ module Charty
         return levels, lookup_table
       end
 
-      attr_reader :palette, :order, :norm, :levels
+      attr_reader :palette, :order, :norm, :levels, :lookup_table, :map_type
 
       def lookup_single_value(key)
         if @lookup_table.key?(key)
