@@ -36,12 +36,47 @@ module Charty
       end
     end
 
+    # TODO: This should be replaced with red-colors's Normalize feature
+    class SimpleNormalizer
+      def initialize(vmin=nil, vmax=nil)
+        @vmin = vmin
+        @vmax = vmax
+      end
+
+      attr_accessor :vmin, :vmax
+
+      def call(value, clip=nil)
+        scalar_p = false
+        vector_p = false
+        case value
+        when Charty::Vector
+          vector_p = true
+          value = value.to_a
+        when Array
+          # do nothing
+        else
+          scalar_p = true
+          value = [value]
+        end
+
+        @vmin = value.min if vmin.nil?
+        @vmax = value.max if vmax.nil?
+
+        result = value.map {|x| (x - vmin) / (vmax - vmin).to_f }
+
+        case
+        when scalar_p
+          result[0]
+        when vector_p
+          Charty::Vector.new(result, index: value.index)
+        else
+          result
+        end
+      end
+    end
+
     class ColorMapper < BaseMapper
       private def initialize_mapping(palette, order, norm)
-        @palette = palette
-        @order = order
-        @norm = norm
-
         if plotter.variables.key?(:color)
           data = plotter.plot_data[:color]
         end
@@ -51,8 +86,7 @@ module Charty
 
           case @map_type
           when :numeric
-            raise NotImplementedError,
-                  "numeric color mapping is not supported"
+            @levels, @lookup_table, @norm, @cmap = numeric_mapping(data, @palette, norm)
           when :categorical
             @cmap = nil
             @norm = nil
@@ -62,6 +96,51 @@ module Charty
                   "datetime color mapping is not supported"
           end
         end
+      end
+
+      private def numeric_mapping(data, palette, norm)
+        case palette
+        when Hash
+          levels = palette.keys.sort
+          colors = palette.values_at(*levels)
+          cmap = Colors::ListedColormap.new(colors)
+          lookup_table = palette.dup
+        else
+          levels = data.drop_na.unique_values
+          levels.sort!
+
+          palette ||= "ch:"
+          cmap = case palette
+                 when Colors::Colormap
+                   palette
+                 else
+                   Palette.new(palette, 256).to_colormap
+                 end
+
+          case norm
+          when nil
+            norm = SimpleNormalizer.new
+          when Array
+            norm = SimpleNormalizer.new(*norm)
+          #when Colors::Normalizer
+          # TODO: Must support red-color's Normalize feature
+          else
+            raise ArgumentError,
+                  "`color_norm` must be nil, Array, or Normalizer object"
+          end
+
+          # initialize norm
+          norm.(data.drop_na.to_a)
+
+          lookup_table = levels.map { |level|
+            [
+              level,
+              cmap[norm.(level)]
+            ]
+          }.to_h
+        end
+
+        return levels, lookup_table, norm, cmap
       end
 
       private def categorical_mapping(data, palette, order)
@@ -108,7 +187,7 @@ module Charty
         end
       end
 
-      attr_reader :palette, :order, :norm, :levels, :lookup_table, :map_type
+      attr_reader :palette, :norm, :levels, :lookup_table, :map_type
 
       def inverse_lookup_table
         lookup_table.invert
@@ -119,61 +198,21 @@ module Charty
           @lookup_table[key]
         elsif @norm
           # Use the colormap to interpolate between existing datapoints
-          raise NotImplementedError,
-                "Palette interpolation is not implemented yet"
-          # begin
-          #   normed = @norm.(key)
-          # rescue ArgumentError, TypeError => err
-          #   if Util.nan?(key)
-          #     return "#000000"
-          #   else
-          #     raise err
-          #   end
-          # end
+          begin
+            normed = @norm.(key)
+            @cmap[normed]
+          rescue ArgumentError, TypeError => err
+            if Util.nan?(key)
+              return "#000000"
+            else
+              raise err
+            end
+          end
         end
       end
     end
 
     class SizeMapper < BaseMapper
-      # TODO: This should be replaced with red-colors's Normalize feature
-      class SimpleNormalizer
-        def initialize(vmin=nil, vmax=nil)
-          @vmin = vmin
-          @vmax = vmax
-        end
-
-        attr_accessor :vmin, :vmax
-
-        def call(value, clip=nil)
-          scalar_p = false
-          vector_p = false
-          case value
-          when Charty::Vector
-            vector_p = true
-            value = value.to_a
-          when Array
-            # do nothing
-          else
-            scalar_p = true
-            value = [value]
-          end
-
-          @vmin = value.min if vmin.nil?
-          @vmax = value.max if vmax.nil?
-
-          result = value.map {|x| (x - vmin) / (vmax - vmin).to_f }
-
-          case
-          when scalar_p
-            result[0]
-          when vector_p
-            Charty::Vector.new(result, index: value.index)
-          else
-            result
-          end
-        end
-      end
-
       private def initialize_mapping(sizes, order, norm)
         @sizes = sizes
         @order = order
