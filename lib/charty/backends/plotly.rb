@@ -438,6 +438,7 @@ module Charty
               width: 1,
               color: "#fff"
             },
+            symbol: marker,
             size: 10
           }
         end
