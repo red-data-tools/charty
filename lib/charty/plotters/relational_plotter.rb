@@ -357,6 +357,7 @@ module Charty
             marker: markers[key],
             dashes: dashes[key]
           }
+          record.compact!
           [key, record]
         }.to_h
       end
@@ -404,7 +405,7 @@ module Charty
                   "%he `%s` argument has the wrong number of values" % attr
           end
           return levels.zip(vals).to_h
-        when nil
+        when nil, false
           return {}
         else
           raise ArgumentError,
