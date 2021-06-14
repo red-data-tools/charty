@@ -77,20 +77,23 @@ module Charty
 
     class ColorMapper < BaseMapper
       private def initialize_mapping(palette, order, norm)
+        @palette = palette
+        @order = order
+
         if plotter.variables.key?(:color)
           data = plotter.plot_data[:color]
         end
 
         if data && data.notnull.any?
-          @map_type = infer_map_type(@palette, @norm, @plotter.input_format, @plotter.var_types[:color])
+          @map_type = infer_map_type(palette, norm, @plotter.input_format, @plotter.var_types[:color])
 
           case @map_type
           when :numeric
-            @levels, @lookup_table, @norm, @cmap = numeric_mapping(data, @palette, norm)
+            @levels, @lookup_table, @norm, @cmap = numeric_mapping(data, palette, norm)
           when :categorical
             @cmap = nil
             @norm = nil
-            @levels, @lookup_table = categorical_mapping(data, @palette, order)
+            @levels, @lookup_table = categorical_mapping(data, palette, order)
           else
             raise NotImplementedError,
                   "datetime color mapping is not supported"
