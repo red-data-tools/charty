@@ -303,7 +303,7 @@ module Charty
         end
       end
 
-      def scatter(x, y, variables, legend:, color:, color_mapper:,
+      def scatter(x, y, variables, color:, color_mapper:,
                   style:, style_mapper:, size:, size_mapper:)
         kwd = {}
         kwd[:edgecolor] = "w"
@@ -328,14 +328,15 @@ module Charty
 
         sizes = points.get_sizes
         points.set_linewidths(0.08 * Numpy.sqrt(Numpy.percentile(sizes, 10)))
+      end
 
-        if legend
-          add_relational_plot_legend(
-            ax, legend, variables, color_mapper, size_mapper, style_mapper,
-            [:color, :s, :marker]
-          ) do |label, kwargs|
-            ax.scatter([], [], label: label, **kwargs)
-          end
+      def add_scatter_plot_legend(variables, color_mapper, size_mapper, style_mapper, legend)
+        ax = @pyplot.gca
+        add_relational_plot_legend(
+          ax, variables, color_mapper, size_mapper, style_mapper,
+          legend, [:color, :s, :marker]
+        ) do |label, kwargs|
+          ax.scatter([], [], label: label, **kwargs)
         end
       end
 
@@ -369,8 +370,8 @@ module Charty
 
       RELATIONAL_PLOT_LEGEND_BRIEF_TICKS = 6
 
-      private def add_relational_plot_legend(ax, verbosity, variables, color_mapper, size_mapper, style_mapper,
-                                             legend_attributes, &func)
+      private def add_relational_plot_legend(ax, variables, color_mapper, size_mapper, style_mapper,
+                                             verbosity, legend_attributes, &func)
         brief_ticks = RELATIONAL_PLOT_LEGEND_BRIEF_TICKS
         verbosity = :auto if verbosity == true
 
@@ -391,24 +392,17 @@ module Charty
 
         # color legend
 
-        brief_color = case verbosity
-                      when :brief
-                        color_mapper.map_type == :numeric
-                      when :auto
-                        if color_mapper.levels.nil?
-                          false
-                        else
-                          color_mapper.levels.length > brief_ticks
-                        end
-                      else
-                        false
-                      end
+        brief_color = (color_mapper.map_type == :numeric) && (
+                        (verbosity == :brief) || (
+                          verbosity == :auto && color_mapper.levels.length > brief_ticks
+                        )
+                      )
         case
         when brief_color
           # TODO: Also support LogLocator
           # locator = Matplotlib.ticker.LogLocator.new(numticks: brief_ticks)
           locator = Matplotlib.ticker.MaxNLocator.new(nbins: brief_ticks)
-          limits = color_map.levels.minmax
+          limits = color_mapper.levels.minmax
           color_levels, color_formatted_levels = locator_to_legend_entries(locator, limits)
         when color_mapper.levels.nil?
           color_levels = color_formatted_levels = []
@@ -422,22 +416,14 @@ module Charty
 
         color_levels.length.times do |i|
           next if color_levels[i].nil?
-          color_value = color_mapper[color_levels[i]].to_hex_string
+          color_value = color_mapper[color_levels[i]].to_rgb.to_hex_string
           update_legend.(variables[:color], color_formatted_levels[i], color: color_value)
         end
 
-        brief_size = case verbosity
-                     when :brief
-                       size_mapper.map_type == :numeric
-                     when :auto
-                       if size_mapper.levels.nil?
-                         false
-                       else
-                         size_mapper.levels.length > brief_ticks
-                       end
-                     else
-                       false
-                     end
+        brief_size = (size_mapper.map_type == :numeric) && (
+                       verbosity == :brief ||
+                       (verbosity == :auto && size_mapper.levels.length > brief_ticks)
+                     )
         case
         when brief_size
           # TODO: Also support LogLocator
@@ -457,8 +443,9 @@ module Charty
 
         size_levels.length.times do |i|
           next if size_levels[i].nil?
-          size_value = scale_scatter_point_size(size_mapper[size_levels[i]])
-          update_legend.(variables[:size], size_formatted_levels[i], linewidth: size_value, s: size_value)
+          line_width = scale_line_width(size_mapper[size_levels[i]])
+          point_size = scale_scatter_point_size(size_mapper[size_levels[i]])
+          update_legend.(variables[:size], size_formatted_levels[i], linewidth: line_width, s: point_size)
         end
 
         if legend_title.nil? && variables.key?(:style)
@@ -474,10 +461,12 @@ module Charty
                      else
                        ""
                      end
-            # TODO: support dashes
-            update_legend.(variables[:style], level,
-                           marker: marker,
-                           dashes: attrs.fetch(:dashes, ""))
+            dashes = if attrs.key?(:dashes)
+                       attrs[:dashes]
+                     else
+                       ""
+                     end
+            update_legend.(variables[:style], level, marker: marker, dashes: dashes)
           end
         end
 
@@ -505,9 +494,96 @@ module Charty
         min + x * (max - min)
       end
 
+      def line(x, y, variables, color:, color_mapper:, size:, size_mapper:, style:, style_mapper:, ci_params:)
+        kws = {
+          markeredgewidth: 0.75,
+          markeredgecolor: "w",
+        }
+        ax = @pyplot.gca
+
+        x = x.to_a
+        y = y.to_a
+        lines = ax.plot(x, y, **kws)
+
+        lines.each do |line|
+          unless color.nil?
+            line.set_color(color_mapper[color].to_rgb.to_hex_string)
+          end
+
+          unless size.nil?
+            scaled_size = scale_line_width(size_mapper[size])
+            line.set_linewidth(scaled_size.to_f)
+          end
+
+          unless style.nil?
+            attributes = style_mapper[style]
+            if attributes.key?(:dashes)
+              line.set_dashes(attributes[:dashes])
+            end
+            if attributes.key?(:marker)
+              line.set_marker(PYPLOT_MARKERS[attributes[:marker]])
+            end
+          end
+        end
+
+        # TODO: support color, size, and style
+
+        line = lines[0]
+        line_color = line.get_color
+        line_alpha = line.get_alpha
+        line_capstyle = line.get_solid_capstyle
+
+        unless ci_params.nil?
+          y_min = ci_params[:y_min].to_a
+          y_max = ci_params[:y_max].to_a
+          case ci_params[:style]
+          when :band
+            # TODO: support to supply `alpha` via `err_kws`
+            ax.fill_between(x, y_min, y_max, color: line_color, alpha: 0.2)
+          when :bars
+            error_deltas = [
+              y.zip(y_min).map {|v, v_min| v - v_min },
+              y.zip(y_max).map {|v, v_max| v_max - v }
+            ]
+            ebars = ax.errorbar(x, y, error_deltas,
+                                linestyle: "", color: line_color, alpha: line_alpha)
+            ebars.get_children.each do |bar|
+              case bar
+              when Matplotlib.collections.LineCollection
+                bar.set_capstyle(line_capstyle)
+              end
+            end
+          end
+        end
+      end
+
+      def add_line_plot_legend(variables, color_mapper, size_mapper, style_mapper, legend)
+        ax = @pyplot.gca
+        add_relational_plot_legend(
+          ax, variables, color_mapper, size_mapper, style_mapper,
+          legend, [:color, :linewidth, :marker, :dashes]
+        ) do |label, kwargs|
+          ax.plot([], [], label: label, **kwargs)
+        end
+      end
+
+
+      private def scale_line_width(x)
+        min = 0.5 * @default_line_width
+        max = 2.0 * @default_line_width
+
+        min + x * (max - min)
+      end
+
       private def locator_to_legend_entries(locator, limits)
         vmin, vmax = limits
-        raw_levels = locator.tick_values(vmin, vmax).to_a
+        dtype = case vmin
+                when Numeric
+                  :float64
+                else
+                  :object
+                end
+        raw_levels = locator.tick_values(vmin, vmax).astype(dtype).to_a
         raw_levels.reject! {|v| v < limits[0] || limits[1] < v }
 
         formatter = case locator

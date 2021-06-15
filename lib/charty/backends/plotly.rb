@@ -248,12 +248,8 @@ module Charty
         @traces.concat(traces)
       end
 
-      def scatter(x, y, variables, legend:, color:, color_mapper:,
+      def scatter(x, y, variables, color:, color_mapper:,
                   style:, style_mapper:, size:, size_mapper:)
-        if legend == :full
-          warn("Plotly backend does not support full verbosity legend")
-        end
-
         orig_x, orig_y = x, y
 
         x = case x
@@ -277,7 +273,7 @@ module Charty
         end
 
         unless color.nil? && style.nil?
-          grouped_scatter(x, y, variables, legend: legend,
+          grouped_scatter(x, y, variables,
                           color: color, color_mapper: color_mapper,
                           style: style, style_mapper: style_mapper,
                           size: size, size_mapper: size_mapper)
@@ -305,7 +301,7 @@ module Charty
         @traces << trace
       end
 
-      private def grouped_scatter(x, y, variables, legend:, color:, color_mapper:,
+      private def grouped_scatter(x, y, variables, color:, color_mapper:,
                                   style:, style_mapper:, size:, size_mapper:)
         @layout[:showlegend] = true
 
@@ -364,11 +360,202 @@ module Charty
         end
       end
 
+      def add_scatter_plot_legend(variables, color_mapper, size_mapper, style_mapper, legend)
+        if legend == :full
+          warn("Plotly backend does not support full verbosity legend")
+        end
+      end
+
       private def scale_scatter_point_size(x)
         min = 6
         max = 12
 
         min + x * (max - min)
+      end
+
+      def line(x, y, variables, color:, color_mapper:, size:, size_mapper:, style:, style_mapper:, ci_params:)
+        x = case x
+            when Charty::Vector
+              x.to_a
+            else
+              orig_x, x = x, Array.try_convert(x)
+              if x.nil?
+                raise ArgumentError, "Invalid value for x: %p" % orig_x
+              end
+            end
+
+        y = case y
+            when Charty::Vector
+              y.to_a
+            else
+              orig_y, y = y, Array.try_convert(y)
+              if y.nil?
+                raise ArgumentError, "Invalid value for y: %p" % orig_y
+              end
+            end
+
+        name = []
+        legend_title = []
+
+        if color.nil?
+          # TODO: do not hard code this
+          line_color = Colors["#1f77b4"] # the first color of D3's category10 palette
+        else
+          line_color = color_mapper[color].to_rgb
+          name << color
+          legend_title << variables[:color]
+        end
+
+        unless style.nil?
+          marker, dashes = style_mapper[style].values_at(:marker, :dashes)
+          name << style
+          legend_title << variables[:style]
+        end
+
+        trace = {
+          type: :scatter,
+          mode: marker.nil? ? "lines" : "lines+markers",
+          x: x,
+          y: y,
+          line: {
+            shape: :linear,
+            color: line_color.to_hex_string
+          }
+        }
+
+        default_line_width = 2.0
+        unless size.nil?
+          line_width = default_line_width + 2.0 * size_mapper[size]
+          trace[:line][:width] = line_width
+        end
+
+        unless dashes.nil?
+          trace[:line][:dash] = convert_dash_pattern(dashes, line_width || default_line_width)
+        end
+
+        unless marker.nil?
+          trace[:marker] = {
+            line: {
+              width: 1,
+              color: "#fff"
+            },
+            symbol: marker,
+            size: 10
+          }
+        end
+
+        unless ci_params.nil?
+          case ci_params[:style]
+          when :band
+            y_min = ci_params[:y_min].to_a
+            y_max = ci_params[:y_max].to_a
+            @traces << {
+              type: :scatter,
+              x: x,
+              y: y_max,
+              mode: :lines,
+              line: { shape: :linear, width: 0 },
+              showlegend: false
+            }
+            @traces << {
+              type: :scatter,
+              x: x,
+              y: y_min,
+              mode: :lines,
+              line: { shape: :linear, width: 0 },
+              fill: :tonexty,
+              fillcolor: line_color.to_rgba(alpha: 0.2).to_hex_string,
+              showlegend: false
+            }
+          when :bars
+            y_min = ci_params[:y_min].map.with_index {|v, i| y[i] - v }
+            y_max = ci_params[:y_max].map.with_index {|v, i| v - y[i] }
+            trace[:error_y] = {
+              visible: true,
+              type: :data,
+              array: y_max,
+              arrayminus: y_min
+            }
+            unless line_color.nil?
+              trace[:error_y][:color] = line_color
+            end
+            unless line_width.nil?
+              trace[:error_y][:thickness] = line_width
+            end
+          end
+        end
+
+        trace[:name] = name.uniq.join(", ") unless name.empty?
+
+        @traces << trace
+
+        unless legend_title.empty?
+          @layout[:showlegend] = true
+          @layout[:legend] ||= {}
+          @layout[:legend][:title] = {text: legend_title.uniq.join(", ")}
+        end
+      end
+
+      def add_line_plot_legend(variables, color_mapper, size_mapper, style_mapper, legend)
+        if legend == :full
+          warn("Plotly backend does not support full verbosity legend")
+        end
+
+        legend_order = if variables.key?(:color)
+                         if variables.key?(:style)
+                           # both color and style
+                           color_mapper.levels.product(style_mapper.levels)
+                         else
+                           # only color
+                           color_mapper.levels
+                         end
+                       elsif variables.key?(:style)
+                         # only style
+                         style_mapper.levels
+                       else
+                         # no legend entries
+                         nil
+                       end
+
+        if legend_order
+          # sort traces
+          legend_index = legend_order.map.with_index { |name, i|
+            [Array(name).uniq.join(", "), i]
+          }.to_h
+          @traces = @traces.each_with_index.sort_by { |trace, trace_index|
+            index = legend_index.fetch(trace[:name], legend_order.length)
+            [index, trace_index]
+          }.map(&:first)
+
+          # remove duplicated legend entries
+          names = {}
+          @traces.each do |trace|
+            if trace[:showlegend] != false
+              name = trace[:name]
+              if name
+                if names.key?(name)
+                  # Hide duplications
+                  trace[:showlegend] = false
+                else
+                  trace[:showlegend] = true
+                  names[name] = true
+                end
+              else
+                # Hide no name trace in legend
+                trace[:showlegend] = false
+              end
+            end
+          end
+        end
+      end
+
+      private def convert_dash_pattern(pattern, line_width)
+        case pattern
+        when ""
+          :solid
+        else
+          pattern.map {|d| "#{line_width * d}px" }.join(",")
+        end
       end
 
       def set_xlabel(label)

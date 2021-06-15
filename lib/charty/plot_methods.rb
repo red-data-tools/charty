@@ -130,6 +130,76 @@ module Charty
       )
     end
 
+    # Line plot
+    #
+    # @param x [vector-like object, key in data]
+    # @param y [vector-like object, key in data]
+    # @param color [vector-like object, key in data]
+    # @param style [vector-like object, key in data]
+    # @param size [vector-like object, key in data]
+    # @param data [table-like object]
+    # @param key_color [color object]
+    # @param palette [String,Array<Numeric>,Palette]
+    # @param color_order [Array<String>,Array<Symbol>]
+    # @param color_norm
+    # @param sizes [Array, Hash]
+    # @param size_order [Array]
+    # @param size_norm
+    # @param dashes [true, false, Array, Hash]
+    # @param markers [true, false, Array, Hash]
+    # @param style_order [Array]
+    # @param units [vector-like object, key in data]
+    # @param estimator [:mean]
+    # @param n_boot [Integer]
+    # @param random [Integer, Random, nil]
+    # @param sort [true, false]
+    # @param err_style [:band, :bars]
+    # @param err_params [Hash]
+    # @param error_bar
+    # @param x_scale [:linear, :log10]
+    # @param y_scale [:linear, :log10]
+    # @param legend [:auto, :brief, :full, false]
+    #        How to draw legend.  If :brief, numeric color and size variables
+    #        will be represented with a sample of evenly spaced values.  If
+    #        :full, every group will get an entry in the legend.  If :auto,
+    #        choose between brief or full representation based on number of
+    #        levels.  If false, no legend data is added and no legend is drawn.
+    def line_plot(x: nil, y: nil, color: nil, style: nil, size: nil,
+                  data: nil, key_color: nil, palette: nil, color_order: nil,
+                  color_norm: nil, sizes: nil, size_order: nil, size_norm: nil,
+                  markers: nil, dashes: true, style_order: nil,
+                  units: nil, estimator: :mean, n_boot: 1000, random: nil,
+                  sort: true, err_style: :band, err_params: nil, error_bar: [:ci, 95],
+                  x_scale: :linear, y_scale: :linear, legend: :auto, **options, &block)
+      Plotters::LinePlotter.new(
+        data: data,
+        variables: { x: x, y: y, color: color, style: style, size: size },
+        key_color: key_color,
+        palette: palette,
+        color_order: color_order,
+        color_norm: color_norm,
+        sizes: sizes,
+        size_order: size_order,
+        size_norm: size_norm,
+        markers: markers,
+        dashes: dashes,
+        style_order: style_order,
+        units: units,
+        estimator: estimator,
+        n_boot: n_boot,
+        random: random,
+        sort: sort,
+        err_style: err_style,
+        err_params: err_params,
+        error_bar: error_bar,
+        x_scale: x_scale,
+        y_scale: y_scale,
+        legend: legend,
+        **options,
+        &block
+      )
+    end
+
     # Scatter plot
     #
     # @param x [vector-like object, key in data]

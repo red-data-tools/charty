@@ -36,32 +36,114 @@ module Charty
       end
     end
 
+    # TODO: This should be replaced with red-colors's Normalize feature
+    class SimpleNormalizer
+      def initialize(vmin=nil, vmax=nil)
+        @vmin = vmin
+        @vmax = vmax
+      end
+
+      attr_accessor :vmin, :vmax
+
+      def call(value, clip=nil)
+        scalar_p = false
+        vector_p = false
+        case value
+        when Charty::Vector
+          vector_p = true
+          value = value.to_a
+        when Array
+          # do nothing
+        else
+          scalar_p = true
+          value = [value]
+        end
+
+        @vmin = value.min if vmin.nil?
+        @vmax = value.max if vmax.nil?
+
+        result = value.map {|x| (x - vmin) / (vmax - vmin).to_f }
+
+        case
+        when scalar_p
+          result[0]
+        when vector_p
+          Charty::Vector.new(result, index: value.index)
+        else
+          result
+        end
+      end
+    end
+
     class ColorMapper < BaseMapper
       private def initialize_mapping(palette, order, norm)
         @palette = palette
         @order = order
-        @norm = norm
 
         if plotter.variables.key?(:color)
           data = plotter.plot_data[:color]
         end
 
         if data && data.notnull.any?
-          @map_type = infer_map_type(@palette, @norm, @plotter.input_format, @plotter.var_types[:color])
+          @map_type = infer_map_type(palette, norm, @plotter.input_format, @plotter.var_types[:color])
 
           case @map_type
           when :numeric
-            raise NotImplementedError,
-                  "numeric color mapping is not supported"
+            @levels, @lookup_table, @norm, @cmap = numeric_mapping(data, palette, norm)
           when :categorical
             @cmap = nil
             @norm = nil
-            @levels, @lookup_table = categorical_mapping(data, @palette, @order)
+            @levels, @lookup_table = categorical_mapping(data, palette, order)
           else
             raise NotImplementedError,
                   "datetime color mapping is not supported"
           end
         end
+      end
+
+      private def numeric_mapping(data, palette, norm)
+        case palette
+        when Hash
+          levels = palette.keys.sort
+          colors = palette.values_at(*levels)
+          cmap = Colors::ListedColormap.new(colors)
+          lookup_table = palette.dup
+        else
+          levels = data.drop_na.unique_values
+          levels.sort!
+
+          palette ||= "ch:"
+          cmap = case palette
+                 when Colors::Colormap
+                   palette
+                 else
+                   Palette.new(palette, 256).to_colormap
+                 end
+
+          case norm
+          when nil
+            norm = SimpleNormalizer.new
+          when Array
+            norm = SimpleNormalizer.new(*norm)
+          #when Colors::Normalizer
+          # TODO: Must support red-color's Normalize feature
+          else
+            raise ArgumentError,
+                  "`color_norm` must be nil, Array, or Normalizer object"
+          end
+
+          # initialize norm
+          norm.(data.drop_na.to_a)
+
+          lookup_table = levels.map { |level|
+            [
+              level,
+              cmap[norm.(level)]
+            ]
+          }.to_h
+        end
+
+        return levels, lookup_table, norm, cmap
       end
 
       private def categorical_mapping(data, palette, order)
@@ -108,7 +190,7 @@ module Charty
         end
       end
 
-      attr_reader :palette, :order, :norm, :levels, :lookup_table, :map_type
+      attr_reader :palette, :norm, :levels, :lookup_table, :map_type
 
       def inverse_lookup_table
         lookup_table.invert
@@ -119,61 +201,21 @@ module Charty
           @lookup_table[key]
         elsif @norm
           # Use the colormap to interpolate between existing datapoints
-          raise NotImplementedError,
-                "Palette interpolation is not implemented yet"
-          # begin
-          #   normed = @norm.(key)
-          # rescue ArgumentError, TypeError => err
-          #   if Util.nan?(key)
-          #     return "#000000"
-          #   else
-          #     raise err
-          #   end
-          # end
+          begin
+            normed = @norm.(key)
+            @cmap[normed]
+          rescue ArgumentError, TypeError => err
+            if Util.nan?(key)
+              return "#000000"
+            else
+              raise err
+            end
+          end
         end
       end
     end
 
     class SizeMapper < BaseMapper
-      # TODO: This should be replaced with red-colors's Normalize feature
-      class SimpleNormalizer
-        def initialize(vmin=nil, vmax=nil)
-          @vmin = vmin
-          @vmax = vmax
-        end
-
-        attr_accessor :vmin, :vmax
-
-        def call(value, clip=nil)
-          scalar_p = false
-          vector_p = false
-          case value
-          when Charty::Vector
-            vector_p = true
-            value = value.to_a
-          when Array
-            # do nothing
-          else
-            scalar_p = true
-            value = [value]
-          end
-
-          @vmin = value.min if vmin.nil?
-          @vmax = value.max if vmax.nil?
-
-          result = value.map {|x| (x - vmin) / (vmax - vmin).to_f }
-
-          case
-          when scalar_p
-            result[0]
-          when vector_p
-            Charty::Vector.new(result, index: value.index)
-          else
-            result
-          end
-        end
-      end
-
       private def initialize_mapping(sizes, order, norm)
         @sizes = sizes
         @order = order
@@ -280,7 +322,7 @@ module Charty
         return levels, lookup_table
       end
 
-      attr_reader :palette, :order, :norm, :levels
+      attr_reader :palette, :order, :norm, :levels, :lookup_table, :map_type
 
       def lookup_single_value(key)
         if @lookup_table.key?(key)
@@ -308,13 +350,14 @@ module Charty
         @levels = data.categorical_order(order)
 
         markers = map_attributes(markers, @levels, unique_markers(@levels.length), :markers)
-
-        # TODO: dashes support
+        dashes = map_attributes(dashes, @levels, unique_dashes(@levels.length), :dashes)
 
         @lookup_table = @levels.map {|key|
           record = {
-            marker: markers[key]
+            marker: markers[key],
+            dashes: dashes[key]
           }
+          record.compact!
           [key, record]
         }.to_h
       end
@@ -330,6 +373,10 @@ module Charty
                 "Too many markers are required (%p for %p)" % [n, MARKER_NAMES.length]
         end
         MARKER_NAMES[0, n]
+      end
+
+      private def unique_dashes(n)
+        DashPatternGenerator.take(n)
       end
 
       private def map_attributes(vals, levels, defaults, attr)
@@ -349,7 +396,7 @@ module Charty
                   "%he `%s` argument has the wrong number of values" % attr
           end
           return levels.zip(vals).to_h
-        when nil
+        when nil, false
           return {}
         else
           raise ArgumentError,
@@ -383,13 +430,19 @@ module Charty
         setup_variables
       end
 
-      attr_reader :style, :size
+      attr_reader :style, :size, :units
 
       attr_reader :color_norm
 
       attr_reader :sizes, :size_order, :size_norm
 
-      attr_reader :markers, :style_order
+      attr_reader :markers, :dashes, :style_order
+
+      attr_reader :legend
+
+      def units=(units)
+        @units = check_dimension(units, :units)
+      end
 
       def style=(val)
         @style = check_dimension(val, :style)
@@ -434,10 +487,31 @@ module Charty
         val
       end
 
+      def dashes=(val)
+        @dashes = check_dashes(val)
+      end
+
+      private def check_dashes(val)
+        # TODO
+        val
+      end
+
       def style_order=(val)
         unless val.nil?
           raise NotImplementedError,
                 "Specifying style_order is not supported yet"
+        end
+      end
+
+      def legend=(val)
+        case val
+        when :auto, :brief, :full, false
+          @legend = val
+        when "auto", "brief", "full"
+          @legend = val.to_sym
+        else
+          raise ArgumentError,
+                "invalid value of legend (%p for :auto, :brief, :full, or false)" % val
         end
       end
 
@@ -486,11 +560,7 @@ module Charty
       end
 
       private def setup_variables_with_long_form_dataset
-        if data.nil? || data.empty?
-          @plot_data = Charty::Table.new({})
-          @variables = {}
-          return
-        end
+        self.data = {} if data.nil?
 
         plot_data = {}
         variables = {}
@@ -500,11 +570,12 @@ module Charty
           y: self.y,
           color: self.color,
           style: self.style,
-          size: self.size
+          size: self.size,
+          units: self.units
         }.each do |key, val|
           next if val.nil?
 
-          if data.column_names.include?(val)
+          if data.column?(val)
             plot_data[key] = data[val]
             variables[key] = val
           else

@@ -83,9 +83,9 @@ module Charty
         "structured bootstrapping has not been supported yet"
     end
 
-    def self.bootstrap_ci(*vectors, which, n_boot: 2000, func: :mean, units: nil, random: nil)
+    def self.bootstrap_ci(*vectors, width, n_boot: 2000, func: :mean, units: nil, random: nil)
       boot = bootstrap(*vectors, n_boot: n_boot, func: func, units: units, random: random)
-      q = [50 - which / 2, 50 + which / 2]
+      q = [50 - width / 2, 50 + width / 2]
       if boot.respond_to?(:percentile)
         boot.percentile(q)
       else
