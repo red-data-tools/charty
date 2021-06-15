@@ -184,6 +184,7 @@ module Charty
         markers: markers,
         dashes: dashes,
         style_order: style_order,
+        units: units,
         estimator: estimator,
         n_boot: n_boot,
         random: random,

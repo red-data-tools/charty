@@ -120,14 +120,11 @@ module Charty
         end
       end
 
+      # TODO: Move units to AbstractPlotter
       attr_reader :units
 
       def units=(units)
         @units = check_dimension(units, :units)
-        unless units.nil?
-          raise NotImplementedError,
-                "Specifying units variable is not supported yet"
-        end
       end
 
       include RandomSupport
@@ -272,7 +269,7 @@ module Charty
           # TODO: perform inverse conversion of axis scaling before plot
 
           unit_grouping = if self.variables.include?(:units)
-                            sub_data.group_by(:units)
+                            sub_data.group_by(:units).each_group
                           else
                             { nil => sub_data }
                           end

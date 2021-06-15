@@ -566,7 +566,8 @@ module Charty
           y: self.y,
           color: self.color,
           style: self.style,
-          size: self.size
+          size: self.size,
+          units: self.units
         }.each do |key, val|
           next if val.nil?
 
