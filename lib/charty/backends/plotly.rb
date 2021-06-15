@@ -500,6 +500,53 @@ module Charty
         if legend == :full
           warn("Plotly backend does not support full verbosity legend")
         end
+
+        legend_order = if variables.key?(:color)
+                         if variables.key?(:style)
+                           # both color and style
+                           color_mapper.levels.product(style_mapper.levels)
+                         else
+                           # only color
+                           color_mapper.levels
+                         end
+                       elsif variables.key?(:style)
+                         # only style
+                         style_mapper.levels
+                       else
+                         # no legend entries
+                         nil
+                       end
+
+        if legend_order
+          # sort traces
+          legend_index = legend_order.map.with_index { |name, i|
+            [Array(name).uniq.join(", "), i]
+          }.to_h
+          @traces = @traces.each_with_index.sort_by { |trace, trace_index|
+            index = legend_index.fetch(trace[:name], legend_order.length)
+            [index, trace_index]
+          }.map(&:first)
+
+          # remove duplicated legend entries
+          names = {}
+          @traces.each do |trace|
+            if trace[:showlegend] != false
+              name = trace[:name]
+              if name
+                if names.key?(name)
+                  # Hide duplications
+                  trace[:showlegend] = false
+                else
+                  trace[:showlegend] = true
+                  names[name] = true
+                end
+              else
+                # Hide no name trace in legend
+                trace[:showlegend] = false
+              end
+            end
+          end
+        end
       end
 
       private def convert_dash_pattern(pattern, line_width)
