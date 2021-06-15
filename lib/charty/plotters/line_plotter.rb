@@ -120,13 +120,6 @@ module Charty
         end
       end
 
-      # TODO: Move units to AbstractPlotter
-      attr_reader :units
-
-      def units=(units)
-        @units = check_dimension(units, :units)
-      end
-
       include RandomSupport
 
       attr_reader :sort, :err_style, :err_kws, :error_bar, :x_scale, :y_scale

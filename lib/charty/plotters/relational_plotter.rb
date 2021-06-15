@@ -430,7 +430,7 @@ module Charty
         setup_variables
       end
 
-      attr_reader :style, :size
+      attr_reader :style, :size, :units
 
       attr_reader :color_norm
 
@@ -439,6 +439,10 @@ module Charty
       attr_reader :markers, :dashes, :style_order
 
       attr_reader :legend
+
+      def units=(units)
+        @units = check_dimension(units, :units)
+      end
 
       def style=(val)
         @style = check_dimension(val, :style)
