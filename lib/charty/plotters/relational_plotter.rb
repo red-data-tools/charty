@@ -375,17 +375,8 @@ module Charty
         MARKER_NAMES[0, n]
       end
 
-      DASH_NAMES = [
-        :solid, :dash, :dot, :dashdot, :longdashdot, :longdash,
-      ].freeze
-
       private def unique_dashes(n)
-        if n > DASH_NAMES.length
-          raise ArgumentError,
-                "Too many dash patterns are required " +
-                "(%p for %p)" % [n, DASH_NAMES.length]
-        end
-        DASH_NAMES[0, n]
+        DashPatternGenerator.take(n)
       end
 
       private def map_attributes(vals, levels, defaults, attr)

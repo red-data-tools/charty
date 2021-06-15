@@ -423,13 +423,14 @@ module Charty
           }
         }
 
+        default_line_width = 2.0
         unless size.nil?
-          line_width = 2.0 + 2.0 * size_mapper[size]
+          line_width = default_line_width + 2.0 * size_mapper[size]
           trace[:line][:width] = line_width
         end
 
         unless dashes.nil?
-          trace[:line][:dash] = dashes
+          trace[:line][:dash] = convert_dash_pattern(dashes, line_width || default_line_width)
         end
 
         unless marker.nil?
@@ -498,6 +499,15 @@ module Charty
       def add_line_plot_legend(variables, color_mapper, size_mapper, style_mapper, legend)
         if legend == :full
           warn("Plotly backend does not support full verbosity legend")
+        end
+      end
+
+      private def convert_dash_pattern(pattern, line_width)
+        case pattern
+        when ""
+          :solid
+        else
+          pattern.map {|d| "#{line_width * d}px" }.join(",")
         end
       end
 

@@ -368,15 +368,6 @@ module Charty
         end
       end
 
-      PYPLOT_DASHES = {
-              solid: "",
-               dash: [4, 1.5].freeze,
-                dot: [1, 1].freeze,
-            dashdot: [3, 1.25, 1.5, 1.25].freeze,
-        longdashdot: [5, 1, 1, 1].freeze,
-           longdash: [6, 1.5].freeze
-      }.freeze
-
       RELATIONAL_PLOT_LEGEND_BRIEF_TICKS = 6
 
       private def add_relational_plot_legend(ax, variables, color_mapper, size_mapper, style_mapper,
@@ -471,7 +462,7 @@ module Charty
                        ""
                      end
             dashes = if attrs.key?(:dashes)
-                       PYPLOT_DASHES[attrs[:dashes]]
+                       attrs[:dashes]
                      else
                        ""
                      end
@@ -527,7 +518,7 @@ module Charty
           unless style.nil?
             attributes = style_mapper[style]
             if attributes.key?(:dashes)
-              line.set_dashes(PYPLOT_DASHES[attributes[:dashes]])
+              line.set_dashes(attributes[:dashes])
             end
             if attributes.key?(:marker)
               line.set_marker(PYPLOT_MARKERS[attributes[:marker]])
