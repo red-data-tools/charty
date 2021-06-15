@@ -201,6 +201,8 @@ module Charty
         case level
         when Numeric
           # nothing to do
+        when nil
+          level = DEFAULT_ERROR_BAR_LEVELS[method]
         else
           raise ArgumentError,
                 "The value of level in `error_bar` array must be a number "
