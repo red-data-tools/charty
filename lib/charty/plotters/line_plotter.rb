@@ -74,9 +74,63 @@ module Charty
         @comp_data = nil
       end
 
-      include EstimationSupport
+      attr_reader :estimator
 
-      undef_method :ci, :ci=, :check_ci
+      def estimator=(estimator)
+        @estimator = check_estimator(estimator)
+      end
+
+      private def check_estimator(value)
+        case value
+        when nil, false
+          nil
+        when :count, "count"
+          :count
+        when :mean, "mean"
+          :mean
+        when :median
+          raise NotImplementedError,
+                "median estimator has not been supported yet"
+        when Proc
+          raise NotImplementedError,
+                "a callable estimator has not been supported yet"
+        else
+          raise ArgumentError,
+                "invalid value for estimator (%p for :mean)" % value
+        end
+      end
+
+      attr_reader :n_boot
+
+      def n_boot=(n_boot)
+        @n_boot = check_n_boot(n_boot)
+      end
+
+      private def check_n_boot(value)
+        case value
+        when Integer
+          if value <= 0
+            raise ArgumentError,
+                  "n_boot must be larger than zero, but %p is given" % value
+          end
+          value
+        else
+          raise ArgumentError,
+                "invalid value for n_boot (%p for an integer > 0)" % value
+        end
+      end
+
+      attr_reader :units
+
+      def units=(units)
+        @units = check_dimension(units, :units)
+        unless units.nil?
+          raise NotImplementedError,
+                "Specifying units variable is not supported yet"
+        end
+      end
+
+      include RandomSupport
 
       attr_reader :sort, :err_style, :err_kws, :error_bar, :x_scale, :y_scale
 
