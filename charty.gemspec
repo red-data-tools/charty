@@ -26,8 +26,12 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "red-colors"
-  spec.add_dependency "red-palette", ">= 0.4.0"
+  spec.add_dependency "red-colors", ">= 0.3.0"
+  spec.add_dependency "red-palette", ">= 0.5.0"
+
+  spec.add_dependency "matplotlib", ">= 1.2.0"
+  spec.add_dependency "pandas", ">= 0.3.5"
+  spec.add_dependency "playwright-ruby-client"
 
   spec.add_development_dependency "bundler", ">= 1.16"
   spec.add_development_dependency "rake"
@@ -37,6 +41,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "matrix" # need for daru on Ruby > 3.0
   spec.add_development_dependency "activerecord"
   spec.add_development_dependency "sqlite3"
-  spec.add_development_dependency "playwright-ruby-client"
   spec.add_development_dependency "iruby", ">= 0.7.0"
 end
