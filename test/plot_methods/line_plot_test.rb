@@ -4,6 +4,15 @@ class PlotMethodLinePlotTest < Test::Unit::TestCase
   sub_test_case("rendering") do
     include Charty::RenderingTestHelpers
 
+    def test_line_plot_with_flat_vector
+      backend_name = :pyplot
+      setup_backend(backend_name)
+      plot = Charty.line_plot(data: [1, 2, 3, 4, 5])
+      assert_nothing_raised do
+        render_plot(backend_name, plot)
+      end
+    end
+
     def test_line_plot_with_vectors
       backend_name = :pyplot
       setup_backend(backend_name)
@@ -14,8 +23,7 @@ class PlotMethodLinePlotTest < Test::Unit::TestCase
     end
 
     data(:adapter, [:array], keep: true)
-    data(:backend, [:pyplot], keep: true)
-    #data(:backend, [:pyplot, :plotly], keep: true)
+    data(:backend, [:pyplot, :plotly], keep: true)
     def test_line_plot(data)
       adapter_name, backend_name = data.values_at(:adapter, :backend)
       setup_data(adapter_name)

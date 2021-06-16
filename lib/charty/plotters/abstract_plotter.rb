@@ -38,6 +38,8 @@ module Charty
         @data = case data
                 when nil, Charty::Table
                   data
+                when method(:array?)
+                  Charty::Vector.new(data)
                 else
                   Charty::Table.new(data)
                 end

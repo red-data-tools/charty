@@ -27,6 +27,7 @@ module Charty
         case data
         when Charty::Vector
           true
+        # TODO: Use vector adapter to detect them:
         when Array, method(:daru_vector?), method(:narray_vector?), method(:nmatrix_vector?),
              method(:numpy_vector?), method(:pandas_series?)
           true

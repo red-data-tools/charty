@@ -421,6 +421,13 @@ module Charty
     end
 
     class RelationalPlotter < AbstractPlotter
+      def flat_structure
+        {
+          x: :index,
+          y: :values
+        }
+      end
+
       def initialize(x, y, color, style, size, data: nil, **options, &block)
         super(x, y, color, data: data, **options, &block)
 
@@ -518,7 +525,7 @@ module Charty
       attr_reader :input_format, :plot_data, :variables, :var_types
 
       private def setup_variables
-        if x.nil? && y.nl?
+        if x.nil? && y.nil?
           @input_format = :wide
           setup_variables_with_wide_form_dataset
         else
@@ -548,11 +555,23 @@ module Charty
           return
         end
 
-        # TODO: detect flat data
-        flat = false
-
+        flat = data.is_a?(Charty::Vector)
         if flat
-          # TODO: Support flat data
+          @plot_data = {}
+          @variables = {}
+
+          [:x, :y].each do |var|
+            case self.flat_structure[var]
+            when :index
+              @plot_data[var] = data.index.to_a
+              @variables[var] = data.index.name
+            when :values
+              @plot_data[var] = data.to_a
+              @variables[var] = data.name
+            end
+          end
+
+          @plot_data = Charty::Table.new(@plot_data)
         else
           raise NotImplementedError,
                 "wide-form input is not supported"
