@@ -166,6 +166,16 @@ class PlotMethodsBarPlotTest < Test::Unit::TestCase
       end
     end
 
+    def test_bar_plot_with_vectors(data)
+      adapter_name, backend_name = data.values_at(:adapter, :backend)
+      setup_data(adapter_name)
+      setup_backend(backend_name)
+      plot = Charty.bar_plot(x: @data[:x].to_a, y: @data[:y].to_a)
+      assert_nothing_raised do
+        render_plot(backend_name, plot)
+      end
+    end
+
     def test_bar_plot_with_color(data)
       adapter_name, backend_name = data.values_at(:adapter, :backend)
       setup_data(adapter_name)
