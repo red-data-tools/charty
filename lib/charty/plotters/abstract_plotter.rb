@@ -231,12 +231,7 @@ module Charty
       end
 
       def to_iruby
-        render(notebook: iruby_notebook?)
-      end
-
-      private def iruby_notebook?
-        return false unless defined?(IRuby)
-        true # TODO: Check the server is notebook or not
+        render(notebook: IRubyHelper.iruby_notebook?)
       end
     end
   end
