@@ -4,6 +4,7 @@ require "tmpdir"
 
 require_relative "plotly_helpers/html_renderer"
 require_relative "plotly_helpers/notebook_renderer"
+require_relative "plotly_helpers/plotly_renderer"
 
 module Charty
   module Backends
@@ -751,8 +752,9 @@ module Charty
       end
 
       private def render_plotly_mimetype_bundle
-        # TODO: implement
-        nil
+        renderer = PlotlyHelpers::PlotlyRenderer.new
+        obj = renderer.render({data: @traces, layout: @layout})
+        [ "application/vnd.plotly.v1+json", obj ]
       end
 
       private def render_notebook_bundle
