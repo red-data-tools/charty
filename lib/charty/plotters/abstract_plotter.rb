@@ -212,17 +212,19 @@ module Charty
       end
 
       def save(filename, **kwargs)
-        backend = Backends.current
-        backend.begin_figure
-        render_plot(backend, **kwargs)
+        call_render_plot(notebook: false, **kwargs)
         backend.save(filename, **kwargs)
       end
 
       def render(notebook: false, **kwargs)
         backend = Backends.current
+        call_render_plot(backend, notebook: notebook, **kwargs)
+        backend.render(notebook: notebook, **kwargs)
+      end
+
+      private def call_render_plot(backend, notebook: false, **kwargs)
         backend.begin_figure
         render_plot(backend, notebook: notebook, **kwargs)
-        backend.render(notebook: notebook, **kwargs)
       end
 
       private def render_plot(*, **)
@@ -232,6 +234,16 @@ module Charty
 
       def to_iruby
         render(notebook: IRubyHelper.iruby_notebook?)
+      end
+
+      def to_iruby_mimebundle(include: [], exclude: [])
+        backend = Backends.current
+        if backend.respond_to?(:render_mimebundle)
+          call_render_plot(backend, notebook: true)
+          backend.render_mimebundle(include: include, exclude: exclude)
+        else
+          {}
+        end
       end
     end
   end

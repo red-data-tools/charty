@@ -3,6 +3,7 @@ require_relative "charty/version"
 require "colors"
 require "palette"
 
+require_relative "charty/cache_dir"
 require_relative "charty/util"
 require_relative "charty/iruby_helper"
 require_relative "charty/dash_pattern_generator"
