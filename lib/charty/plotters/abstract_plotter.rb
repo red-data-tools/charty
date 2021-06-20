@@ -212,7 +212,8 @@ module Charty
       end
 
       def save(filename, **kwargs)
-        call_render_plot(notebook: false, **kwargs)
+        backend = Backends.current
+        call_render_plot(backend, notebook: false, **kwargs)
         backend.save(filename, **kwargs)
       end
 
