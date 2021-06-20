@@ -703,7 +703,7 @@ module Charty
 
       def render(element_id: nil, format: nil, notebook: false)
         case format
-        when :html, "html"
+        when :html, "html", nil
           format = "text/html"
         when :png, "png"
           format = "image/png"
@@ -712,7 +712,7 @@ module Charty
         end
 
         case format
-        when "text/html", nil
+        when "text/html"
           # render html after this case cause
         when "image/png", "image/jpeg"
           image_data = render_image(format, element_id: element_id, notebook: false)
@@ -729,7 +729,12 @@ module Charty
         element_id = SecureRandom.uuid if element_id.nil?
 
         renderer = PlotlyHelpers::HtmlRenderer.new(full_html: !notebook)
-        renderer.render({data: @traces, layout: @layout}, element_id: element_id)
+        html = renderer.render({data: @traces, layout: @layout}, element_id: element_id)
+        if notebook
+          [format, html]
+        else
+          html
+        end
       end
 
       def render_mimebundle(include: [], exclude: [])
