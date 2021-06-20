@@ -670,6 +670,7 @@ module Charty
 
       def render(notebook: false)
         show
+        nil
       end
 
       SAVEFIG_OPTIONAL_PARAMS = [
