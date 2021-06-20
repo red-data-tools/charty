@@ -31,7 +31,7 @@ module Charty
               <html>
               <head><meta charset="utf-8" /></head>
               <body>
-                {div}
+                %{div}
               </body>
               </html>
             END_HTML
