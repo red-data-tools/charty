@@ -2,6 +2,10 @@ require "json"
 require "securerandom"
 require "tmpdir"
 
+require_relative "plotly_helpers/html_renderer"
+require_relative "plotly_helpers/notebook_renderer"
+require_relative "plotly_helpers/plotly_renderer"
+
 module Charty
   module Backends
     class Plotly
@@ -699,7 +703,7 @@ module Charty
 
       def render(element_id: nil, format: nil, notebook: false)
         case format
-        when :html, "html"
+        when :html, "html", nil
           format = "text/html"
         when :png, "png"
           format = "image/png"
@@ -708,7 +712,7 @@ module Charty
         end
 
         case format
-        when "text/html", nil
+        when "text/html"
           # render html after this case cause
         when "image/png", "image/jpeg"
           image_data = render_image(format, element_id: element_id, notebook: false)
@@ -722,30 +726,52 @@ module Charty
                 "Unsupported mime type to render: %p" % format
         end
 
-        # TODO: size should be customizable
-        html = <<~HTML
-          <div id="%{id}" style="width: 100%%; height:525px;"></div>
-          <script type="text/javascript">
-            requirejs(["plotly"], function (Plotly) {
-              Plotly.newPlot("%{id}", %{data}, %{layout});
-            });
-          </script>
-        HTML
-
         element_id = SecureRandom.uuid if element_id.nil?
 
-        html %= {
-          id: element_id,
-          data: JSON.dump(@traces),
-          layout: JSON.dump(@layout)
-        }
-
+        renderer = PlotlyHelpers::HtmlRenderer.new(full_html: !notebook)
+        html = renderer.render({data: @traces, layout: @layout}, element_id: element_id)
         if notebook
-          IRubyOutput.prepare
-          ["text/html", html]
+          [format, html]
         else
           html
         end
+      end
+
+      def render_mimebundle(include: [], exclude: [])
+        types = case
+               when IRubyHelper.vscode?,
+                 IRubyHelper.nteract?
+                 [:plotly_mimetype]
+               else
+                 [:plotly_mimetype, :notebook]
+               end
+        bundle = Util.filter_map(types) { |type|
+          case type
+          when :plotly_mimetype
+            render_plotly_mimetype_bundle
+          when :notebook
+            render_notebook_bundle
+          end
+        }.to_h
+        bundle
+      end
+
+      private def render_plotly_mimetype_bundle
+        renderer = PlotlyHelpers::PlotlyRenderer.new
+        obj = renderer.render({data: @traces, layout: @layout})
+        [ "application/vnd.plotly.v1+json", obj ]
+      end
+
+      private def render_notebook_bundle
+        renderer = self.class.notebook_renderer
+        renderer.activate
+        html = renderer.render({data: @traces, layout: @layout})
+        [ "text/html", html ]
+      end
+
+      # for new APIs
+      def self.notebook_renderer
+        @notebook_renderer ||= PlotlyHelpers::NotebookRenderer.new
       end
 
       private def render_image(format=nil, filename: nil, element_id: nil, notebook: false,

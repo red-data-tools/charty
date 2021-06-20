@@ -27,6 +27,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "red-colors", ">= 0.3.0"
+  spec.add_dependency "red-datasets", ">= 0.1.2"
   spec.add_dependency "red-palette", ">= 0.5.0"
 
   spec.add_dependency "matplotlib", ">= 1.2.0"
@@ -36,7 +37,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler", ">= 1.16"
   spec.add_development_dependency "rake"
   spec.add_development_dependency "test-unit"
-  spec.add_development_dependency "red-datasets", ">= 0.1.2"
   spec.add_development_dependency "daru"
   spec.add_development_dependency "matrix" # need for daru on Ruby > 3.0
   spec.add_development_dependency "activerecord"
