@@ -570,14 +570,15 @@ module Charty
       }.freeze
 
       def univariate_histogram(data, name, variable_name, stat,
-                               bin_start, bin_end, bin_size, alpha)
+                               bin_start, bin_end, bin_size, alpha,
+                               color, color_mapper)
         orientation = case variable_name
                       when :x
                         :v
                       else
                         :h
                       end
-        @traces << {
+        trace = {
           type: "histogram",
           name: name.to_s,
           variable_name => data.to_a,
@@ -590,6 +591,14 @@ module Charty
           },
           opacity: alpha
         }
+
+        if color
+          trace[:marker] = {
+            color: color_mapper[color].to_rgb.to_hex_string
+          }
+        end
+
+        @traces << trace
 
         @layout[:bargap] = 0.05
 

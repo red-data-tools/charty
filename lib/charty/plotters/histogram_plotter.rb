@@ -125,6 +125,8 @@ module Charty
       end
 
       private def draw_univariate_histogram(backend)
+        map_color(palette: palette, order: color_order, norm: color_norm)
+
         # TODO: calculate histogram here and use bar plot to visualize
         data_variable = self.univariate_variable
 
@@ -156,7 +158,8 @@ module Charty
           observations = sub_data[data_variable].drop_na.to_a
 
           backend.univariate_histogram(observations, name, data_variable, stat,
-                                       bin_start, bin_end, bin_size, alpha)
+                                       bin_start, bin_end, bin_size, alpha,
+                                       name, @color_mapper)
         end
       end
 

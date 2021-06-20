@@ -126,6 +126,18 @@ module Charty
           @plot_data[var].notnull.any?
         end
       end
+
+      private def map_color(palette: nil, order: nil, norm: nil)
+        @color_mapper = ColorMapper.new(self, palette, order, norm)
+      end
+
+      private def map_size(sizes: nil, order: nil, norm: nil)
+        @size_mapper = SizeMapper.new(self, sizes, order, norm)
+      end
+
+      private def map_style(markers: nil, dashes: nil, order: nil)
+        @style_mapper = StyleMapper.new(self, markers, dashes, order)
+      end
     end
   end
 end
