@@ -134,7 +134,11 @@ module Charty
         each_subset([:color], processed: true) do |sub_vars, sub_data|
           key = sub_vars.to_a
           observations = sub_data[data_variable].drop_na.to_a
-          hist = Statistics.histogram(observations)
+          hist = if bins != :auto
+                   Statistics.histogram(observations, bins)
+                 else
+                   Statistics.histogram(observations)
+                 end
           histograms[key] = hist
         end
 
