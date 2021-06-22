@@ -180,6 +180,10 @@ module Charty
           end
           backend.set_ylabel(ylabel) if ylabel
           backend.set_xlabel(xlabel) if xlabel
+
+          if self.variables.key?(:color)
+            backend.legend(loc: :best, title: self.variables[:color])
+          end
         end
       end
     end
