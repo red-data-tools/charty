@@ -106,7 +106,7 @@ module Charty
         }.each do |key, val|
           next if val.nil?
 
-          if data.column_names.include?(val)
+          if data.column?(val)
             plot_data[key] = data[val]
             variables[key] = val
           else
