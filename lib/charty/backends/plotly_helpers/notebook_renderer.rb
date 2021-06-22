@@ -49,6 +49,7 @@ module Charty
               </script>
             END_SCRIPT
           end
+          IRuby.display(script, mime: "text/html")
         end
 
         def render(figure, element_id: nil, post_script: nil)
