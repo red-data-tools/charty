@@ -12,16 +12,6 @@ module Charty
         ([:x, :y] & self.variables.keys)[0]
       end
 
-      attr_reader :weights
-
-      def weights=(val)
-        @weights = check_weights(val)
-      end
-
-      private def check_weights(val)
-        raise NotImplementedError, "weights is not supported yet"
-      end
-
       attr_reader :stat
 
       def stat=(val)
@@ -68,7 +58,13 @@ module Charty
       # TODO: bin_range
       # TODO: discrete
       # TODO: cumulative
-      # TODO: common_bins
+
+      attr_reader :common_bins
+
+      def common_bins=(val)
+        @common_bins = check_boolean(val, :common_bins)
+      end
+
       # TODO: common_norm
 
       attr_reader :multiple
@@ -130,25 +126,27 @@ module Charty
         # TODO: calculate histogram here and use bar plot to visualize
         data_variable = self.univariate_variable
 
-        histograms = {}
-        each_subset([:color], processed: true) do |sub_vars, sub_data|
-          key = sub_vars.to_a
-          observations = sub_data[data_variable].drop_na.to_a
-          hist = if bins != :auto
-                   Statistics.histogram(observations, bins)
-                 else
-                   Statistics.histogram(observations)
-                 end
-          histograms[key] = hist
-        end
+        if common_bins
+          all_data = processed_data.drop_na
+          all_observations = all_data[data_variable].to_a
 
-        bin_start, bin_end, bin_size = nil
-        histograms.each do |_, hist|
-          s, e = hist.edge.minmax
-          z = (e - s).to_f / (hist.edge.length - 1)
-          bin_start = [bin_start, s].compact.min
-          bin_end   = [bin_end, e].compact.max
-          bin_size  = [bin_size, z].compact.min
+          bins = self.bins
+          bins = 10 if self.variables.key?(:color) && bins == :auto
+
+          case bins
+          when Integer
+            start, stop = all_observations.minmax
+            if start == stop
+              start -= 0.5
+              stop += 0.5
+            end
+            common_bin_edges = Linspace.new(start .. stop, bins + 1).map(&:to_f)
+          else
+            params = {}
+            params[:weights] = all_data[:weights].to_a if all_data.column?(:weights)
+            h = Statistics.histogram(all_observations, bins, **params)
+            common_bin_edges = h.edges
+          end
         end
 
         if self.variables.key?(:color)
@@ -158,12 +156,15 @@ module Charty
         end
 
         each_subset([:color], processed: true) do |sub_vars, sub_data|
-          name = sub_vars[:color]
           observations = sub_data[data_variable].drop_na.to_a
+          params = {}
+          params[:weights] = sub_data[:weights].to_a if sub_data.column?(:weights)
+          params[:edges] = common_bin_edges if common_bin_edges
+          hist = Statistics.histogram(observations, bins, **params)
 
-          backend.univariate_histogram(observations, name, data_variable, stat,
-                                       bin_start, bin_end, bin_size, alpha,
-                                       name, @color_mapper)
+          name = sub_vars[:color]
+          backend.univariate_histogram(hist, name, data_variable, stat,
+                                       alpha, name, @color_mapper)
         end
       end
 

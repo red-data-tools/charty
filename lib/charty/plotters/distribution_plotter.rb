@@ -14,6 +14,12 @@ module Charty
         setup_variables
       end
 
+      attr_reader :weights
+
+      def weights=(val)
+        @weights = check_dimension(val, :weights)
+      end
+
       attr_reader :variables
 
       attr_reader :color_norm
@@ -103,6 +109,7 @@ module Charty
           x: self.x,
           y: self.y,
           color: self.color,
+          weights: self.weights
         }.each do |key, val|
           next if val.nil?
 

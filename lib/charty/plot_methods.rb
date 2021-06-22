@@ -249,8 +249,9 @@ module Charty
       )
     end
 
-    def hist_plot(data: nil, x: nil, y: nil, color: nil,
+    def hist_plot(data: nil, x: nil, y: nil, color: nil, weights: nil,
                   stat: :count, bins: :auto,
+                  common_bins: true,
                   key_color: nil, palette: nil, color_order: nil, color_norm: nil,
                   legend: true, **options, &block)
       # TODO: support following arguments
@@ -259,7 +260,6 @@ module Charty
       # - binrange
       # - discrete
       # - cumulative
-      # - common_bins
       # - common_norm
       # - multiple
       # - element
@@ -278,8 +278,10 @@ module Charty
       Plotters::HistogramPlotter.new(
         data: data,
         variables: { x: x, y: y, color: color },
+        weights: weights,
         stat: stat,
         bins: bins,
+        common_bins: common_bins,
         key_color: key_color,
         palette: palette,
         color_order: color_order,

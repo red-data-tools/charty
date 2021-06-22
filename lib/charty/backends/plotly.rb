@@ -569,26 +569,26 @@ module Charty
         probability: "probability".freeze
       }.freeze
 
-      def univariate_histogram(data, name, variable_name, stat,
-                               bin_start, bin_end, bin_size, alpha,
-                               color, color_mapper)
-        orientation = case variable_name
-                      when :x
-                        :v
-                      else
-                        :h
-                      end
+      def univariate_histogram(hist, name, variable_name, stat,
+                               alpha, color, color_mapper)
+        value_axis = variable_name
+        case value_axis
+        when :x
+          weights_axis = :y
+          orientation = :v
+        else
+          weights_axis = :x
+          orientation = :h
+        end
+
+        mid_points = hist.edges.each_cons(2).map {|a, b| a + (b - a) / 2 }
+
         trace = {
-          type: "histogram",
+          type: :bar,
           name: name.to_s,
-          variable_name => data.to_a,
+          value_axis => mid_points,
+          weights_axis => hist.weights,
           orientation: orientation,
-          histnorm: PLOTLY_HISTNORM[stat],
-          "#{variable_name}bins": {
-            start: bin_start,
-            end: bin_end,
-            size: bin_size
-          },
           opacity: alpha
         }
 
