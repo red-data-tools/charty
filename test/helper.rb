@@ -5,6 +5,7 @@ require "tmpdir"
 
 require "active_record"
 require "bigdecimal"
+require "csv"
 require "daru"
 require "datasets"
 require "set" # NOTE: daru needs set

@@ -20,6 +20,8 @@ module Charty
           end
         when Hash
           true
+        when ->(x) { defined?(CSV::Table) && x.is_a?(CSV::Table) }
+          true
         end
       end
 
@@ -79,6 +81,9 @@ module Charty
           else
             unsupported_data_format
           end
+        when ->(x) { defined?(CSV::Table) && x.is_a?(CSV::Table) }
+          columns ||= data.headers
+          arrays = data.headers.map {|x| data[x] }
         else
           unsupported_data_format
         end
