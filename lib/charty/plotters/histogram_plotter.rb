@@ -55,7 +55,35 @@ module Charty
       end
 
       # TODO: bin_width
-      # TODO: bin_range
+
+      attr_reader :bin_range
+
+      def bin_range=(val)
+        @bin_range = check_bin_range(val)
+      end
+
+      private def check_bin_range(val)
+        case val
+        when nil, Range
+          return val
+        when Array
+          if val.length == 2
+            val.each_with_index do |v, i|
+              check_number(v, "bin_range[#{i}]")
+            end
+            return val
+          else
+            amount = val.length < 2 ? "few" : "many"
+            raise ArgumentError,
+                  "Too #{amount} items in `bin_range` array (%p for 2)" % val.length
+          end
+        else
+          raise ArgumentError,
+                "Invalid value for `bin_range` " +
+                "(%p for a range or a pair of numbers)" % val
+        end
+      end
+
       # TODO: discrete
       # TODO: cumulative
 
@@ -135,7 +163,16 @@ module Charty
 
           case bins
           when Integer
-            start, stop = all_observations.minmax
+            case bin_range
+            when Range
+              start = bin_range.begin
+              stop  = bin_range.end
+            when Array
+              start, stop = bin_range.minmax
+            end
+            data_range = all_observations.minmax
+            start ||= data_range[0]
+            stop ||= data_range[1]
             if start == stop
               start -= 0.5
               stop += 0.5
