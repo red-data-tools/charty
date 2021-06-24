@@ -570,7 +570,8 @@ module Charty
       }.freeze
 
       def univariate_histogram(hist, name, variable_name, stat,
-                               alpha, color, color_mapper)
+                               alpha, color, key_color, color_mapper,
+                               _multiple, _element, _fill, _shrink)
         value_axis = variable_name
         case value_axis
         when :x
@@ -592,7 +593,11 @@ module Charty
           opacity: alpha
         }
 
-        if color
+        if color.nil?
+          trace[:marker] = {
+            color: key_color.to_rgb.to_hex_string
+          }
+        else
           trace[:marker] = {
             color: color_mapper[color].to_rgb.to_hex_string
           }

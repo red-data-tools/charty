@@ -8,7 +8,6 @@ class PlotMethodHistPlotTest < Test::Unit::TestCase
     data(:backend, [:pyplot, :plotly], keep: true)
     def test_hist_plot_with_flat_vectors(data)
       backend_name = data[:backend]
-      omit("pyplot is not supported yet") if backend_name == :pyplot
       setup_backend(backend_name)
       data = Array.new(500) { rand }
       plot = Charty.hist_plot(data: data)
@@ -21,7 +20,6 @@ class PlotMethodHistPlotTest < Test::Unit::TestCase
     data(:backend, [:pyplot, :plotly], keep: true)
     def test_hist_plot(data)
       adapter_name, backend_name = data.values_at(:adapter, :backend)
-      omit("pyplot is not supported yet") if backend_name == :pyplot
       setup_data(adapter_name)
       setup_backend(backend_name)
       plot = Charty.hist_plot(data: @data, x: :a)
@@ -32,7 +30,6 @@ class PlotMethodHistPlotTest < Test::Unit::TestCase
 
     def test_hist_plot_color(data)
       adapter_name, backend_name = data.values_at(:adapter, :backend)
-      omit("pyplot is not supported yet") if backend_name == :pyplot
       setup_data(adapter_name)
       setup_backend(backend_name)
       plot = Charty.hist_plot(data: @data, x: :a, color: :c)

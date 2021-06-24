@@ -14,6 +14,7 @@ module Charty
 
       def initialize
         @pyplot = ::Matplotlib::Pyplot
+        @default_edgecolor = Colors["white"].to_rgb
         @default_line_width = ::Matplotlib.rcParams["lines.linewidth"]
         @default_marker_size = ::Matplotlib.rcParams["lines.markersize"]
       end
@@ -573,6 +574,47 @@ module Charty
         max = 2.0 * @default_line_width
 
         min + x * (max - min)
+      end
+
+      def univariate_histogram(hist, name, variable_name, stat,
+                               alpha, color, key_color, color_mapper,
+                               multiple, element, fill, shrink)
+        mid_points = hist.edges.each_cons(2).map {|a, b| a + (b - a) / 2 }
+        orient = variable_name == :x ? :v : :h
+        width = shrink * (hist.edges[1] - hist.edges[0])
+
+        kw = {align: :edge}
+
+        color = if color.nil?
+                  key_color.to_rgb
+                else
+                  color_mapper[color].to_rgb
+                end
+
+        alpha = 1r unless fill
+
+        if fill
+          kw[:facecolor] = color.to_rgba(alpha: alpha).to_hex_string
+          if multiple == :stack || multiple == :fill || element == :bars
+            kw[:edgecolor] = @default_edgecolor.to_hex_string
+          else
+            kw[:edgecolor] = color.to_hex_string
+          end
+        elsif element == :bars
+          kw.delete(:facecolor)
+          kw[:edgecolor] = color.to_rgba(alpha: alpha).to_hex_string
+        else
+          kw[:color] = color.to_rgba(alpha: alpha).to_hex_string
+        end
+
+        kw[:label] = name unless name.nil?
+
+        ax = @pyplot.gca
+        if orient == :v
+          ax.bar(mid_points, hist.weights, width, **kw)
+        else
+          ax.barh(mid_points, hist.weights, width, **kw)
+        end
       end
 
       private def locator_to_legend_entries(locator, limits)

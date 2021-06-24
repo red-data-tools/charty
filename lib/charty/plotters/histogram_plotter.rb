@@ -151,6 +151,19 @@ module Charty
       private def draw_univariate_histogram(backend)
         map_color(palette: palette, order: color_order, norm: color_norm)
 
+        key_color = self.key_color
+        if key_color.nil? && !self.variables.key?(:color)
+          palette = case self.palette
+                    when Palette
+                      self.palette
+                    when nil
+                      Palette.default
+                    else
+                      Palette[self.palette]
+                    end
+          key_color = palette[0]
+        end
+
         # TODO: calculate histogram here and use bar plot to visualize
         data_variable = self.univariate_variable
 
@@ -201,7 +214,8 @@ module Charty
 
           name = sub_vars[:color]
           backend.univariate_histogram(hist, name, data_variable, stat,
-                                       alpha, name, @color_mapper)
+                                       alpha, name, key_color, @color_mapper,
+                                       multiple, :bars, true, 1r)
         end
       end
 
