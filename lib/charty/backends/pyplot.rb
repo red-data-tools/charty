@@ -728,6 +728,7 @@ module Charty
           params[key] = kwargs[key] if kwargs.key?(key)
         end
         @pyplot.savefig(filename, **params)
+        @pyplot.close
       end
 
       def show
