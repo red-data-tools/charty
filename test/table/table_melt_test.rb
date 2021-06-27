@@ -54,6 +54,7 @@ class TableMeltTest < Test::Unit::TestCase
   end
 
   def setup_table_by_pandas(key_type)
+    pandas_required
     csv = csv_table.by_col!
     data = csv.headers.map { |cn|
       [cn, csv[cn]]

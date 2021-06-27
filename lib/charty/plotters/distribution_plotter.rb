@@ -96,18 +96,6 @@ module Charty
 
           @plot_data = Charty::Table.new(@plot_data)
         else
-          numeric_columns = @data.column_names.select do |cn|
-            @data[cn].numeric?
-          end
-          wide_data = @data[numeric_columns]
-
-          @plot_data = wide_data.melt_wide_form
-
-          melt_params = {var_name: :@columns, value_name: :@values }
-          if self.wide_structure.include?(:index)
-            melt_params[:id_vars] = :@index
-          end
-
           raise NotImplementedError,
                 "wide-form input is not supported"
         end
