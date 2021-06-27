@@ -16,6 +16,19 @@ module Charty
         columns.to_a
       end
 
+      def column?(name)
+        return true if column_names.include?(name)
+
+        case name
+        when String
+          column_names.include?(name.to_sym)
+        when Symbol
+          column_names.include?(name.to_s)
+        else
+          false
+        end
+      end
+
       attr_reader :index
 
       def index=(values)
@@ -124,6 +137,81 @@ module Charty
           }.to_h,
           index: index.to_a.values_at(*order)
         )
+      end
+
+      def melt(id_vars: nil, value_vars: nil, var_name: nil, value_name: :value)
+        if column?(value_name)
+          raise ArgumentError,
+                "The value of `value_name` must not be matched to the existing column names."
+        end
+
+        case value_name
+        when Symbol
+          # do nothing
+        else
+          value_name = value.to_str.to_sym
+        end
+
+        id_vars = check_melt_vars(id_vars, :id_vars)
+        value_vars = check_melt_vars(value_vars, :value_vars) { self.column_names }
+        value_vars -= id_vars
+
+        case var_name
+        when nil
+          var_name = self.columns.name
+          var_name = :variable if var_name.nil?
+        when Symbol
+          # do nothing
+        else
+          var_name = var_name.to_str
+        end
+        var_name = var_name.to_sym
+
+        n_batch_rows = self.length
+        n_target_columns = value_vars.length
+        melted_data = id_vars.map { |cn|
+          id_values = self[nil, cn].to_a
+          [cn.to_sym, id_values * n_target_columns]
+        }.to_h
+
+        melted_data[var_name] = value_vars.map { |cn| Array.new(n_batch_rows, cn) }.flatten
+
+        melted_data[value_name] = value_vars.map { |cn| self[nil, cn].to_a }.flatten
+
+        Charty::Table.new(melted_data)
+      end
+
+      private def check_melt_vars(val, name)
+        if val.nil?
+          val = if block_given?
+                  yield
+                else
+                  []
+                end
+        end
+        case val
+        when nil
+          nil
+        when Array
+          missing = val.reject {|cn| self.column?(cn) }
+          if missing.empty?
+            val.map do |v|
+              case v
+              when Symbol
+                v.to_s
+              else
+                v.to_str
+              end
+            end
+          else
+            raise ArgumentError,
+                  "Missing column names in `#{name}` (%s)" % missing.join(", ")
+          end
+        when Symbol
+          [val.to_s]
+        else
+          [val.to_str]
+        end
       end
 
       private def check_na_position(val)

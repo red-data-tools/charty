@@ -42,6 +42,10 @@ module Charty
         end
       end
 
+      def column?(name)
+        data.__contains__(name)
+      end
+
       def index
         PandasIndex.new(data.index)
       end
@@ -99,6 +103,15 @@ module Charty
 
       def reset_index
         Charty::Table.new(data.reset_index)
+      end
+
+      def melt(id_vars: nil, value_vars: nil, var_name: nil, value_name: :value)
+        id_vars = check_melt_vars(id_vars, :id_vars) { nil }
+        value_vars = check_melt_vars(value_vars, :value_vars) { nil }
+
+        Charty::Table.new(data.melt(id_vars: id_vars, value_vars: value_vars,
+                                    var_name: var_name, value_name: value_name,
+                                    ignore_index: true))
       end
 
       class GroupBy < Charty::Table::GroupByBase

@@ -35,6 +35,8 @@ module Charty
       end
 
       def data=(data)
+        # TODO: Convert a Charty::Vector to a Charty::Table so that
+        # the Charty::Vector is handled as a wide form data
         @data = case data
                 when nil, Charty::Table
                   data

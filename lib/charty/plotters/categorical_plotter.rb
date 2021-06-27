@@ -134,6 +134,7 @@ module Charty
         order = @order # TODO: supply order via parameter
         unless order
           order = @data.column_names.select do |cn|
+            # TODO: Use Charty::Vector#numeric?
             @data[cn].all? {|x| Float(x, exception: false) }
           end
         end

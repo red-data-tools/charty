@@ -7,6 +7,13 @@ module Charty
         }
       end
 
+      def wide_structure
+        {
+          x: :values,
+          color: :columns
+        }
+      end
+
       def initialize(data:, variables:, **options, &block)
         x, y, color = variables.values_at(:x, :y, :color)
         super(x, y, color, data: data, **options, &block)
@@ -71,7 +78,6 @@ module Charty
           return
         end
 
-        # TODO: detect flat data
         flat = data.is_a?(Charty::Vector)
         if flat
           @plot_data = {}
@@ -90,6 +96,18 @@ module Charty
 
           @plot_data = Charty::Table.new(@plot_data)
         else
+          numeric_columns = @data.column_names.select do |cn|
+            @data[cn].numeric?
+          end
+          wide_data = @data[numeric_columns]
+
+          @plot_data = wide_data.melt_wide_form
+
+          melt_params = {var_name: :@columns, value_name: :@values }
+          if self.wide_structure.include?(:index)
+            melt_params[:id_vars] = :@index
+          end
+
           raise NotImplementedError,
                 "wide-form input is not supported"
         end

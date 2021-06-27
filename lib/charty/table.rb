@@ -32,20 +32,7 @@ module Charty
     def_delegators :adapter, :columns, :columns=
     def_delegators :adapter, :index, :index=
 
-    def_delegator :@adapter, :column_names
-
-    def column?(name)
-      return true if column_names.include?(name)
-
-      case name
-      when String
-        column_names.include?(name.to_sym)
-      when Symbol
-        column_names.include?(name.to_s)
-      else
-        false
-      end
-    end
+    def_delegators :@adapter, :column_names, :column?
 
     def_delegator :@adapter, :data, :raw_data
 
@@ -122,6 +109,8 @@ module Charty
     def_delegator :adapter, :sort_values
 
     def_delegator :adapter, :reset_index
+
+    def_delegator :adapter, :melt
 
     class GroupByBase
     end
