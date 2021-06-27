@@ -2,8 +2,7 @@ class TableMeltTest < Test::Unit::TestCase
   include Charty::TestHelpers
 
   sub_test_case("generic table data") do
-    # TODO: daru
-    data(:adapter_type, [:array_hash, :pandas], keep: true)
+    data(:adapter_type, [:array_hash, :daru, :pandas], keep: true)
     data(:key_type,     [:string, :symbol], keep: true)
     def test_melt_without_id_vars(data)
       setup_table(data[:adapter_type], data[:key_type])
@@ -43,16 +42,13 @@ class TableMeltTest < Test::Unit::TestCase
   end
 
   def setup_table_by_array_hash(key_type)
-    csv = csv_table.by_col!
-    data = csv.headers.map { |cn|
-      key = if key_type == :string
-              cn
-            else
-              cn.to_sym
-            end
-      [key, csv[cn]]
-    }.to_h
-    @table = Charty::Table.new(data)
+    @table = Charty::Table.new(raw_data(key_type))
+    @expected_without_id_vars = Charty::Table.new(expected_data_without_id_vars)
+    @expected_with_id_vars = Charty::Table.new(expected_data_with_id_vars)
+  end
+
+  def setup_table_by_daru(key_type)
+    @table = Charty::Table.new(Daru::DataFrame.new(raw_data(key_type)))
     @expected_without_id_vars = Charty::Table.new(expected_data_without_id_vars)
     @expected_with_id_vars = Charty::Table.new(expected_data_with_id_vars)
   end
@@ -102,6 +98,18 @@ class TableMeltTest < Test::Unit::TestCase
         1751.88, 132.69
       ]
     }
+  end
+
+  def raw_data(key_type)
+    csv = csv_table.by_col!
+    csv.headers.map { |cn|
+      key = if key_type == :string
+              cn
+            else
+              cn.to_sym
+            end
+      [key, csv[cn]]
+    }.to_h
   end
 
   def csv_table

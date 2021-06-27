@@ -57,7 +57,12 @@ module Charty
           column_data = if @data.has_vector?(column)
                           @data[column]
                         else
-                          @data[column.to_s]
+                          case column
+                          when String
+                            @data[column.to_sym]
+                          else
+                            @data[column.to_s]
+                          end
                         end
           Vector.new(column_data)
         end
