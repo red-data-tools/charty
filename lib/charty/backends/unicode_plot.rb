@@ -16,7 +16,7 @@ module Charty
         @layout = {}
       end
 
-      def bar(bar_pos, values, color: nil)
+      def bar(bar_pos, _group_names, values, colors, _orient, **kwargs)
         @figure = {
           type: :bar,
           bar_pos: bar_pos,
@@ -24,7 +24,7 @@ module Charty
         }
       end
 
-      def box_plot(plot_data, positions, color:, gray:)
+      def box_plot(plot_data, positions, **kwargs)
         @figure = { type: :box, data: plot_data }
       end
 
@@ -52,13 +52,13 @@ module Charty
         # do nothing
       end
 
-      def show
-        case @figure[:type]
-        when :bar
-          plot = ::UnicodePlot.barplot(@layout[:xtick_labels], @figure[:values], xlabel: @layout[:xlabel])
-        when :box
-          plot = ::UnicodePlot.boxplot(@layout[:xtick_labels], @figure[:data], xlabel: @layout[:xlabel])
-        end
+      def render(**kwargs)
+        plot = case @figure[:type]
+                when :bar
+                  ::UnicodePlot.barplot(@layout[:xtick_labels], @figure[:values], xlabel: @layout[:xlabel])
+                when :box
+                  ::UnicodePlot.boxplot(@layout[:xtick_labels], @figure[:data], xlabel: @layout[:xlabel])
+                end
         sio = StringIO.new
         class << sio
           def tty?; true; end
