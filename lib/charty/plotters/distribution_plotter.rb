@@ -3,14 +3,14 @@ module Charty
     class DistributionPlotter < AbstractPlotter
       def flat_structure
         {
-          x: :values
+          x: :@values
         }
       end
 
       def wide_structure
         {
-          x: :values,
-          color: :columns
+          x: :@values,
+          color: :@columns
         }
       end
 
@@ -85,10 +85,10 @@ module Charty
 
           [:x, :y].each do |var|
             case self.flat_structure[var]
-            when :index
+            when :@index
               @plot_data[var] = data.index.to_a
               @variables[var] = data.index.name
-            when :values
+            when :@values
               @plot_data[var] = data.to_a
               @variables[var] = data.name
             end
@@ -96,8 +96,32 @@ module Charty
 
           @plot_data = Charty::Table.new(@plot_data)
         else
-          raise NotImplementedError,
-                "wide-form input is not supported"
+          numeric_columns = @data.column_names.select do |cn|
+            @data[cn].numeric?
+          end
+          wide_data = @data[numeric_columns]
+
+          melt_params = {var_name: :@columns, value_name: :@values }
+          if self.wide_structure.include?(:index)
+            melt_params[:id_vars] = :@index
+          end
+
+          @plot_data = wide_data.melt(**melt_params)
+          @variables = {}
+          self.wide_structure.each do |var, attr|
+            @plot_data[var] = @plot_data[attr]
+
+            @variables[var] = case attr
+                              when :@columns
+                                wide_data.columns.name
+                              when :@index
+                                wide_data.index.name
+                              else
+                                nil
+                              end
+          end
+
+          @plot_data = @plot_data[self.wide_structure.keys]
         end
       end
 

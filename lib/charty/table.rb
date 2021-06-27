@@ -52,17 +52,35 @@ module Charty
     end
 
     def [](key)
-      key = case key
-            when Symbol
-              key
-            else
-              String.try_convert(key).to_sym
-            end
-      if @column_cache.key?(key)
-        @column_cache[key]
+      case key
+      when Array
+        @adapter[nil, key]
       else
-        @column_cache[key] = @adapter[nil, key]
+        key = case key
+              when Symbol
+                key
+              else
+                String.try_convert(key).to_sym
+              end
+        if @column_cache.key?(key)
+          @column_cache[key]
+        else
+          @column_cache[key] = @adapter[nil, key]
+        end
       end
+    end
+
+    def []=(key, values)
+      case key
+      when Array
+        raise ArgumentError,
+              "Substituting multiple keys is not supported"
+      when Symbol
+        # do nothing
+      else
+        key = key.to_str.to_sym
+      end
+      @adapter[key] = values
     end
 
     def group_by(grouper, sort: true, drop_na: true)

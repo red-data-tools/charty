@@ -181,6 +181,11 @@ module Charty
           @data[column][row]
         else
           case column
+          when Array
+            slice_data = column.map { |cn|
+              [cn, self[nil, cn]]
+            }.to_h
+            return Charty::Table.new(slice_data, index: self.index)
           when Symbol
             sym_key = column
             str_key = column.to_s
@@ -196,6 +201,53 @@ module Charty
                         end
           Vector.new(column_data, index: index, name: column)
         end
+      end
+
+      # TODO: test
+      def []=(key, values)
+        case key
+        when Symbol
+          str_key = key.to_s
+          sym_key = key
+        else
+          str_key = key.to_str
+          sym_key = str_key.to_sym
+        end
+
+        orig_values = values
+        case values
+        when Charty::Vector
+          values = values.data
+        else
+          values = Array.try_convert(values)
+        end
+        if values.nil?
+          raise ArgumentError,
+                "`values` must be convertible to Array"
+        end
+
+        if values.length != self.length
+          raise ArgumentError,
+                "`values` length does not match the length of the table"
+        end
+
+        if @data.key?(sym_key)
+          @data[sym_key] = values
+        elsif @data.key?(str_key)
+          @data[str_key] = values
+        elsif key == sym_key
+          @data[sym_key] = values
+          new_column = sym_key
+        else
+          @data[str_key] = values
+          new_column = sym_key
+        end
+
+        if new_column
+          self.columns = Index.new([*self.columns, new_column])
+        end
+
+        values
       end
 
       def each

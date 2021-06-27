@@ -16,6 +16,38 @@ class PlotMethodHistPlotTest < Test::Unit::TestCase
       end
     end
 
+    sub_test_case("wide form") do
+      data(:adapter, [:array, :pandas], keep: true)
+      #data(:backend, [:pyplot, :plotly], keep: true)
+      #data(:adapter, [:pandas], keep: true)
+      data(:backend, [:plotly], keep: true)
+      def test_hist_plot_with_wide_form(data)
+        adapter_name, backend_name = data.values_at(:adapter, :backend)
+        setup_data(adapter_name)
+        setup_backend(backend_name)
+        plot = Charty.hist_plot(data: @data)
+        assert_nothing_raised do
+          render_plot(backend_name, plot)
+        end
+      end
+
+      def setup_array_data
+        @data = @array_data = {
+          red: Array.new(100) {|i| rand },
+          blue: Array.new(100) {|i| rand + 1},
+          green: Array.new(100) {|i| rand + 2 },
+        }
+      end
+
+      def setup_pandas_data
+        pandas_required
+        @data = Pandas::DataFrame.new(data: @array_data)
+        @data[:red] = @data[:red].astype("float64")
+        @data[:blue] = @data[:blue].astype("float64")
+        @data[:green] = @data[:green].astype("float64")
+      end
+    end
+
     data(:adapter, [:array, :pandas], keep: true)
     data(:backend, [:pyplot, :plotly], keep: true)
     def test_hist_plot(data)
@@ -46,6 +78,7 @@ class PlotMethodHistPlotTest < Test::Unit::TestCase
     end
 
     def setup_pandas_data
+      pandas_required
       @data = Pandas::DataFrame.new(data: @array_data)
       @data[:a] = @data[:a].astype("float64")
       @data[:c] = @data[:c].astype("category")

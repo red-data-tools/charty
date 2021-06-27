@@ -80,8 +80,34 @@ module Charty
         if row
           @data[column][row]
         else
-          Vector.new(@data[column])
+          case column
+          when Array
+            Table.new(@data[column])
+          else
+            Vector.new(@data[column])
+          end
         end
+      end
+
+      # TODO: test
+      def []=(key, values)
+        case values
+        when Charty::Vector
+          case values.adapter
+          when Charty::VectorAdapters::PandasSeriesAdapter
+            @data[key] = values.adapter.data
+          else
+            @data[key] = values.to_a
+          end
+        else
+          orig_values = values
+          values = Array.try_convert(values)
+          if values.nil?
+            raise ArgumentError, "`values` must be convertible to Array"
+          end
+          @data[key] = values
+        end
+        return values
       end
 
       def drop_na
@@ -129,6 +155,7 @@ module Charty
           each_group_key.to_a
         end
 
+        # TODO: test
         def each_group_key
           return enum_for(__method__) unless block_given?
 
@@ -156,6 +183,15 @@ module Charty
                 end
               end
             end
+          end
+        end
+
+        # TODO: test
+        def each_group
+          return enum_for(__method__) unless block_given?
+
+          each_group_key do |key|
+            yield(Array(key), self[key])
           end
         end
 
