@@ -89,7 +89,6 @@ module Charty
         end
       end
 
-      # TODO: test
       def []=(key, values)
         case values
         when Charty::Vector

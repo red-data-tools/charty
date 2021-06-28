@@ -203,7 +203,6 @@ module Charty
         end
       end
 
-      # TODO: test
       def []=(key, values)
         case key
         when Symbol
