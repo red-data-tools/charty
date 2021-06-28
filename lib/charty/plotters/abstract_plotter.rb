@@ -157,14 +157,18 @@ module Charty
         when Symbol
           value.to_s
         else
-          orig_value = value
-          value = String.try_convert(value)
-          if value.nil?
-            raise ArgumentError,
-                  "`#{name}` must be convertible to String: %p" % orig_value,
-                  caller
+          if allow_nil && value.nil?
+            nil
           else
-            value
+            orig_value = value
+            value = String.try_convert(value)
+            if value.nil?
+              raise ArgumentError,
+                "`#{name}` must be convertible to String: %p" % orig_value,
+                caller
+            else
+              value
+            end
           end
         end
       end
