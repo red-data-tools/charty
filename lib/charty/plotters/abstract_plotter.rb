@@ -83,6 +83,18 @@ module Charty
                    end
       end
 
+      attr_reader :x_label
+
+      def x_label=(val)
+        @x_label = check_string(val, :x_label, allow_nil: true)
+      end
+
+      attr_reader :y_label
+
+      def y_label=(val)
+        @y_label = check_string(val, :y_label, allow_nil: true)
+      end
+
       private def substitute_options(options)
         options.each do |key, val|
           send("#{key}=", val)
@@ -137,6 +149,23 @@ module Charty
           raise ArgumentError,
                 "invalid value for #{name} (%p for #{expected})" % value,
                 caller
+        end
+      end
+
+      private def check_string(value, name, allow_nil: false)
+        case value
+        when Symbol
+          value.to_s
+        else
+          orig_value = value
+          value = String.try_convert(value)
+          if value.nil?
+            raise ArgumentError,
+                  "`#{name}` must be convertible to String: %p" % orig_value,
+                  caller
+          else
+            value
+          end
         end
       end
 

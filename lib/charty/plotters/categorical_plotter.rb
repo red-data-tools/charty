@@ -353,6 +353,8 @@ module Charty
         else
           xlabel, ylabel = @value_label, @group_label
         end
+        xlabel = self.x_label if self.x_label
+        ylabel = self.y_label if self.y_label
         backend.set_xlabel(xlabel) unless xlabel.nil?
         backend.set_ylabel(ylabel) unless ylabel.nil?
 

@@ -18,15 +18,14 @@ class PlotMethodHistPlotTest < Test::Unit::TestCase
 
     sub_test_case("wide form") do
       data(:adapter, [:array, :pandas], keep: true)
-      #data(:backend, [:pyplot, :plotly], keep: true)
-      #data(:adapter, [:pandas], keep: true)
-      data(:backend, [:plotly], keep: true)
+      data(:backend, [:pyplot, :plotly], keep: true)
       def test_hist_plot_with_wide_form(data)
         adapter_name, backend_name = data.values_at(:adapter, :backend)
         setup_data(adapter_name)
         setup_backend(backend_name)
-        plot = Charty.hist_plot(data: @data)
+        plot = Charty.hist_plot(data: @data, x_label: "Foo Bar")
         assert_nothing_raised do
+          assert_equal("Foo Bar", plot.x_label)
           render_plot(backend_name, plot)
         end
       end
