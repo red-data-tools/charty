@@ -66,6 +66,52 @@ class TableAsetTest < Test::Unit::TestCase
     end
   end
 
+  sub_test_case("Daru") do
+    data(:data_key_type,     [:string, :symbol], keep: true)
+    data(:aset_key_type,     [:string, :symbol], keep: true)
+    def test_aset_existing(data)
+      data_key_type, aset_key_type = data.values_at(:data_key_type, :aset_key_type)
+      data = Daru::DataFrame.new(raw_data(data_key_type))
+      table = Charty::Table.new(data, index: [2, 4, 6, 8, 10])
+      key = case aset_key_type
+            when :symbol
+              :bar
+            else
+              "bar"
+            end
+      table[key] = [10, 20, 30, 40, 50]
+      expected_data = {
+        foo: [1, 2, 3, 4, 5],
+        bar: [10, 20, 30, 40, 50]
+      }
+      expected_data = transform_keys(expected_data, &:to_s) if data_key_type == :string
+      expected_data = Daru::DataFrame.new(expected_data)
+      assert_equal(Charty::Table.new(expected_data, index: [2, 4, 6, 8, 10]),
+                   table)
+    end
+
+    def test_aset_new(data)
+      data_key_type, aset_key_type = data.values_at(:data_key_type, :aset_key_type)
+      data = Daru::DataFrame.new(raw_data(data_key_type))
+      table = Charty::Table.new(data, index: [2, 4, 6, 8, 10])
+      key = case aset_key_type
+            when :symbol
+              :bar
+            else
+              "bar"
+            end
+      table[key] = [10, 20, 30, 40, 50]
+      expected_data = {
+        foo: [1, 2, 3, 4, 5],
+        bar: [10, 20, 30, 40, 50]
+      }
+      expected_data = transform_keys(expected_data, &:to_s) if data_key_type == :string
+      expected_data = Daru::DataFrame.new(expected_data)
+      assert_equal(Charty::Table.new(expected_data, index: [2, 4, 6, 8, 10]),
+                   table)
+    end
+  end
+
   sub_test_case("Pandas") do
     def setup
       pandas_required

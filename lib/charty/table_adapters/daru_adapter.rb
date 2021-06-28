@@ -68,6 +68,41 @@ module Charty
         end
       end
 
+      def []=(key, values)
+        case key
+        when Symbol
+          sym_key = key
+          str_key = key.to_s
+        else
+          str_key = key.to_str
+          sym_key = str_key.to_sym
+        end
+        case
+        when @data.has_vector?(sym_key)
+          key = sym_key
+        when @data.has_vector?(str_key)
+          key = str_key
+        end
+
+        case values
+        when Charty::Vector
+          case values.adapter
+          when Charty::VectorAdapters::DaruVectorAdapter
+            @data[key] = values.adapter.data
+          else
+            @data[key] = values.to_a
+          end
+        else
+          orig_values = values
+          values = Array.try_convert(values)
+          if values.nil?
+            raise ArgumentError, "`values` must be convertible to Array"
+          end
+          @data[key] = values
+        end
+        return values
+      end
+
       private def check_type(type, data, name)
         return data if data.is_a?(type)
         raise TypeError, "#{name} must be a #{type}"
