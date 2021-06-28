@@ -95,6 +95,12 @@ module Charty
         @y_label = check_string(val, :y_label, allow_nil: true)
       end
 
+      attr_reader :title
+
+      def title=(val)
+        @title = check_string(val, :title, allow_nil: true)
+      end
+
       private def substitute_options(options)
         options.each do |key, val|
           send("#{key}=", val)

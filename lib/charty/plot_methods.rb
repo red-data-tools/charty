@@ -25,12 +25,13 @@ module Charty
     #        categorical axis for avoid overlapping when the color-dimension is used.
     # @param x_label [String,Symbol,#to_str,nil]  X-axis label.
     # @param y_label [String,Symbol,#to_str,nil]  Y-axis label.
+    # @param title [String,Symbol,#to_str,nil]  Title text.
     def bar_plot(x: nil, y: nil, color: nil, data: nil,
                  order: nil, color_order: nil,
                  estimator: :mean, ci: 95, n_boot: 1000, units: nil, random: nil,
                  orient: nil, key_color: nil, palette: nil, saturation: 1r,
                  error_color: [0.26, 0.26, 0.26], error_width: nil, cap_size: nil,
-                 dodge: true, x_label: nil, y_label: nil, **options, &block)
+                 dodge: true, x_label: nil, y_label: nil, title: nil, **options, &block)
       Plotters::BarPlotter.new(
         data: data, variables: { x: x, y: y, color: color },
         order: order, orient: orient,
@@ -40,6 +41,7 @@ module Charty
         dodge: dodge,
         x_label: x_label,
         y_label: y_label,
+        title: title,
         **options, &block
       )
     end
@@ -47,7 +49,7 @@ module Charty
     def count_plot(x: nil, y: nil, color: nil, data: nil,
                    order: nil, color_order: nil,
                    orient: nil, key_color: nil, palette: nil, saturation: 1r,
-                   dodge: true, x_label: nil, y_label: nil, **options, &block)
+                   dodge: true, x_label: nil, y_label: nil, title: nil, **options, &block)
       case
       when x.nil? && !y.nil?
         x = y
@@ -76,6 +78,7 @@ module Charty
         dodge: dodge,
         x_label: x_label,
         y_label: y_label,
+        title: title,
         **options
       ) do |plotter|
         plotter.value_label = "count"
@@ -114,11 +117,12 @@ module Charty
     #        treated as outliers.
     # @param x_label [String,Symbol,#to_str,nil]  X-axis label.
     # @param y_label [String,Symbol,#to_str,nil]  Y-axis label.
+    # @param title [String,Symbol,#to_str,nil]  Title text.
     def box_plot(x: nil, y: nil, color: nil, data: nil,
                  order: nil, color_order: nil,
                  orient: nil, key_color: nil, palette: nil, saturation: 1r,
                  width: 0.8r, dodge: true, flier_size: 5, line_width: nil,
-                 whisker: 1.5, x_label: nil, y_label: nil,
+                 whisker: 1.5, x_label: nil, y_label: nil, title: nil,
                  **options, &block)
       Plotters::BoxPlotter.new(
         data: data,
@@ -136,6 +140,7 @@ module Charty
         whisker: whisker,
         x_label: x_label,
         y_label: y_label,
+        title: title,
         **options,
         &block
       )
@@ -177,6 +182,7 @@ module Charty
     #        levels.  If false, no legend data is added and no legend is drawn.
     # @param x_label [String,Symbol,#to_str,nil]  X-axis label.
     # @param y_label [String,Symbol,#to_str,nil]  Y-axis label.
+    # @param title [String,Symbol,#to_str,nil]  Title text.
     def line_plot(x: nil, y: nil, color: nil, style: nil, size: nil,
                   data: nil, key_color: nil, palette: nil, color_order: nil,
                   color_norm: nil, sizes: nil, size_order: nil, size_norm: nil,
@@ -184,7 +190,7 @@ module Charty
                   units: nil, estimator: :mean, n_boot: 1000, random: nil,
                   sort: true, err_style: :band, err_params: nil, error_bar: [:ci, 95],
                   x_scale: :linear, y_scale: :linear, legend: :auto,
-                  x_label: nil, y_label: nil,
+                  x_label: nil, y_label: nil, title: nil,
                   **options, &block)
       Plotters::LinePlotter.new(
         data: data,
@@ -212,6 +218,7 @@ module Charty
         legend: legend,
         x_label: x_label,
         y_label: y_label,
+        title: title,
         **options,
         &block
       )
@@ -244,11 +251,12 @@ module Charty
     #        levels.  If false, no legend data is added and no legend is drawn.
     # @param x_label [String,Symbol,#to_str,nil]  X-axis label.
     # @param y_label [String,Symbol,#to_str,nil]  Y-axis label.
+    # @param title [String,Symbol,#to_str,nil]  Title text.
     def scatter_plot(x: nil, y: nil, color: nil, style: nil, size: nil,
                      data: nil, key_color: nil, palette: nil, color_order: nil,
                      color_norm: nil, sizes: nil, size_order: nil, size_norm: nil,
                      markers: true, style_order: nil, alpha: nil, legend: :auto,
-                     x_label: nil, y_label: nil, **options, &block)
+                     x_label: nil, y_label: nil, title: nil, **options, &block)
       Plotters::ScatterPlotter.new(
         data: data,
         variables: { x: x, y: y, color: color, style: style, size: size },
@@ -265,6 +273,7 @@ module Charty
         legend: legend,
         x_label: x_label,
         y_label: y_label,
+        title: title,
         **options,
         &block
       )
@@ -274,7 +283,8 @@ module Charty
                   stat: :count, bins: :auto,
                   bin_range: nil, common_bins: true,
                   key_color: nil, palette: nil, color_order: nil, color_norm: nil,
-                  legend: true, x_label: nil, y_label: nil, **options, &block)
+                  legend: true, x_label: nil, y_label: nil, title: nil,
+                  **options, &block)
       # TODO: support following arguments
       # - wiehgts
       # - binwidth
@@ -310,6 +320,7 @@ module Charty
         legend: legend,
         x_label: x_label,
         y_label: y_label,
+        title: title,
         **options,
         &block)
     end

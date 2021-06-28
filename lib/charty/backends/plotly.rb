@@ -613,6 +613,11 @@ module Charty
         end
       end
 
+      def set_title(title)
+        @layout[:title] ||= {}
+        @layout[:title][:text] = title
+      end
+
       def set_xlabel(label)
         @layout[:xaxis] ||= {}
         @layout[:xaxis][:title] = label

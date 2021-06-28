@@ -70,6 +70,8 @@ module Charty
       end
 
       private def annotate_axes(backend)
+        backend.set_title(self.title) if self.title
+
         xlabel = self.x_label || self.variables[:x]
         ylabel = self.y_label || self.variables[:y]
         backend.set_xlabel(xlabel) unless xlabel.nil?

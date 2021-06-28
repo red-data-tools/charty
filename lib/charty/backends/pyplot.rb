@@ -662,6 +662,10 @@ module Charty
         end
       end
 
+      def set_title(title)
+        @pyplot.gca.set_title(String(title))
+      end
+
       def set_xlabel(label)
         @pyplot.gca.set_xlabel(String(label))
       end

@@ -348,6 +348,8 @@ module Charty
       end
 
       private def annotate_axes(backend)
+        backend.set_title(self.title) if self.title
+
         if orient == :v
           xlabel, ylabel = @group_label, @value_label
         else
