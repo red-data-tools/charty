@@ -231,6 +231,7 @@ module Charty
           end
           return :h
         end
+
         case orient
         when :v
           if require_numeric && y_type != :numeric

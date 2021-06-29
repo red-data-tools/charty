@@ -660,6 +660,29 @@ module Charty
         @layout[:yaxis][:range] = [min, max]
       end
 
+      def set_xscale(scale)
+        scale = check_scale_type(scale, :xscale)
+        @layout[:xaxis] ||= {}
+        @layout[:xaxis][:type] = scale
+      end
+
+      def set_yscale(scale)
+        scale = check_scale_type(scale, :yscale)
+        @layout[:yaxis] ||= {}
+        @layout[:yaxis][:type] = scale
+      end
+
+      private def check_scale_type(val, name)
+        case
+        when :linear, :log
+          val
+        else
+          raise ArgumentError,
+                "Invalid #{name} type: %p" % val,
+                caller
+        end
+      end
+
       def disable_xaxis_grid
         # do nothing
       end

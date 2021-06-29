@@ -42,6 +42,12 @@ module Charty
         @cap_size = check_number(cap_size, :cap_size, allow_nil: true)
       end
 
+      attr_reader :log
+
+      def log=(val)
+        @log = check_boolean(val, :log)
+      end
+
       private def render_plot(backend, **)
         draw_bars(backend)
         annotate_axes(backend)
@@ -77,6 +83,19 @@ module Charty
             end
             backend.bar(pos, @group_names, @estimations[i], colors, orient,
                         label: color_name, width: width, **ci_params)
+          end
+        end
+      end
+
+      private def annotate_axes(backend)
+        super
+
+        if self.log
+          case self.orient
+          when :v
+            backend.set_yscale(:log)
+          else
+            backend.set_xscale(:log)
           end
         end
       end

@@ -23,6 +23,7 @@ module Charty
     # @param cap_size  Width of the caps on error bars.
     # @param dodge  [true,false]  If true, bar position is shifted along the
     #        categorical axis for avoid overlapping when the color-dimension is used.
+    # @param log  [true,false]  Set the value-axis (e.g. Y-axis if orient is :v) to be log scale.
     # @param x_label [String,Symbol,#to_str,nil]  X-axis label.
     # @param y_label [String,Symbol,#to_str,nil]  Y-axis label.
     # @param title [String,Symbol,#to_str,nil]  Title text.
@@ -31,17 +32,15 @@ module Charty
                  estimator: :mean, ci: 95, n_boot: 1000, units: nil, random: nil,
                  orient: nil, key_color: nil, palette: nil, saturation: 1r,
                  error_color: [0.26, 0.26, 0.26], error_width: nil, cap_size: nil,
-                 dodge: true, x_label: nil, y_label: nil, title: nil, **options, &block)
+                 dodge: true, log: false, x_label: nil, y_label: nil, title: nil,
+                 **options, &block)
       Plotters::BarPlotter.new(
         data: data, variables: { x: x, y: y, color: color },
         order: order, orient: orient,
         estimator: estimator, ci: ci, n_boot: n_boot, units: units, random: random,
         color_order: color_order, key_color: key_color, palette: palette, saturation: saturation,
         error_color: error_color, error_width: error_width, cap_size: cap_size,
-        dodge: dodge,
-        x_label: x_label,
-        y_label: y_label,
-        title: title,
+        dodge: dodge, log: log, x_label: x_label, y_label: y_label, title: title,
         **options, &block
       )
     end
@@ -49,7 +48,8 @@ module Charty
     def count_plot(x: nil, y: nil, color: nil, data: nil,
                    order: nil, color_order: nil,
                    orient: nil, key_color: nil, palette: nil, saturation: 1r,
-                   dodge: true, x_label: nil, y_label: nil, title: nil, **options, &block)
+                   dodge: true, log: false, x_label: nil, y_label: nil, title: nil,
+                   **options, &block)
       case
       when x.nil? && !y.nil?
         x = y
