@@ -611,6 +611,7 @@ module Charty
 
         @plot_data = Charty::Table.new(plot_data)
         @variables = variables.select do |var, name|
+          # TODO: this overwrite the cached vector in the original data
           @plot_data[var].notnull.any?
         end
       end
