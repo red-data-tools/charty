@@ -134,10 +134,8 @@ module Charty
 
         if orient == :v
           x, y = bar_pos, values
-          x = group_names unless group_names.nil?
         else
           x, y = values, bar_pos
-          y = group_names unless group_names.nil?
         end
 
         trace = {
@@ -241,9 +239,9 @@ module Charty
           }
 
           if orient == :v
-            trace.update(y: values, x: group_keys)
+            trace.update(y: values, x: group_keys.map(&:to_s))
           else
-            trace.update(x: values, y: group_keys)
+            trace.update(x: values, y: group_keys.map(&:to_s))
           end
 
           trace
