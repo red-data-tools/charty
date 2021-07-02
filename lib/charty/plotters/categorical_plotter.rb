@@ -265,7 +265,9 @@ module Charty
       private def group_long_form(vals, groups, group_order)
         grouped_vals = vals.group_by(groups)
 
-        plot_data = group_order.map {|g| grouped_vals[g] || [] }
+        plot_data = group_order.map do |g|
+          grouped_vals[g] || Charty::Vector.new([])
+        end
 
         if vals.respond_to?(:name)
           value_label = vals.name

@@ -59,7 +59,9 @@ module Charty
           order = categories
         else
           order = unique_values.compact
-          order.sort! if numeric?
+          if numeric?
+            order.sort_by! {|x| Util.missing?(x) ? Float::INFINITY : x }
+          end
         end
         order.compact!
       end
