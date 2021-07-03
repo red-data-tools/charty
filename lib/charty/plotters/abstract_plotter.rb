@@ -222,15 +222,6 @@ module Charty
         data = processed ? processed_data : plot_data
         data = data.drop_na if drop_na
 
-        levels = var_levels.dup
-
-        ([:x, :y] & grouping_vars).each do |axis|
-          levels[axis] = plot_data[axis].categorical_order()
-          if processed
-            # TODO: perform inverse conversion of axis scaling here
-          end
-        end
-
         if not grouping_vars.empty?
           grouped = data.group_by(grouping_vars, sort: false)
           grouped.each_group do |group_key, group_data|
