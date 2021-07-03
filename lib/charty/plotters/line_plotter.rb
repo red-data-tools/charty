@@ -122,7 +122,7 @@ module Charty
 
       include RandomSupport
 
-      attr_reader :sort, :err_style, :err_kws, :error_bar, :x_scale, :y_scale
+      attr_reader :sort, :err_style, :err_kws, :error_bar
 
       def sort=(val)
         @sort = check_boolean(val, :sort)
@@ -211,9 +211,13 @@ module Charty
         [method, level]
       end
 
+      attr_reader :x_scale
+
       def x_scale=(val)
         @x_scale = check_axis_scale(val, :x)
       end
+
+      attr_reader :y_scale
 
       def y_scale=(val)
         @y_scale = check_axis_scale(val, :y)
@@ -221,7 +225,7 @@ module Charty
 
       private def check_axis_scale(val, axis)
         case val
-        when :linear, "linear", :log10, "log10"
+        when :linear, "linear", :log, "log"
           val.to_sym
         else
           raise ArgumentError,
@@ -252,6 +256,15 @@ module Charty
             sub_data = sub_data.sort_values(sort_cols)
           end
 
+          # Perform axis scaling
+          if x_scale != :linear
+            sub_data[:x] = sub_data[:x].scale(x_scale)
+          end
+          if y_scale != :linear
+            sub_data[:y] = sub_data[:y].scale(x_scale)
+          end
+
+          # Perform estimation and error calculation
           unless estimator.nil?
             if self.variables.include?(:units)
               raise "`estimator` is must be nil when specifying `units`"
@@ -261,7 +274,22 @@ module Charty
             sub_data = grouped.apply(agg_var, &aggregator.method(:aggregate)).reset_index
           end
 
-          # TODO: perform inverse conversion of axis scaling before plot
+          # Perform axis inverse scaling
+          if x_scale != :linear
+            sub_data.column_names.each do |cn|
+              if cn.start_with?("x")
+                sub_data[cn] = sub_data[cn].scale_inverse(x_scale)
+              end
+            end
+          end
+
+          if y_scale != :linear
+            sub_data.column_names.each do |cn|
+              if cn.start_with?("y")
+                sub_data[cn] = sub_data[cn].scale_inverse(x_scale)
+              end
+            end
+          end
 
           unit_grouping = if self.variables.include?(:units)
                             sub_data.group_by(:units).each_group
@@ -296,6 +324,9 @@ module Charty
         ylabel = self.y_label || self.variables[:y]
         backend.set_xlabel(xlabel) unless xlabel.nil?
         backend.set_ylabel(ylabel) unless ylabel.nil?
+
+        backend.set_xscale(x_scale)
+        backend.set_yscale(y_scale)
       end
     end
   end

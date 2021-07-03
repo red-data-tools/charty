@@ -195,6 +195,14 @@ module Charty
         q = q.map {|x| x / 100.0 }
         data.quantile(q)
       end
+
+      def log_scale(method)
+        Charty::Vector.new(Numpy.log10(data))
+      end
+
+      def inverse_log_scale(method)
+        Charty::Vector.new(Numpy.power(10, data))
+      end
     end
   end
 end

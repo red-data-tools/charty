@@ -95,6 +95,16 @@ class PlotMethodLinePlotTest < Test::Unit::TestCase
       end
     end
 
+    def test_line_plot_xy_log(data)
+      adapter_name, backend_name = data.values_at(:adapter, :backend)
+      setup_data(adapter_name)
+      setup_backend(backend_name)
+      plot = Charty.line_plot(data: @data, x: :x, y: :y, x_scale: :log, y_scale: :log)
+      assert_nothing_raised do
+        render_plot(backend_name, plot)
+      end
+    end
+
     def setup_array_data
       @data = {
         y: Array.new(100) {|i| rand },

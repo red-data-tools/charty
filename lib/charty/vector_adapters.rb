@@ -99,6 +99,22 @@ module Charty
       def stdev(population: false)
         Statistics.stdev(data, population: population)
       end
+
+      def log_scale(method)
+        Charty::Vector.new(
+          self.map {|x| Math.log10(x) },
+          index: index,
+          name: name
+        )
+      end
+
+      def inverse_log_scale(method)
+        Charty::Vector.new(
+          self.map {|x| 10.0 ** x },
+          index: index,
+          name: name
+        )
+      end
     end
 
     module NameSupport

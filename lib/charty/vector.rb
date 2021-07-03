@@ -51,6 +51,32 @@ module Charty
 
     def_delegators :adapter, :mean, :stdev
 
+    def_delegators :adapter, :scale, :scale_inverse
+
+    def scale(method)
+      case method
+      when :linear
+        self
+      when :log
+        adapter.log_scale(method)
+      else
+        raise ArgumentError,
+              "Invalid scaling method: %p" % method
+      end
+    end
+
+    def scale_inverse(method)
+      case method
+      when :linear
+        self
+      when :log
+        adapter.inverse_log_scale(method)
+      else
+        raise ArgumentError,
+              "Invalid scaling method: %p" % method
+      end
+    end
+
     # TODO: write test
     def categorical_order(order=nil)
       if order.nil?
