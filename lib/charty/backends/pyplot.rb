@@ -740,6 +740,11 @@ module Charty
         nil
       end
 
+      def render_mimebundle(include: [], exclude: [])
+        show
+        {}
+      end
+
       SAVEFIG_OPTIONAL_PARAMS = [
         :dpi, :quality, :optimize, :progressive, :facecolor, :edgecolor,
         :orientation, :papertype, :transparent, :bbox_inches, :pad_inches,
