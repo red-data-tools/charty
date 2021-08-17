@@ -199,7 +199,9 @@ module Charty
                         else
                           @data[str_key]
                         end
-          Vector.new(column_data, index: index, name: column)
+          # FIXME: Here column_data need to be dupped to
+          # prevent to overwrite the name of Pandas::Series
+          Vector.new(column_data.dup, index: index, name: column)
         end
       end
 
