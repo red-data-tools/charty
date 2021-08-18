@@ -7,7 +7,7 @@ module Charty
           @initialized = false
         end
 
-        def activate()
+        def activate
           return if @initialized
 
           unless IRubyHelper.iruby_notebook?
@@ -50,6 +50,8 @@ module Charty
             END_SCRIPT
           end
           IRuby.display(script, mime: "text/html")
+          @initialized = true
+          nil
         end
 
         def render(figure, element_id: nil, post_script: nil)
