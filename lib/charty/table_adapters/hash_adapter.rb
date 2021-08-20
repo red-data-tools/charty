@@ -123,7 +123,7 @@ module Charty
         arrays = arrays.map do |array|
           case array
           when Charty::Vector
-            array.data
+            array.data.to_a
           when Hash
             raise NotImplementedError
           when self.class.method(:array?)

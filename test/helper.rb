@@ -34,6 +34,11 @@ begin
 rescue LoadError, StandardError
 end
 
+begin
+  require "arrow"
+rescue LoadError
+end
+
 module Charty
   module TestHelpers
     module_function def numo_available?
@@ -75,6 +80,14 @@ module Charty
 
     module_function def pandas_required
       omit("Pandas is required") unless pandas_available?
+    end
+
+    module_function def arrow_available?
+      defined?(::Arrow::Table) and Arrow::Version::MAJOR >= 6
+    end
+
+    module_function def arrow_required
+      omit("red-arrow 6.0.0 or later is requried") unless arrow_available?
     end
 
     def assert_near(c1, c2, eps=1e-8)
