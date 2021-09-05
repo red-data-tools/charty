@@ -51,7 +51,7 @@ class PlotMethodHistPlotTest < Test::Unit::TestCase
       end
     end
 
-    data(:adapter, [:array, :pandas], keep: true)
+    data(:adapter, [:array, :arrow, :pandas], keep: true)
     data(:backend, [:pyplot, :plotly], keep: true)
     def test_hist_plot(data)
       adapter_name, backend_name = data.values_at(:adapter, :backend)

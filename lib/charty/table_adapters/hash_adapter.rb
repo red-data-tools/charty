@@ -104,7 +104,12 @@ module Charty
         arrays.each do |array|
           index = case array
                   when Charty::Vector
-                    array.index
+                    case array.index
+                    when DaruIndex, PandasIndex
+                      Index.new(array.index.to_a)
+                    else
+                      array.index
+                    end
                   when ->(x) { defined?(Daru) && x.is_a?(Daru::Vector) }
                     Charty::DaruIndex.new(array.index)
                   when ->(x) { defined?(Pandas) && x.is_a?(Pandas::Series) }
