@@ -38,7 +38,7 @@ module Charty
         mask_data.to_a.each_with_index do |boolean, i|
           masked_index << index[i] if boolean
         end
-        Charty::Vector.new(masked_data, index: masked_index, name: name)
+        Vector.new(masked_data, index: masked_index, name: name)
       end
 
       def boolean?
@@ -102,10 +102,10 @@ module Charty
         equal = Arrow::Function.find("equal")
         group_keys.map { |key|
           if key.nil?
-            target_vector = Charty::Vector.new([nil] * @data.n_nulls)
+            target_vector = Vector.new([nil] * @data.n_nulls)
           else
             mask = equal.execute([grouper_data, key]).value
-            target_vector = Charty::Vector.new(@data.filter(mask))
+            target_vector = Vector.new(@data.filter(mask))
           end
           [key, target_vector]
         }.to_h
