@@ -115,10 +115,7 @@ class PlotMethodLinePlotTest < Test::Unit::TestCase
     end
 
     def setup_arrow_data
-      @data = Arrow::Table.new(y: @data[:y],
-                               x: @data[:x],
-                               c: Arrow::Array.new(@data[:c]).dictionary_encode,
-                               d: @data[:d])
+      @data = Arrow::Table.new(@data)
     end
   end
 end

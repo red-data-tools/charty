@@ -13,9 +13,7 @@ class PlotMethodsBoxPlotTest < Test::Unit::TestCase
     end
 
     def setup_arrow_data
-      @data = Arrow::Table.new(y: @data[:y],
-                               x: Arrow::Array.new(@data[:x]).dictionary_encode,
-                               c: Arrow::Array.new(@data[:c]).dictionary_encode)
+      @data = Arrow::Table.new(@data)
     end
 
     def setup_daru_data

@@ -81,10 +81,7 @@ class PlotMethodHistPlotTest < Test::Unit::TestCase
     end
 
     def setup_arrow_data
-      @data = Arrow::Table.new(
-        a: @array_data[:a],
-        c: Arrow::Array.new(@array_data[:c]).dictionary_encode
-      )
+      @data = Arrow::Table.new(@array_data)
     end
 
     def setup_pandas_data
