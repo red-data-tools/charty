@@ -65,17 +65,27 @@ module Charty
 
       def categorical?
         case @data
-        when Arrow::DictionaryArray
+        when Arrow::StringArray, Arrow::DictionaryArray
           true
         when Arrow::ChunkedArray
-          @data.value_data_type.is_a?(Arrow::DictionaryDataType)
+          case @data.value_data_type
+          when Arrow::StringArray, Arrow::DictionaryDataType
+            true
+          else
+            false
+          end
         else
           false
         end
       end
 
       def categories
-        @data.dictionary.to_a
+        if @data.respond_to?(:dictionary)
+          dictionary = @data.dictionary
+        else
+          dictionary = @data.dictionary_encode.dictionary
+        end
+        dictionary.to_a
       end
 
       def unique_values
