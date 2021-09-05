@@ -133,7 +133,13 @@ module Charty
       end
 
       def stdev(population: false)
-        Arrow::Function.find("stddev").execute([@data])
+        options = Arrow::VarianceOptions.new
+        if population
+          options.ddof = 0
+        else
+          options.ddof = 1
+        end
+        Arrow::Function.find("stddev").execute([@data], options).value.value
       end
     end
   end
