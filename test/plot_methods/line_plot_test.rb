@@ -22,7 +22,7 @@ class PlotMethodLinePlotTest < Test::Unit::TestCase
       end
     end
 
-    data(:adapter, [:array], keep: true)
+    data(:adapter, [:array, :arrow], keep: true)
     data(:backend, [:pyplot, :plotly], keep: true)
     def test_line_plot(data)
       adapter_name, backend_name = data.values_at(:adapter, :backend)
@@ -112,6 +112,13 @@ class PlotMethodLinePlotTest < Test::Unit::TestCase
         c: Array.new(100) {|i| ["red", "blue", "green"][rand(3)] },
         d: Array.new(100) {|i| rand(10..50) }
       }
+    end
+
+    def setup_arrow_data
+      @data = Arrow::Table.new(y: @data[:y],
+                               x: @data[:x],
+                               c: Arrow::Array.new(@data[:c]).dictionary_encode,
+                               d: @data[:d])
     end
   end
 end

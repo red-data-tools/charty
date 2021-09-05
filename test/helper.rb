@@ -41,6 +41,14 @@ end
 
 module Charty
   module TestHelpers
+    module_function def arrow_available?
+      defined?(::Arrow::Table) and Arrow::Version::MAJOR >= 6
+    end
+
+    module_function def arrow_required
+      omit("red-arrow 6.0.0 or later is requried") unless arrow_available?
+    end
+
     module_function def numo_available?
       defined?(::Numo::NArray)
     end
@@ -82,14 +90,6 @@ module Charty
       omit("Pandas is required") unless pandas_available?
     end
 
-    module_function def arrow_available?
-      defined?(::Arrow::Table) and Arrow::Version::MAJOR >= 6
-    end
-
-    module_function def arrow_required
-      omit("red-arrow 6.0.0 or later is requried") unless arrow_available?
-    end
-
     def assert_near(c1, c2, eps=1e-8)
       assert_equal(c1.class, c2.class)
       c1.components.zip(c2.components).each do |x1, x2|
@@ -105,6 +105,9 @@ module Charty
     def setup_data(adapter_name)
       setup_array_data
       case adapter_name
+      when :arrow
+        arrow_required
+        setup_arrow_data
       when :daru
         setup_daru_data
       when :nmatrix

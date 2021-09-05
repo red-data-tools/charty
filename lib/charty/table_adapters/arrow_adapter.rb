@@ -37,10 +37,15 @@ module Charty
         if row
           @data[column][row]
         else
-          column_data = @data[column]
-          Charty::Vector.new(column_data.data.combine,
-                             index: index,
-                             name: column_data.name)
+          case column
+          when Array
+            Table.new(@data.select_columns(*column))
+          else
+            column_data = @data[column]
+            Vector.new(column_data.data.combine,
+                       index: index,
+                       name: column_data.name)
+          end
         end
       end
     end
