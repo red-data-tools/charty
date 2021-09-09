@@ -31,7 +31,6 @@ module Charty
       def_delegators :data, :name, :name=
 
       def compare_data_equality(other)
-        other = other.data.adapter if other.is_a?(VectorAdapter)
         case other
         when DaruVectorAdapter
           data == other.data

@@ -234,8 +234,6 @@ module Charty
           new_column = sym_key
         end
 
-        values.name = sym_key if values.name != sym_key
-
         if new_column
           self.columns = Index.new([*self.columns, new_column])
         end
