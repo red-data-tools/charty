@@ -100,6 +100,10 @@ module Charty
         Statistics.stdev(data, population: population)
       end
 
+      def percentile(q)
+        Statistics.percentile(data, q)
+      end
+
       def log_scale(method)
         Charty::Vector.new(
           self.map {|x| Math.log10(x) },

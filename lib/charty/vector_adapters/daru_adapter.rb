@@ -156,7 +156,8 @@ module Charty
       end
 
       def percentile(q)
-        data.linear_percentile(q)
+        a = data.reject_values(*Daru::MISSING_VALUES).to_a
+        Statistics.percentile(a, q)
       end
     end
   end
