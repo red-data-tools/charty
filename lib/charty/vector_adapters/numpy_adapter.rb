@@ -163,6 +163,10 @@ module Charty
       def stdev(population: false)
         Numpy.std(data, ddof: population ? 0 : 1)
       end
+
+      def percentile(q)
+        Numpy.nanpercentile(data, q)
+      end
     end
   end
 end

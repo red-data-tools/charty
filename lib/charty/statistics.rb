@@ -109,9 +109,9 @@ module Charty
       a = a.sort
       n = a.size
       q.map do |x|
-        x = n * (x / 100.0)
+        x = (n-1) * (x / 100.0)
         i = x.floor
-        if i == n-1
+        if i == x
           a[i]
         else
           t = x - i

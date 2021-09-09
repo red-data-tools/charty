@@ -49,7 +49,7 @@ module Charty
 
     alias completecases notnull
 
-    def_delegators :adapter, :mean, :stdev
+    def_delegators :adapter, :mean, :stdev, :percentile
 
     def_delegators :adapter, :scale, :scale_inverse
 
