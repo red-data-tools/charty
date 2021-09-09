@@ -20,12 +20,12 @@ module Charty
         @figure = {
           type: :bar,
           bar_pos: bar_pos,
-          values: values
+          values: values,
         }
       end
 
-      def box_plot(plot_data, positions, **kwargs)
-        @figure = { type: :box, data: plot_data }
+      def box_plot(plot_data, positions, orient:, **kwargs)
+        @figure = { type: :box, data: plot_data, orient: orient }
       end
 
       def set_xlabel(label)
@@ -57,7 +57,12 @@ module Charty
                 when :bar
                   ::UnicodePlot.barplot(@layout[:xtick_labels], @figure[:values], xlabel: @layout[:xlabel])
                 when :box
-                  ::UnicodePlot.boxplot(@layout[:xtick_labels], @figure[:data], xlabel: @layout[:xlabel])
+                  xlabel = if @figure[:orient] == :v
+                             @layout[:ylabel]
+                           else
+                             @layout[:xlabel]
+                           end
+                  ::UnicodePlot.boxplot(@layout[:xtick_labels], @figure[:data], xlabel: xlabel)
                 end
         sio = StringIO.new
         class << sio
