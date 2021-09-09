@@ -34,8 +34,21 @@ begin
 rescue LoadError, StandardError
 end
 
+begin
+  require "arrow"
+rescue LoadError
+end
+
 module Charty
   module TestHelpers
+    module_function def arrow_available?
+      defined?(::Arrow::Table) and Arrow::Version::MAJOR >= 6
+    end
+
+    module_function def arrow_required
+      omit("red-arrow 6.0.0 or later is requried") unless arrow_available?
+    end
+
     module_function def numo_available?
       defined?(::Numo::NArray)
     end
@@ -92,6 +105,9 @@ module Charty
     def setup_data(adapter_name)
       setup_array_data
       case adapter_name
+      when :arrow
+        arrow_required
+        setup_arrow_data
       when :daru
         setup_daru_data
       when :nmatrix

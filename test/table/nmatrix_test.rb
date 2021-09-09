@@ -54,10 +54,10 @@ class TableNMatrixTest < Test::Unit::TestCase
 
         test("data") do
           assert_equal({
-                         "X0" => [1, 5],
-                         "X1" => [2, 6],
-                         "X2" => [3, 7],
-                         "X3" => [4, 8]
+                         "X0" => Charty::Vector.new([1, 5]),
+                         "X1" => Charty::Vector.new([2, 6]),
+                         "X2" => Charty::Vector.new([3, 7]),
+                         "X3" => Charty::Vector.new([4, 8])
                        },
                        {
                          "X0" => @table["X0"].data,

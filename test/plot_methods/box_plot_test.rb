@@ -12,6 +12,10 @@ class PlotMethodsBoxPlotTest < Test::Unit::TestCase
       }
     end
 
+    def setup_arrow_data
+      @data = Arrow::Table.new(@data)
+    end
+
     def setup_daru_data
       @data = Daru::DataFrame.new(@data)
       @data[:x] = @data[:x].to_category
@@ -43,7 +47,9 @@ class PlotMethodsBoxPlotTest < Test::Unit::TestCase
       }
     end
 
-    data(:adapter, [:array, :daru, :numo, :nmatrix, :numpy, :pandas], keep: true)
+    data(:adapter,
+         [:array, :arrow, :daru, :numo, :nmatrix, :numpy, :pandas],
+         keep: true)
     data(:backend, [:plotly, :pyplot], keep: true)
     def test_box_plot(data)
       adapter_name, backend_name = data.values_at(:adapter, :backend)

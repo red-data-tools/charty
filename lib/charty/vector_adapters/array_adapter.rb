@@ -30,7 +30,7 @@ module Charty
       include NameSupport
       include IndexSupport
 
-      def_delegators :data, :values_at
+      def_delegators :data, :values_at, :to_a
 
       def where(mask)
         masked_data, masked_index = where_in_array(mask)

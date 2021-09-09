@@ -199,6 +199,15 @@ module Charty
       end
     end
 
+    def loc(key)
+      case values
+      when Pandas::Index
+        values.get_loc(key)
+      else
+        super
+      end
+    end
+
     def union(other)
       other = PandasIndex.try_convert(other)
       # NOTE: Using `sort=False` in pandas.Index#union does not produce pandas.RangeIndex.

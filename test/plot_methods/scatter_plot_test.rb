@@ -64,7 +64,9 @@ class PlotMethodScatterPlotTest < Test::Unit::TestCase
   sub_test_case("rendering") do
     include Charty::RenderingTestHelpers
 
-    data(:adapter, [:array, :daru, :numo, :nmatrix, :numpy, :pandas_series, :pandas_dataframe], keep: true)
+    data(:adapter,
+         [:array, :arrow, :daru, :numo, :nmatrix, :numpy, :pandas_series, :pandas_dataframe],
+         keep: true)
     data(:backend, [:pyplot, :plotly], keep: true)
     def test_scatter_plot(data)
       adapter_name, backend_name = data.values_at(:adapter, :backend)
@@ -165,6 +167,10 @@ class PlotMethodScatterPlotTest < Test::Unit::TestCase
         c: Array.new(100) {|i| ["red", "blue", "green"][rand(3)] },
         d: Array.new(100) {|i| rand(10..50) }
       }
+    end
+
+    def setup_arrow_data
+      @data = Arrow::Table.new(@data)
     end
 
     def setup_daru_data

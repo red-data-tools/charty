@@ -75,6 +75,8 @@ module Charty
                 arrays[i] << record[key]
               end
             end
+          when Vector
+            arrays = data
           when self.class.method(:array?)
             unsupported_data_format unless data.all?(&self.class.method(:array?))
             arrays = data.map(&:to_a).transpose
@@ -121,19 +123,14 @@ module Charty
         index = union_indexes(*indexes)
 
         arrays = arrays.map do |array|
-          case array
-          when Charty::Vector
-            array.data
-          when Hash
-            raise NotImplementedError
-          when self.class.method(:array?)
-            array
-          else
-            Array.try_convert(array)
-          end
+          Vector.try_convert(array)
         end
 
         columns = generate_column_names(arrays.length, columns)
+
+        arrays.zip(columns) do |array, column|
+          array.name = column.to_sym if array.name.to_s != column
+        end
 
         return arrays, columns, index
       end
@@ -199,9 +196,7 @@ module Charty
                         else
                           @data[str_key]
                         end
-          # FIXME: Here column_data need to be dupped to
-          # prevent to overwrite the name of Pandas::Series
-          Vector.new(column_data.dup, index: index, name: column)
+          Vector.new(column_data, index: index, name: column)
         end
       end
 
@@ -216,15 +211,10 @@ module Charty
         end
 
         orig_values = values
-        case values
-        when Charty::Vector
-          values = values.data
-        else
-          values = Array.try_convert(values)
-        end
+        values = Vector.try_convert(values)
         if values.nil?
           raise ArgumentError,
-                "`values` must be convertible to Array"
+                "`values` must be convertible to Charty::Vector"
         end
 
         if values.length != self.length

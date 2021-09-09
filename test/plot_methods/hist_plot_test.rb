@@ -4,8 +4,8 @@ class PlotMethodHistPlotTest < Test::Unit::TestCase
   sub_test_case("rendering") do
     include Charty::RenderingTestHelpers
 
-    data(:adapter, [:array], keep: true)
-    data(:backend, [:pyplot, :plotly], keep: true)
+    data(:adapter, [:array, :arrow])
+    data(:backend, [:pyplot, :plotly])
     def test_hist_plot_with_flat_vectors(data)
       backend_name = data[:backend]
       setup_backend(backend_name)
@@ -17,7 +17,7 @@ class PlotMethodHistPlotTest < Test::Unit::TestCase
     end
 
     sub_test_case("wide form") do
-      data(:adapter, [:array, :pandas], keep: true)
+      data(:adapter, [:array, :arrow, :pandas], keep: true)
       data(:backend, [:pyplot, :plotly], keep: true)
       def test_hist_plot_with_wide_form(data)
         adapter_name, backend_name = data.values_at(:adapter, :backend)
@@ -38,6 +38,10 @@ class PlotMethodHistPlotTest < Test::Unit::TestCase
         }
       end
 
+      def setup_arrow_data
+        @data = Arrow::Table.new(@array_data)
+      end
+
       def setup_pandas_data
         pandas_required
         @data = Pandas::DataFrame.new(data: @array_data)
@@ -47,7 +51,7 @@ class PlotMethodHistPlotTest < Test::Unit::TestCase
       end
     end
 
-    data(:adapter, [:array, :pandas], keep: true)
+    data(:adapter, [:array, :arrow, :pandas], keep: true)
     data(:backend, [:pyplot, :plotly], keep: true)
     def test_hist_plot(data)
       adapter_name, backend_name = data.values_at(:adapter, :backend)
@@ -74,6 +78,10 @@ class PlotMethodHistPlotTest < Test::Unit::TestCase
         a: Array.new(100) {|i| rand },
         c: Array.new(100) {|i| ["red", "blue", "green"][rand(3)] },
       }
+    end
+
+    def setup_arrow_data
+      @data = Arrow::Table.new(@array_data)
     end
 
     def setup_pandas_data
