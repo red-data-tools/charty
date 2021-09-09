@@ -173,10 +173,10 @@ class TableArrayTest < Test::Unit::TestCase
 
         test("values") do
           assert_equal({
-                         X0: [1, 5],
-                         X1: [2, 6],
-                         X2: [3, 7],
-                         X3: [4, 8]
+                         X0: Charty::Vector.new([1, 5]),
+                         X1: Charty::Vector.new([2, 6]),
+                         X2: Charty::Vector.new([3, 7]),
+                         X3: Charty::Vector.new([4, 8])
                        },
                        {
                          X0: @table["X0"].data,
@@ -341,7 +341,7 @@ class TableArrayTest < Test::Unit::TestCase
       end
 
       test("values") do
-        assert_equal([1, 2, 3, 4, 5],
+        assert_equal(Charty::Vector.new([1, 2, 3, 4, 5]),
                      @table["X0"].data)
       end
     end

@@ -22,12 +22,21 @@ module Charty
         when NumpyAdapter, PandasSeriesAdapter
           other.compare_data_equality(self)
         else
-          data == other.data.to_a
+          data == other.to_a
         end
       end
 
       include NameSupport
       include IndexSupport
+
+      def to_a
+        case data
+        when Numo::Bit
+          map {|bit| bit == 1 }
+        else
+          super
+        end
+      end
 
       def where(mask)
         mask = check_mask_vector(mask)

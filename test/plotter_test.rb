@@ -10,11 +10,11 @@ class PlotterTest < Test::Unit::TestCase
 
   test("#table=") do
     @plotter.table = @data
-    assert_equal(@data[:foo],
+    assert_equal(Charty::Vector.new(@data[:foo]),
                  @plotter.table[:foo].data)
-    assert_equal(@data[:square],
+    assert_equal(Charty::Vector.new(@data[:square]),
                  @plotter.table[:square].data)
-    assert_equal(@data[:cubic],
+    assert_equal(Charty::Vector.new(@data[:cubic]),
                  @plotter.table[:cubic].data)
   end
 

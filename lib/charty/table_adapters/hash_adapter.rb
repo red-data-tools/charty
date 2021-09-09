@@ -128,6 +128,10 @@ module Charty
 
         columns = generate_column_names(arrays.length, columns)
 
+        arrays.zip(columns) do |array, column|
+          array.name = column.to_sym if array.name.to_s != column
+        end
+
         return arrays, columns, index
       end
 
@@ -187,11 +191,12 @@ module Charty
             sym_key = str_key.to_sym
           end
 
-          if @data.key?(sym_key)
-            @data[sym_key]
-          else
-            @data[str_key]
-          end
+          column_data = if @data.key?(sym_key)
+                          @data[sym_key]
+                        else
+                          @data[str_key]
+                        end
+          Vector.new(column_data, index: index, name: column)
         end
       end
 
@@ -228,6 +233,8 @@ module Charty
           @data[str_key] = values
           new_column = sym_key
         end
+
+        values.name = sym_key if values.name != sym_key
 
         if new_column
           self.columns = Index.new([*self.columns, new_column])
