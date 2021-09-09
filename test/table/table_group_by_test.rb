@@ -233,7 +233,11 @@ class TableGroupByTest < Test::Unit::TestCase
       ]
     }.to_h
 
-    df = Pandas::DataFrame.new(data: @expected_applied_table.adapter.data)
+    data = {}
+    @expected_applied_table.adapter.data.each do |key, value|
+      data[key] = value.to_a
+    end
+    df = Pandas::DataFrame.new(data: data)
     df[:a_min] = df[:a_min].astype(:float64)
     df[:a_max] = df[:a_max].astype(:float64)
     @expected_applied_table = Charty::Table.new(df, index: @expected_applied_table.index)
