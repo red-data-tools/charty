@@ -206,15 +206,10 @@ module Charty
         end
 
         orig_values = values
-        case values
-        when Charty::Vector
-          values = values.data
-        else
-          values = Array.try_convert(values)
-        end
+        values = Vector.try_convert(values)
         if values.nil?
           raise ArgumentError,
-                "`values` must be convertible to Array"
+                "`values` must be convertible to Charty::Vector"
         end
 
         if values.length != self.length
