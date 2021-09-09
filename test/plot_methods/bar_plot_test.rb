@@ -38,7 +38,10 @@ class PlotMethodsBarPlotTest < Test::Unit::TestCase
                      x: :x,
                      y: :y,
                      color: nil,
-                     data: data,
+                     data: {
+                       x: Charty::Vector.new(data[:x]),
+                       y: Charty::Vector.new(data[:y]),
+                     },
                      palette: nil,
                      group_names: data[:x],
                      plot_data: data[:y].map {|v| [v] }
@@ -99,7 +102,10 @@ class PlotMethodsBarPlotTest < Test::Unit::TestCase
                      x: :x,
                      y: :y,
                      color: nil,
-                     data: data,
+                     data: {
+                       x: Charty::Vector.new(data[:x]),
+                       y: Charty::Vector.new(data[:y]),
+                     },
                      palette: nil,
                      group_names: data[:x],
                      plot_data: data[:y].map {|v| [v] }
