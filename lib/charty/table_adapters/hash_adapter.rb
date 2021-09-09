@@ -75,6 +75,8 @@ module Charty
                 arrays[i] << record[key]
               end
             end
+          when Vector
+            arrays = data
           when self.class.method(:array?)
             unsupported_data_format unless data.all?(&self.class.method(:array?))
             arrays = data.map(&:to_a).transpose
@@ -104,12 +106,7 @@ module Charty
         arrays.each do |array|
           index = case array
                   when Charty::Vector
-                    case array.index
-                    when DaruIndex, PandasIndex
-                      Index.new(array.index.to_a)
-                    else
-                      array.index
-                    end
+                    array.index
                   when ->(x) { defined?(Daru) && x.is_a?(Daru::Vector) }
                     Charty::DaruIndex.new(array.index)
                   when ->(x) { defined?(Pandas) && x.is_a?(Pandas::Series) }
@@ -126,16 +123,7 @@ module Charty
         index = union_indexes(*indexes)
 
         arrays = arrays.map do |array|
-          case array
-          when Charty::Vector
-            array.data.to_a
-          when Hash
-            raise NotImplementedError
-          when self.class.method(:array?)
-            array
-          else
-            Array.try_convert(array)
-          end
+          Vector.try_convert(array)
         end
 
         columns = generate_column_names(arrays.length, columns)
@@ -199,14 +187,11 @@ module Charty
             sym_key = str_key.to_sym
           end
 
-          column_data = if @data.key?(sym_key)
-                          @data[sym_key]
-                        else
-                          @data[str_key]
-                        end
-          # FIXME: Here column_data need to be dupped to
-          # prevent to overwrite the name of Pandas::Series
-          Vector.new(column_data.dup, index: index, name: column)
+          if @data.key?(sym_key)
+            @data[sym_key]
+          else
+            @data[str_key]
+          end
         end
       end
 
