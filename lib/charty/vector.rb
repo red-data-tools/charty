@@ -34,6 +34,7 @@ module Charty
 
     alias size length
 
+    def_delegators :adapter, :iloc
     def_delegators :adapter, :to_a
     def_delegators :adapter, :each
     def_delegators :adapter, :empty?

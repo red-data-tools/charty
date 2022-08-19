@@ -34,7 +34,8 @@ module Charty
                      :uniq,
                      :unique_values,
                      :values_at,
-                     :where
+                     :where,
+                     :iloc
 
       def compare_data_equality(other)
         if other.is_a?(self.class)

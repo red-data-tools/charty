@@ -61,6 +61,10 @@ module Charty
         data.equals(Pandas::Series.new(other, index: data.index))
       end
 
+      def iloc(i)
+        data.iloc[i]
+      end
+
       def [](key)
         case key
         when Charty::Vector
