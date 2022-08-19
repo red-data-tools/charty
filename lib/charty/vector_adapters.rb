@@ -57,6 +57,8 @@ module Charty
         end
       end
 
+      def_delegator :data, :[], :iloc
+
       def_delegators :data, :[], :[]=
       def_delegators :data, :each, :to_a, :empty?
 
@@ -148,7 +150,7 @@ module Charty
         when Charty::Vector
           where(key)
         else
-          super(key_to_loc(key))
+          iloc(key_to_loc(key))
         end
       end
 

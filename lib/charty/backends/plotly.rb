@@ -309,8 +309,8 @@ module Charty
 
         groups = (0 ... x.length).group_by do |i|
           key = {}
-          key[:color] = color[i] unless color.nil?
-          key[:style] = style[i] unless style.nil?
+          key[:color] = color.iloc(i) unless color.nil?
+          key[:style] = style.iloc(i) unless style.nil?
           key
         end
 

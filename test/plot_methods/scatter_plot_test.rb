@@ -214,4 +214,46 @@ class PlotMethodScatterPlotTest < Test::Unit::TestCase
       @data = Pandas::DataFrame.new(data: @data)
     end
   end
+
+  sub_test_case("with nonzero origin index") do  # [GH-93]
+    def setup
+      numpy_required
+      pandas_required
+
+      data = Numpy.arange(300).reshape([100, 3])
+      @df = Pandas::DataFrame.new(data, index: (300...400).to_a, columns: %w[a b c])
+
+      Charty::Backends.use(:plotly)
+    end
+
+    def test_scatter_plot_with_single_category
+      @df[:categorical_column] = "category_name"
+
+      plot = Charty.scatter_plot(
+        data: @df,
+        x: :a,
+        y: :b,
+        color: :categorical_column
+      )
+
+      assert_nothing_raised do
+        plot.render()
+      end
+    end
+
+    def test_scatter_plot_with_multiple_categories
+      @df[:categorical_column] = ["A", "B"] * 50
+
+      Charty::Backends.use(:plotly)
+      plot = Charty.scatter_plot(
+        data: @df,
+        x: :a,
+        y: :b,
+        color: :categorical_column
+      )
+      assert_nothing_raised do
+        plot.render()
+      end
+    end
+  end
 end
