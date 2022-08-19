@@ -185,7 +185,7 @@ module Charty
         elsif vector.categorical?
           :categorical
         else
-          case vector[0]
+          case vector.iloc(0)
           when true, false
             boolean_type
           else
