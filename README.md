@@ -79,7 +79,7 @@ First you need to load the Charty library.
 require "charty"
 ```
 
-Next you msut have a dataset you want to visualize.  Here, we use the penguins dataset provided in red-datasets library.
+Next you must have a dataset you want to visualize.  Here, we use the penguins dataset provided in red-datasets library.
 
 ```ruby
 require "datasets"
