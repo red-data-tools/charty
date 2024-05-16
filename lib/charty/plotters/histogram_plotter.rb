@@ -209,8 +209,11 @@ module Charty
           observations = sub_data[data_variable].drop_na.to_a
           params = {}
           params[:weights] = sub_data[:weights].to_a if sub_data.column?(:weights)
-          params[:edges] = common_bin_edges if common_bin_edges
-          hist = Statistics.histogram(observations, bins, **params)
+          hist = if common_bin_edges
+                   Statistics.histogram(observations, edges: common_bin_edges, **params)
+                 else
+                   Statistics.histogram(observations, bins, **params)
+                 end
 
           name = sub_vars[:color]
           backend.univariate_histogram(hist, name, data_variable, stat,
