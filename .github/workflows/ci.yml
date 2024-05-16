@@ -30,6 +30,9 @@ jobs:
         - 2.6
         include:
         - { os: ubuntu-latest , ruby: debug }
+        exclude:
+        - { os: ubuntu-24.04 , ruby: 2.7 }
+        - { os: ubuntu-24.04 , ruby: 2.6 }
 
     steps:
     - uses: actions/checkout@v2
