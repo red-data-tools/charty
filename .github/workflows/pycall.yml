@@ -19,19 +19,19 @@ jobs:
       fail-fast: false
       matrix:
         os:
+        - ubuntu-latest
+        - ubuntu-24.04
         - ubuntu-20.04
-        - ubuntu-18.04
         ruby:
-        - "3.0"
-        - 2.7
-        - 2.6
+        - 3.3
+        - 3.2
+        - 3.1
         python:
         - 3.x
-        - 2.x
         python_architecture:
         - x64
         include:
-        - { os: ubuntu-20.04 , ruby: head , python: 3.x , python_architecture: x64 }
+        - { os: ubuntu-latest , ruby: debug , python: 3.x , python_architecture: x64 }
 
     steps:
     - uses: actions/checkout@v2
