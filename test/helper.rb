@@ -40,7 +40,71 @@ rescue LoadError
 end
 
 module Charty
+  module PythonTestHelpers
+    def define_python_warning_check
+      PyCall.exec(<<PYTHON)
+import contextlib
+import io
+import re
+import sys
+
+class WarningCheckError(Exception):
+  pass
+
+class CaptureIO(io.TextIOWrapper):
+  def __init__(self) -> None:
+    super().__init__(io.BytesIO(), encoding="UTF-8", newline="", write_through=True)
+
+  def getvalue(self) -> str:
+    assert isinstance(self.buffer, io.BytesIO)
+    return self.buffer.getvalue().decode("UTF-8")
+
+class WarningCheckIO(CaptureIO):
+  def __init__(self, pattern: str) -> None:
+    super().__init__()
+    self.pattern = pattern
+
+  def write(self, s: str) -> int:
+    if re.search(self.pattern, s) is not None:
+      raise WarningCheckError(s)
+    return super().write(s)
+
+@contextlib.contextmanager
+def warning_check(pattern: str):
+  old = sys.stderr
+  setattr(sys, "stderr", WarningCheckIO(pattern))
+  try:
+    yield
+  finally:
+    setattr(sys, "stderr", old)
+PYTHON
+    end
+
+    def python_warning_check(pattern)
+      f = PyCall.eval("warning_check")
+      f.(pattern)
+    rescue PyCall::PyError
+      define_python_warning_check
+      python_warning_check(pattern)
+    end
+
+    def check_python_warning(pattern, &block)
+      PyCall.with(python_warning_check(pattern), &block)
+    end
+  end
+
   module TestHelpers
+    include PythonTestHelpers
+
+    def setup
+      super
+      if pandas_available?
+        check_python_warning("FutureWarning") do
+          yield
+        end
+      end
+    end
+
     module_function def arrow_available?
       defined?(::Arrow::Table) and Arrow::Version::MAJOR >= 6
     end
