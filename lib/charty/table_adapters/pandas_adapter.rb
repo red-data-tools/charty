@@ -90,13 +90,14 @@ module Charty
       end
 
       def []=(key, values)
+        all_slice = PyCall::Slice.new(nil)
         case values
         when Charty::Vector
           case values.adapter
           when Charty::VectorAdapters::PandasSeriesAdapter
-            @data[key] = values.adapter.data
+            @data.loc[all_slice, key] = values.adapter.data
           else
-            @data[key] = values.to_a
+            @data.loc[all_slice, key] = values.to_a
           end
         else
           orig_values = values
@@ -104,7 +105,7 @@ module Charty
           if values.nil?
             raise ArgumentError, "`values` must be convertible to Array"
           end
-          @data[key] = values
+          @data.loc[all_slice, key] = values
         end
         return values
       end
@@ -203,6 +204,12 @@ module Charty
         end
 
         def [](key)
+          key = case key
+                when PyCall::Tuple
+                  key
+                else
+                  PyCall::Tuple.new(*key.to_a)
+                end
           Charty::Table.new(@groupby.get_group(key))
         end
       end

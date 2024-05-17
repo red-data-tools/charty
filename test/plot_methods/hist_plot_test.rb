@@ -44,10 +44,12 @@ class PlotMethodHistPlotTest < Test::Unit::TestCase
 
       def setup_pandas_data
         pandas_required
-        @data = Pandas::DataFrame.new(data: @array_data)
-        @data[:red] = @data[:red].astype("float64")
-        @data[:blue] = @data[:blue].astype("float64")
-        @data[:green] = @data[:green].astype("float64")
+        data = Pandas::DataFrame.new(data: @array_data)
+        @data = Pandas::DataFrame.new(data: {
+          red: data[:red].astype("float64"),
+          blue: data[:blue].astype("float64"),
+          green: data[:green].astype("float64")
+        })
       end
     end
 
@@ -86,9 +88,11 @@ class PlotMethodHistPlotTest < Test::Unit::TestCase
 
     def setup_pandas_data
       pandas_required
-      @data = Pandas::DataFrame.new(data: @array_data)
-      @data[:a] = @data[:a].astype("float64")
-      @data[:c] = @data[:c].astype("category")
+      data = Pandas::DataFrame.new(data: @array_data)
+      @data = Pandas::DataFrame.new(data: {
+        a: data[:a].astype("float64"),
+        c: data[:c].astype("category")
+      })
     end
   end
 end
