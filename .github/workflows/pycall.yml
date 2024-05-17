@@ -74,6 +74,7 @@ jobs:
     - run: sudo apt install build-essential libsqlite3-dev
 
     - run: npm install playwright@latest
+    - run: ./node_modules/.bin/playwright install
 
     - run: pip install --user matplotlib pandas
 
