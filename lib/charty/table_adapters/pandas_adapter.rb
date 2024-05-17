@@ -204,6 +204,12 @@ module Charty
         end
 
         def [](key)
+          key = case key
+                when PyCall::Tuple
+                  key
+                else
+                  PyCall::Tuple.new(*key.to_a)
+                end
           Charty::Table.new(@groupby.get_group(key))
         end
       end
