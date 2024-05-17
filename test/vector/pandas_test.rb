@@ -71,10 +71,10 @@ class VectorPandasTest < Test::Unit::TestCase
                        5
                      ],
                      [
-                       @vector[1],
+                       @vector.iloc(1),
                        @vector["c"],
                        @vector["d"],
-                       @vector[4]
+                       @vector.iloc(4)
                      ])
       end
     end

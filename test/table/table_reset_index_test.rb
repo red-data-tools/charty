@@ -105,9 +105,12 @@ class TableResetIndexTest < Test::Unit::TestCase
 
       @table = Charty::Table.new(Pandas::DataFrame.new(data: @data))
 
-      df = Pandas::DataFrame.new(data: {b: @expected_indices.keys}.merge(@expected_applied_data))
-      df[:a_min] = df[:a_min].astype(:float64)
-      df[:a_max] = df[:a_max].astype(:float64)
+      df = Pandas::DataFrame.new(data: {
+        b: @expected_indices.keys,
+        a: @expected_applied_data[:a],
+        a_min: @expected_applied_data[:a_min].map(&:to_f),
+        a_max: @expected_applied_data[:a_max].map(&:to_f)
+      })
       @expected_result = Charty::Table.new(df)
     end
   end
