@@ -38,14 +38,14 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby }}
 
-    - uses: actions/cache@v2
+    - uses: actions/cache@v4
       if: runner.os == 'Linux'
       with:
         path: ~/.cache/red-datasets
         key: ${{ runner.os }}-${{ hashFiles('lib/**') }}
         restore-keys: ${{ runner.os }}-
 
-    - uses: actions/cache@v2
+    - uses: actions/cache@v4
       if: |
         runner.os == 'macOS'
       with:
@@ -54,7 +54,7 @@ jobs:
         key: ${{ runner.os }}-${{ hashFiles('lib/**') }}
         restore-keys: ${{ runner.os }}-
 
-    - uses: actions/cache@v2
+    - uses: actions/cache@v4
       if: |
         runner.os == 'Windows'
       with:
