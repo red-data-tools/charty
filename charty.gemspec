@@ -39,8 +39,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "test-unit"
   spec.add_development_dependency "daru"
   spec.add_development_dependency "matrix" # need for daru on Ruby > 3.0
-  spec.add_development_dependency "activerecord"
-  spec.add_development_dependency "sqlite3"
   spec.add_development_dependency "iruby", ">= 0.7.0"
   spec.add_development_dependency "csv"
 end
