@@ -131,8 +131,8 @@ class TableAsetTest < Test::Unit::TestCase
             end
       table[key] = [10, 20, 30, 40, 50]
       expected_data = {
-        foo: [1, 2, 3, 4, 5],
-        bar: [10, 20, 30, 40, 50]
+        foo: Pandas::Series.new([1, 2, 3, 4, 5]),
+        bar: Pandas::Series.new([10, 20, 30, 40, 50], dtype: "object")
       }
       expected_data = transform_keys(expected_data, &:to_s) if data_key_type == :string
       expected_data = Pandas::DataFrame.new(data: expected_data)
@@ -152,8 +152,8 @@ class TableAsetTest < Test::Unit::TestCase
             end
       table[key] = [10, 20, 30, 40, 50]
       expected_data = {
-        foo: [1, 2, 3, 4, 5],
-        bar: [10, 20, 30, 40, 50]
+        foo: Pandas::Series.new([1, 2, 3, 4, 5]),
+        bar: Pandas::Series.new([10, 20, 30, 40, 50], dtype: "object")
       }
       expected_data = transform_keys(expected_data, &:to_s) if data_key_type == :string
       expected_data = Pandas::DataFrame.new(data: expected_data)
