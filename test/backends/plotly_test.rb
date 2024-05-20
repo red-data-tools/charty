@@ -144,14 +144,14 @@ class BackendsPlotlyTest < Test::Unit::TestCase
   end
 
   sub_test_case("#save") do
-    def setup
-      super
-
-      @tmpdir = Dir.mktmpdir
+    def tmpdir
+      @tmpdir ||= Dir.mktmpdir
     end
 
     def teardown
-      FileUtils.remove_entry(@tmpdir)
+      if defined? @tmpdir
+        FileUtils.remove_entry(@tmpdir)
+      end
     end
 
     sub_test_case("save to test.html") do
@@ -160,7 +160,7 @@ class BackendsPlotlyTest < Test::Unit::TestCase
         setup_data(adapter_name)
         setup_backend(backend_name)
         plot = Charty.scatter_plot(data: @data, x: :x, y: :y)
-        filename = File.join(@tmpdir, "test.html")
+        filename = File.join(tmpdir, "test.html")
         plot.save(filename, element_id: "foo")
         content = File.read(filename)
         assert do
@@ -175,7 +175,7 @@ class BackendsPlotlyTest < Test::Unit::TestCase
         setup_data(adapter_name)
         setup_backend(backend_name)
         plot = Charty.scatter_plot(data: @data, x: :x, y: :y)
-        filename = File.join(@tmpdir, "test.png")
+        filename = File.join(tmpdir, "test.png")
         plot.save(filename, element_id: "foo")
         content = File.read(filename).b
         assert_equal(PNG_HEADER, content[0,8])
@@ -188,7 +188,7 @@ class BackendsPlotlyTest < Test::Unit::TestCase
         setup_data(adapter_name)
         setup_backend(backend_name)
         plot = Charty.scatter_plot(data: @data, x: :x, y: :y)
-        filename = File.join(@tmpdir, "test.jpg")
+        filename = File.join(tmpdir, "test.jpg")
         plot.save(filename, element_id: "foo")
         content = File.read(filename).b
         assert_equal(JPEG_MARKERS,
