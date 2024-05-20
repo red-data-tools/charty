@@ -208,7 +208,7 @@ module Charty
                 when PyCall::Tuple
                   key
                 else
-                  PyCall::Tuple.new(*key.to_a)
+                  PyCall::Tuple.new(*Array(key))
                 end
           Charty::Table.new(@groupby.get_group(key))
         end
