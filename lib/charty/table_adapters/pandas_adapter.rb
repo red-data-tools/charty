@@ -208,7 +208,12 @@ module Charty
                 when PyCall::Tuple
                   key
                 else
-                  PyCall::Tuple.new(*Array(key))
+                  key = Array(key)
+                  if key.length == 1 && key[0].is_a?(Integer)
+                    key[0]
+                  else
+                    PyCall::Tuple.new(*key)
+                  end
                 end
           Charty::Table.new(@groupby.get_group(key))
         end
