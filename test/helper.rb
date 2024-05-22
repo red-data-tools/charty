@@ -102,6 +102,8 @@ PYTHON
         check_python_warning("FutureWarning") do
           yield
         end
+      else
+        yield
       end
     end
 
