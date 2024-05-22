@@ -3,11 +3,12 @@ class PlotMethodScatterPlotTest < Test::Unit::TestCase
 
   sub_test_case("function-call style") do
     def setup
-      super
-
-      @x = Array.new(20) {|i| rand(i.to_f) }
-      @y = Array.new(20) {|i| rand * @x[i] }
-      @data = {x: @x, y: @y}
+      super do
+        @x = Array.new(20) {|i| rand(i.to_f) }
+        @y = Array.new(20) {|i| rand * @x[i] }
+        @data = {x: @x, y: @y}
+        yield
+      end
     end
 
     sub_test_case("wide-form input") do
