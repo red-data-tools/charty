@@ -226,6 +226,16 @@ class PlotMethodsBarPlotTest < Test::Unit::TestCase
         render_plot(backend_name, plot)
       end
     end
+
+    def test_bar_plot_log(data)
+      adapter_name, backend_name = data.values_at(:adapter, :backend)
+      setup_data(adapter_name)
+      setup_backend(backend_name)
+      plot = Charty.bar_plot(data: @data, x: :x, y: :y, color: :c, log: true)
+      assert_nothing_raised do
+        render_plot(backend_name, plot)
+      end
+    end
   end
 
   sub_test_case("with nonzero origin index") do  # [GH-93]
