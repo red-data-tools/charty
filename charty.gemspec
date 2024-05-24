@@ -33,6 +33,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "matplotlib", ">= 1.2.0"
   spec.add_dependency "pandas", ">= 0.3.5"
   spec.add_dependency "playwright-ruby-client"
+  spec.add_dependency "pycall", ">= 1.5.2"
 
   spec.add_development_dependency "bundler", ">= 1.16"
   spec.add_development_dependency "rake"
