@@ -91,17 +91,21 @@ module Charty
         super
 
         if self.log
-          min_value, max_value = @estimations.minmax
           if @plot_colors
+            min_value = @estimations.map(&:min).min
+            max_value = @estimations.map(&:max).max
             unless @conf_int.empty?
-              min_value = [min_value, @conf_int[0]].min
-              max_value = [max_value, @conf_int[1]].max
+              ci_min = @conf_int.map {|cis| cis.map {|ci| ci[0] }.min }.min
+              ci_max = @conf_int.map {|cis| cis.map {|ci| ci[1] }.max }.max
+              min_value = [min_value, ci_min].min
+              max_value = [max_value, ci_max].max
             end
           else
+            min_value, max_value = @estimations.minmax
             ci_min = Util.filter_map(@conf_int) { |ci| ci[0] unless ci.empty? }
             ci_max = Util.filter_map(@conf_int) { |ci| ci[1] unless ci.empty? }
-            min_value = [min_value, ci_min.min].min unless ci_min.empty?
-            max_value = [max_value, ci_max.max].max unless ci_max.empty?
+            min_value = [min_value, *ci_min].min
+            max_value = [max_value, *ci_max].max
           end
           if min_value > 1
             min_value = 0
