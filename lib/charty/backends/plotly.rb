@@ -937,8 +937,6 @@ module Charty
                 loop do
                   result = nil
                   case request.shift
-                  when :finish
-                    break
                   when :render
                     input, output, format, element_id, width, height = request
 
@@ -950,11 +948,14 @@ module Charty
                     kwargs = {type: format}
                     kwargs[:path] = output unless output.nil?
                     result = element.screenshot(**kwargs)
+                  else
+                    # Ignore unknown command
                   end
                   request = Fiber.yield(result)
                 end
               end
             end
+            @playwright_fiber = nil
           end
           @playwright_fiber.resume
         end
@@ -963,10 +964,14 @@ module Charty
       def self.terminate_playwright
         return if @playwright_fiber.nil?
 
-        @playwright_fiber.resume([:finish])
+        @playwright_fiber.raise StopIteration
+      rescue FiberError
+        # Ignore FiberError
       end
 
-      at_exit { terminate_playwright }
+      at_exit do
+        terminate_playwright
+      end
 
       def self.render_image(input, output, format, element_id, width, height)
         ensure_playwright if @playwright_fiber.nil?
