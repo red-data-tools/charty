@@ -19,7 +19,10 @@ require_relative "helper"
 result = Test::Unit::AutoRunner.run(true, test_dir.to_s)
 
 if defined? Charty::Backends::BackendHelpers::PlaywrightManager
-  Charty::Backends::BackendHelpers::PlaywrightManager.shutdown
+  require "timeout"
+  Timeout.timeout(60) do
+    Charty::Backends::BackendHelpers::PlaywrightManager.shutdown
+  end
 end
 
 exit(result)
