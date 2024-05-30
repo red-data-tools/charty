@@ -52,18 +52,10 @@ module Charty
         end
 
         module_function def shutdown
-          if @_context
-            @_context.close
-            @_context = nil
-          end
-          if @_browser
-            @_browser.close
-            @_browser = nil
-          end
-          if @_playwright_exec
-            @_playwright_exec.stop
-            @_playwright_exec = nil
-          end
+          @_playwright_exec.stop if @_playwright_exec
+          @_playwright_exec = nil
+          @_context = nil
+          @_browser = nil
         end
 
         at_exit do
