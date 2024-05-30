@@ -6,21 +6,6 @@ module Charty
         @_browser = nil
         @_context = nil
 
-        at_exit do
-          if @_context
-            @_context.close
-            @_context = nil
-          end
-          if @_browser
-            @_browser.close
-            @_browser = nil
-          end
-          if @_playwright_exec
-            @_playwright_exec.stop
-            @_playwright_exec = nil
-          end
-        end
-
         module_function def playwright
           unless @_playwright_exec
             load_playwright
@@ -64,6 +49,25 @@ module Charty
         rescue LoadError
           $stderr.puts "ERROR: You need to install playwright and playwright-ruby-client before using Plotly renderer"
           raise
+        end
+
+        module_function def shutdown
+          if @_context
+            @_context.close
+            @_context = nil
+          end
+          if @_browser
+            @_browser.close
+            @_browser = nil
+          end
+          if @_playwright_exec
+            @_playwright_exec.stop
+            @_playwright_exec = nil
+          end
+        end
+
+        at_exit do
+          shutdown
         end
       end
     end

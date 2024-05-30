@@ -16,4 +16,10 @@ $LOAD_PATH.unshift(test_lib_dir.to_s)
 
 require_relative "helper"
 
-exit(Test::Unit::AutoRunner.run(true, test_dir.to_s))
+result = Test::Unit::AutoRunner.run(true, test_dir.to_s)
+
+if defined? Charty::Backends::BackendHelpers::PlaywrightManager
+  Charty::Backends::BackendHelpers::PlaywrightManager.shutdown
+end
+
+exit(result)
