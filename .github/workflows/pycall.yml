@@ -86,4 +86,5 @@ jobs:
     - run: bundle exec rake
       env:
         PYTHON: python
+        TIMEOUT_SEC: 180
       continue-on-error: ${{ matrix.python == '2.x' }}
