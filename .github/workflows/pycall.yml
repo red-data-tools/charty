@@ -83,7 +83,7 @@ jobs:
 
     - run: python -V
 
-    - run: bundle exec rake
+    - run: bundle exec rake VERBOSE=1
       env:
         PYTHON: python
         TIMEOUT_SEC: 180

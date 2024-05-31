@@ -64,7 +64,7 @@ jobs:
 
     - run: bundle install --jobs 4 --retry 3 --without "numo python"
 
-    - run: bundle exec rake
+    - run: bundle exec rake VERBOSE=1
       env:
         TIMEOUT_SEC: 180
 
