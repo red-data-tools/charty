@@ -57,10 +57,6 @@ module Charty
           @_context = nil
           @_browser = nil
         end
-
-        at_exit do
-          shutdown
-        end
       end
     end
   end
