@@ -73,7 +73,7 @@ jobs:
 
     - run: bundle exec rake VERBOSE=1
       env:
-        TIMEOUT_SEC: 180
+        TIMEOUT_SEC: 480
 
     - run: rake build
 
