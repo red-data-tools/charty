@@ -4,6 +4,7 @@
 # $VERBOSE = true
 
 require "pathname"
+require "timeout"
 
 base_dir = Pathname(__dir__).parent.expand_path
 
@@ -16,4 +17,11 @@ $LOAD_PATH.unshift(test_lib_dir.to_s)
 
 require_relative "helper"
 
-exit(Test::Unit::AutoRunner.run(true, test_dir.to_s))
+run_test = lambda { Test::Unit::AutoRunner.run(true, test_dir.to_s) }
+timeout_sec = ENV.fetch("TIMEOUT_SEC", "0").to_i
+status = if timeout_sec > 0
+           Timeout.timeout(timeout_sec) { run_test.() }
+         else
+           run_test.()
+         end
+exit(status)
