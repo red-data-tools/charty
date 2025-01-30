@@ -72,7 +72,9 @@ jobs:
 
     - run: bundle install --jobs 4 --retry 3 --without "nmatrix python"
 
-    - run: bundle exec rake
+    - run: bundle exec rake VERBOSE=1
+      env:
+        TIMEOUT_SEC: 480
 
     - run: rake build
 

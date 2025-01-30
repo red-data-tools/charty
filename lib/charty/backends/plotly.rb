@@ -5,6 +5,7 @@ require "tmpdir"
 require_relative "plotly_helpers/html_renderer"
 require_relative "plotly_helpers/notebook_renderer"
 require_relative "plotly_helpers/plotly_renderer"
+require_relative "backend_helpers/playwright_manager"
 
 module Charty
   module Backends
@@ -918,59 +919,16 @@ module Charty
         end
       end
 
-      @playwright_fiber = nil
-
-      def self.ensure_playwright
-        if @playwright_fiber.nil?
-          begin
-            require "playwright"
-          rescue LoadError
-            $stderr.puts "ERROR: You need to install playwright and playwright-ruby-client before using Plotly renderer"
-            raise
-          end
-
-          @playwright_fiber = Fiber.new do
-            playwright_cli_executable_path = ENV.fetch("PLAYWRIGHT_CLI_EXECUTABLE_PATH", "npx playwright")
-            Playwright.create(playwright_cli_executable_path: playwright_cli_executable_path) do |playwright|
-              playwright.chromium.launch(headless: true) do |browser|
-                request = Fiber.yield
-                loop do
-                  result = nil
-                  case request.shift
-                  when :finish
-                    break
-                  when :render
-                    input, output, format, element_id, width, height = request
-
-                    page = browser.new_page
-                    page.set_viewport_size(width: width, height: height)
-                    page.goto("file://#{input}")
-                    element = page.query_selector("\##{element_id}")
-
-                    kwargs = {type: format}
-                    kwargs[:path] = output unless output.nil?
-                    result = element.screenshot(**kwargs)
-                  end
-                  request = Fiber.yield(result)
-                end
-              end
-            end
-          end
-          @playwright_fiber.resume
-        end
-      end
-
-      def self.terminate_playwright
-        return if @playwright_fiber.nil?
-
-        @playwright_fiber.resume([:finish])
-      end
-
-      at_exit { terminate_playwright }
-
       def self.render_image(input, output, format, element_id, width, height)
-        ensure_playwright if @playwright_fiber.nil?
-        @playwright_fiber.resume([:render, input, output, format.to_s, element_id, width, height])
+        BackendHelpers::PlaywrightManager.new_page do |page|
+          page.set_viewport_size(width: width, height: height)
+          page.goto("file://#{input}")
+          element = page.query_selector("\##{element_id}")
+
+          kwargs = {type: format}
+          kwargs[:path] = output unless output.nil?
+          element.screenshot(**kwargs)
+        end
       end
     end
   end
