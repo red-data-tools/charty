@@ -1,4 +1,4 @@
-ARG BASE_IMAGE_TAG=e1a22a2
+ARG BASE_IMAGE_TAG=24a7f04dfc46
 FROM rubydata/minimal-notebook:$BASE_IMAGE_TAG
 
 USER root
