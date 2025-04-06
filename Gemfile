@@ -9,6 +9,7 @@ group :development, :test do
   gem "bundler", ">= 1.16"
   gem "csv"
   gem "daru"
+  gem "fiddle"
   gem "iruby", ">= 0.7.0"
   gem "matrix" # need for daru on Ruby > 3.0
   gem "rake"
