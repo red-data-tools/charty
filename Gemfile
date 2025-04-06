@@ -23,7 +23,7 @@ group :activerecord do
   gem "activerecord"
   # This must be synchronized with `gem "sqlite", "..."` in
   # lib/active_record/connection_adapters/sqlite3_adapter.rb.
-  gem "sqlite3", "=> 2.1"
+  gem "sqlite3", ">= 2.1"
 end
 
 group :cruby do
