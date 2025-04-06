@@ -34,12 +34,4 @@ Gem::Specification.new do |spec|
   spec.add_dependency "pandas", ">= 0.3.5"
   spec.add_dependency "playwright-ruby-client"
   spec.add_dependency "pycall", ">= 1.5.2"
-
-  spec.add_development_dependency "bundler", ">= 1.16"
-  spec.add_development_dependency "rake"
-  spec.add_development_dependency "test-unit"
-  spec.add_development_dependency "daru"
-  spec.add_development_dependency "matrix" # need for daru on Ruby > 3.0
-  spec.add_development_dependency "iruby", ">= 0.7.0"
-  spec.add_development_dependency "csv"
 end
