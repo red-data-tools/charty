@@ -46,6 +46,7 @@ e.g.
 
 ```
 $ docker build -f ./Dockerfile.dev -t charty-dev:latest .
+$ docker run --rm -v $(pwd):/charty charty-dev:latest bundle config set path vendor/bundle
 $ docker run --rm -v $(pwd):/charty charty-dev:latest bundle install
 $ docker run --rm -it -v $(pwd):/charty charty-dev:latest ./bin/console
 irb(main):001:0> Charty::VERSION
