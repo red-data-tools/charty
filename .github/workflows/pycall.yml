@@ -2,13 +2,7 @@ name: CI with matplotlib and pandas
 
 on:
   push:
-    branches:
-    - master
   pull_request:
-    types:
-    - opened
-    - synchronize
-    - reopened
 
 jobs:
   test:
@@ -23,6 +17,7 @@ jobs:
         - ubuntu-latest
         - ubuntu-22.04
         ruby:
+        - debug
         - 3.4
         - 3.3
         - 3.2
@@ -31,8 +26,6 @@ jobs:
         - 3.x
         python_architecture:
         - x64
-        include:
-        - { os: ubuntu-latest , ruby: debug , python: 3.x , python_architecture: x64 }
 
     steps:
     - uses: actions/checkout@v4
@@ -49,28 +42,9 @@ jobs:
         architecture: ${{ matrix.python_architecture }}
 
     - uses: actions/cache@v4
-      if: runner.os == 'Linux'
       with:
         path: ~/.cache/red-datasets
-        key: ${{ runner.os }}-${{ hashFiles('lib/**') }}
-        restore-keys: ${{ runner.os }}-
-
-    - uses: actions/cache@v4
-      if: |
-        runner.os == 'macOS'
-      with:
-        path: |
-          ~/Library/Caches/red-datasets
-          key: ${{ runner.os }}-${{ hashFiles('lib/**') }}
-          restore-keys: ${{ runner.os }}-
-
-    - uses: actions/cache@v4
-      if: |
-        runner.os == 'Windows'
-      with:
-        path: |
-          ~/AppData/red-datasets
-        key: ${{ runner.os }}-${{ hashFiles('lib/**') }}
+        key: ${{ runner.os }}-${{ hashFiles('charty.gemspec') }}
         restore-keys: ${{ runner.os }}-
 
     - run: sudo apt install build-essential libsqlite3-dev
@@ -87,4 +61,3 @@ jobs:
     - run: bundle exec rake
       env:
         PYTHON: python
-      continue-on-error: ${{ matrix.python == '2.x' }}
