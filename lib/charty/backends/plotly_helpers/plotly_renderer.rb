@@ -42,9 +42,6 @@ module Charty
           when ->(x) { defined?(Numo::NArray) && obj.is_a?(Numo::NArray) }
             visit_array(obj.to_a)
 
-          when ->(x) { defined?(NMatrix) && obj.is_a?(NMatrix) }
-            visit_array(obj.to_a)
-
           when ->(x) { defined?(Numpy::NDArray) && obj.is_a?(Numpy::NDArray) }
             visit_array(obj.to_a)
 

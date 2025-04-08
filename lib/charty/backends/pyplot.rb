@@ -504,6 +504,7 @@ module Charty
 
         x = x.to_a
         y = y.to_a
+        x = x.collect(&:to_s) if x[0].is_a?(Time)
         lines = ax.plot(x, y, **kws)
 
         lines.each do |line|

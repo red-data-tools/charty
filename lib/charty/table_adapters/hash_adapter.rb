@@ -30,7 +30,7 @@ module Charty
         when Charty::Vector
           true
         # TODO: Use vector adapter to detect them:
-        when Array, method(:daru_vector?), method(:narray_vector?), method(:nmatrix_vector?),
+        when Array, method(:daru_vector?), method(:narray_vector?),
              method(:numpy_vector?), method(:pandas_series?)
           true
         else
@@ -44,10 +44,6 @@ module Charty
 
       def self.narray_vector?(x)
         defined?(Numo::NArray) && x.is_a?(Numo::NArray) && x.ndim == 1
-      end
-
-      def self.nmatrix_vector?(x)
-        defined?(NMatrix) && x.is_a?(NMatrix) && x.dim == 1
       end
 
       def self.numpy_vector?(x)

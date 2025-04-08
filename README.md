@@ -240,7 +240,7 @@ end
 bar.render("sample_images/bar_pyplot.png")
 ```
 
-Charty also supports Daru::DataFrame, Numo::NArray, NMatrix and ActiveRecord as Data Abstraction Layer.
+Charty also supports Daru::DataFrame, Numo::NArray and ActiveRecord as Data Abstraction Layer.
 For example.
 
 ```ruby
@@ -258,12 +258,6 @@ charty.table = df
 require "numo/narray"
 narray = Numo::DFloat.new(3,5).seq
 charty.table = narray
-
-
-### when NMatrix
-require "nmatrix"
-nmatrix = NMatrix.new([3, 4], [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], dtype: :int64)
-charty.table = nmatrix
 
 
 ### when ActiveRecord
