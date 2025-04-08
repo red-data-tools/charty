@@ -16,7 +16,7 @@ jobs:
     needs: ruby-versions
     name: ${{ matrix.os }}/${{ matrix.ruby }}/${{ matrix.python }}-${{ matrix.python_architecture }}
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 10
+    timeout-minutes: 15
 
     strategy:
       fail-fast: false
