@@ -2,13 +2,7 @@ name: CI
 
 on:
   push:
-    branches:
-    - master
   pull_request:
-    types:
-    - opened
-    - synchronize
-    - reopened
 
 jobs:
   test:
@@ -41,28 +35,9 @@ jobs:
         ruby-version: ${{ matrix.ruby }}
 
     - uses: actions/cache@v4
-      if: runner.os == 'Linux'
       with:
         path: ~/.cache/red-datasets
-        key: ${{ runner.os }}-${{ hashFiles('lib/**') }}
-        restore-keys: ${{ runner.os }}-
-
-    - uses: actions/cache@v4
-      if: |
-        runner.os == 'macOS'
-      with:
-        path: |
-          ~/Library/Caches/red-datasets
-        key: ${{ runner.os }}-${{ hashFiles('lib/**') }}
-        restore-keys: ${{ runner.os }}-
-
-    - uses: actions/cache@v4
-      if: |
-        runner.os == 'Windows'
-      with:
-        path: |
-          ~/AppData/red-datasets
-        key: ${{ runner.os }}-${{ hashFiles('lib/**') }}
+        key: ${{ runner.os }}-${{ hashFiles('charty.gemspec') }}
         restore-keys: ${{ runner.os }}-
 
     - run: sudo apt install build-essential libsqlite3-dev
