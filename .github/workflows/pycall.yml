@@ -5,7 +5,15 @@ on:
   pull_request:
 
 jobs:
+  ruby-versions:
+    uses: ruby/actions/.github/workflows/ruby_versions.yml@master
+    with:
+      engine: cruby
+      min_version: "3.1"
+      versions: '["debug"]'
+
   test:
+    needs: ruby-versions
     name: ${{ matrix.os }}/${{ matrix.ruby }}/${{ matrix.python }}-${{ matrix.python_architecture }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
@@ -16,12 +24,7 @@ jobs:
         os:
         - ubuntu-latest
         - ubuntu-22.04
-        ruby:
-        - debug
-        - 3.4
-        - 3.3
-        - 3.2
-        - 3.1
+        ruby: ${{ fromJson(needs.ruby-versions.outputs.versions) }}
         python:
         - 3.x
         python_architecture:
