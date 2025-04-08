@@ -31,10 +31,6 @@ group :cruby do
   gem "enumerable-statistics"
 end
 
-group :nmatrix do
-  gem "nmatrix"
-end
-
 group :numo do
   gem "numo-narray"
 end

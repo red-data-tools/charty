@@ -25,12 +25,21 @@ jobs:
         - ubuntu-22.04
         ruby: ${{ fromJson(needs.ruby-versions.outputs.versions) }}
 
+    env:
+      BUNDLE_WITHOUT: "python"
+
     steps:
     - uses: actions/checkout@v4
+
+    - run: npm install playwright@latest
+    - run: ./node_modules/.bin/playwright install
+
+    - run: sudo apt install build-essential libsqlite3-dev
 
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
+        bundler-cache: true
         ruby-version: ${{ matrix.ruby }}
 
     - uses: actions/cache@v4
@@ -39,15 +48,8 @@ jobs:
         key: ${{ runner.os }}-${{ hashFiles('charty.gemspec') }}
         restore-keys: ${{ runner.os }}-
 
-    - run: sudo apt install build-essential libsqlite3-dev
-
-    - run: npm install playwright@latest
-    - run: ./node_modules/.bin/playwright install
-
-    - run: bundle install --jobs 4 --retry 3 --without "nmatrix python"
-
     - run: bundle exec rake
 
-    - run: rake build
+    - run: bundle exec rake build
 
     - run: gem install --user pkg/*.gem

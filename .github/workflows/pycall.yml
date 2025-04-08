@@ -31,7 +31,7 @@ jobs:
         - x64
 
     env:
-      BUNDLE_WITHOUT: "nmatrix numo"
+      BUNDLE_WITHOUT: "numo"
       PYTHON: python
 
     steps:
