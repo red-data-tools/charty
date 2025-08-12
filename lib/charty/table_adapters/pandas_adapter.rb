@@ -199,7 +199,7 @@ module Charty
           res = @groupby.apply(->(data) {
             res = block.call(Charty::Table.new(data), *args)
             Pandas::Series.new(data: res)
-          })
+          }, include_groups: false)
           Charty::Table.new(res)
         end
 
