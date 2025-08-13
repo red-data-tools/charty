@@ -63,4 +63,4 @@ jobs:
         key: ${{ runner.os }}-${{ hashFiles('charty.gemspec') }}
         restore-keys: ${{ runner.os }}-
 
-    - run: bundle exec rake
+    - run: bundle exec test/run.rb -v
